@@ -1,12 +1,12 @@
 import Card from "./cards.js";
 
-const cardsNum = 4
 let primaryDeckcards = []
 let secondaryDeckcards = []
 
-
 const primaryDeckCardContainer = document.getElementById('primaryDeck')
 const secondaryDeckCardContainer = document.getElementById('secondaryDeck')
+
+const maxPlayersNum = 4
 let currentPlayer = 1
 let playerTurn = 1
 
@@ -22,20 +22,14 @@ function loadGame() {
     createCards()
 }
 
+function changeTurn() {
+    playerTurn = playerTurn % maxPlayersNum + 1
+    currentPlayer = currentPlayer% maxPlayersNum + 1
+}
+
 function attatchClickEventHandlerToDecks() {
     // primaryDeckCardContainer.addEventListener('click', () => {primaryDeckClicked = true})
     secondaryDeckCardContainer.addEventListener('click', () => {secondaryDeckClick()})
-}
-
-function secondaryDeckClick() {
-    // console.log('in secondaryDeckClick =', primaryDeckClicked)
-    if(primaryDeckClicked) {
-        const victimCard = primaryDeckcards.pop()
-        victimCard.setOwnerContainer(secondaryDeckCardContainer)
-        victimCard.assignCardToOwner()
-        secondaryDeckcards.push(victimCard)
-        primaryDeckClicked = false
-    }
 }
 
 function createCards() {
@@ -73,14 +67,23 @@ function chooseCard(card)
     {
         // console.log('can choose', card.cardName)
         // console.log(card.cardOwnerContainer.id)
-        if(card.cardOwnerContainer.id == primaryDeckCardContainer.id
-           && !primaryDeckClicked
-           && primaryDeckcards.length) {
-            card.flipCard()
-            primaryDeckClicked = true
+        if(card.cardOwnerContainer.id == primaryDeckCardContainer.id)
+        {
+            if(!primaryDeckClicked&& primaryDeckcards.length) {
+                card.flipCard()
+                primaryDeckClicked = true
+            }
+            else if(primaryDeckClicked) {
+                card.flipCard()
+                card.setOwnerContainer(getOwnerContainer(playerTurn))
+                card.assignCardToOwner()
+                primaryDeckcards.pop()
+                primaryDeckClicked = false
+                changeTurn()
+            }
         }
-    
-    }else{
+    }
+    else{
         console.log('can not choose')
     }
 }
@@ -90,5 +93,17 @@ function canChooseCard(card) {
             currentPlayer == playerTurn && 
             card.cardOwnerContainer === getOwnerContainer(0) || card.cardOwnerContainer === getOwnerContainer(5)
             )
+}
+
+function secondaryDeckClick() {
+    // console.log('in secondaryDeckClick =', primaryDeckClicked)
+    if(primaryDeckClicked) {
+        const victimCard = primaryDeckcards.pop()
+        victimCard.setOwnerContainer(secondaryDeckCardContainer)
+        victimCard.assignCardToOwner()
+        secondaryDeckcards.push(victimCard)
+        primaryDeckClicked = false
+        changeTurn()
+    }
 }
 
