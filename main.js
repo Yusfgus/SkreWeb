@@ -11,7 +11,6 @@ let currentPlayer = 1
 let playerTurn = 1
 
 let primaryDeckClicked = false
-let secondaryDeckClicked = false
 
 loadGame()
 
@@ -22,13 +21,18 @@ function loadGame() {
     createCards()
 }
 
+function initRound() {
+
+}
+
 function changeTurn() {
+    console.log('Change Turn')
     playerTurn = playerTurn % maxPlayersNum + 1
     currentPlayer = currentPlayer% maxPlayersNum + 1
 }
 
 function attatchClickEventHandlerToDecks() {
-    // primaryDeckCardContainer.addEventListener('click', () => {primaryDeckClicked = true})
+    primaryDeckCardContainer.addEventListener('click', () => {primaryDeckClick()})
     secondaryDeckCardContainer.addEventListener('click', () => {secondaryDeckClick()})
 }
 
@@ -61,31 +65,9 @@ function attatchClickEventHandlerToCard(card) {
     card.cardDivElem.addEventListener('click', () => chooseCard(card))
 }
 
-function chooseCard(card) 
-{
-    if(canChooseCard(card))
-    {
-        // console.log('can choose', card.cardName)
-        // console.log(card.cardOwnerContainer.id)
-        if(card.cardOwnerContainer.id == primaryDeckCardContainer.id)
-        {
-            if(!primaryDeckClicked&& primaryDeckcards.length) {
-                card.flipCard()
-                primaryDeckClicked = true
-            }
-            else if(primaryDeckClicked) {
-                card.flipCard()
-                card.setOwnerContainer(getOwnerContainer(playerTurn))
-                card.assignCardToOwner()
-                primaryDeckcards.pop()
-                primaryDeckClicked = false
-                changeTurn()
-            }
-        }
-    }
-    else{
-        console.log('can not choose')
-    }
+function changeCardOwner(card, owner) {
+    card.setOwnerContainer(owner)
+    card.assignCardToOwner()
 }
 
 function canChooseCard(card) {
@@ -95,15 +77,55 @@ function canChooseCard(card) {
             )
 }
 
+function chooseCard(card) 
+{
+    if(canChooseCard(card))
+    {
+        console.log('can choose')
+
+    }
+    else{
+        console.log('can not choose')
+    }
+}
+
+function primaryDeckClick() {
+    if(!primaryDeckClicked && primaryDeckcards.length) {
+        const card = primaryDeckcards[primaryDeckcards.length - 1]
+        card.flipCard()
+        primaryDeckClicked = true
+    }
+    else if(primaryDeckClicked) {
+        const card = primaryDeckcards[primaryDeckcards.length - 1]
+        card.flipCard()
+        changeCardOwner(card, getOwnerContainer(playerTurn))
+        primaryDeckcards.pop()
+        primaryDeckClicked = false
+        changeTurn()
+    }
+}
+
 function secondaryDeckClick() {
     // console.log('in secondaryDeckClick =', primaryDeckClicked)
     if(primaryDeckClicked) {
+        // from primary deck to secondary deck
         const victimCard = primaryDeckcards.pop()
-        victimCard.setOwnerContainer(secondaryDeckCardContainer)
-        victimCard.assignCardToOwner()
+        changeCardOwner(victimCard, secondaryDeckCardContainer)
         secondaryDeckcards.push(victimCard)
         primaryDeckClicked = false
         changeTurn()
+    }
+    else if (secondaryDeckcards.length > 0)
+    {
+        const card = secondaryDeckcards[secondaryDeckcards.length - 1]
+        if(canChooseCard(card))
+        {
+            // choose from second deck
+            card.flipCard()
+            changeCardOwner(card, getOwnerContainer(playerTurn))
+            secondaryDeckcards.pop()
+            changeTurn()
+        }
     }
 }
 
