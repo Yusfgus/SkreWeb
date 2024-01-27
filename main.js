@@ -12,6 +12,8 @@ let playerTurn = 1
 
 let primaryDeckClicked = false
 
+let selectedCard = null
+
 loadGame()
 
 function loadGame() {
@@ -26,7 +28,7 @@ function initRound() {
 }
 
 function changeTurn() {
-    console.log('Change Turn')
+    //console.log('Change Turn')
     playerTurn = playerTurn % maxPlayersNum + 1
     currentPlayer = currentPlayer% maxPlayersNum + 1
 }
@@ -62,7 +64,11 @@ function getOwnerContainer(ownerId) {
 }
 
 function attatchClickEventHandlerToCard(card) {
-    card.cardDivElem.addEventListener('click', () => chooseCard(card))
+    card.cardDivElem.addEventListener('click', () => {
+        selectedCard = card
+        //console.log('card name =', selectedCard.cardName)
+        chooseCard(card)
+    })
 }
 
 function changeCardOwner(card, owner) {
@@ -70,26 +76,30 @@ function changeCardOwner(card, owner) {
     card.assignCardToOwner()
 }
 
-function canChooseCard(card) {
+function canChooseCard() {
     return (
             currentPlayer == playerTurn && 
-            card.cardOwnerContainer === getOwnerContainer(0) || card.cardOwnerContainer === getOwnerContainer(5)
+            (selectedCard.cardOwnerContainer === primaryDeckCardContainer || selectedCard.cardOwnerContainer === secondaryDeckCardContainer)
             )
 }
 
 function chooseCard(card) 
 {
-    if(canChooseCard(card))
-    {
-        console.log('can choose')
+    if(!canChooseCard()) {
+        // //console.log('in chooseCard() can not choose')
+        return
+    }
+    // //console.log('in chooseCard() can choose')
 
-    }
-    else{
-        console.log('can not choose')
-    }
 }
 
 function primaryDeckClick() {
+    if(!canChooseCard()) {
+        // //console.log('in primaryDeckClick() can not choose')
+        return
+    }
+    // console.log('in primaryDeckClick() can choose')
+
     if(!primaryDeckClicked && primaryDeckcards.length) {
         const card = primaryDeckcards[primaryDeckcards.length - 1]
         card.flipCard()
@@ -106,7 +116,13 @@ function primaryDeckClick() {
 }
 
 function secondaryDeckClick() {
-    // console.log('in secondaryDeckClick =', primaryDeckClicked)
+    //console.log('in secondaryDeckClick =', primaryDeckClicked)
+    if(!canChooseCard()) {
+        //console.log('in secondaryDeckClick() can not choose')
+        return
+    }
+    //console.log('in secondaryDeckClick() can choose')
+
     if(primaryDeckClicked) {
         // from primary deck to secondary deck
         const victimCard = primaryDeckcards.pop()
@@ -118,14 +134,11 @@ function secondaryDeckClick() {
     else if (secondaryDeckcards.length > 0)
     {
         const card = secondaryDeckcards[secondaryDeckcards.length - 1]
-        if(canChooseCard(card))
-        {
-            // choose from second deck
-            card.flipCard()
-            changeCardOwner(card, getOwnerContainer(playerTurn))
-            secondaryDeckcards.pop()
-            changeTurn()
-        }
+        // choose from second deck
+        card.flipCard()
+        changeCardOwner(card, getOwnerContainer(playerTurn))
+        secondaryDeckcards.pop()
+        changeTurn()
     }
 }
 

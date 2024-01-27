@@ -22,7 +22,7 @@ export default class Card {
 
     creatCard() {
 
-        // <div class="card">
+        // <div class="card" id="this.name">
         //     <div class="card-inner">
         //         <div class="card-front">
         //             <img src="images/card-JackClubs.png" alt="king image" class="card-img">
@@ -33,7 +33,7 @@ export default class Card {
         //     </div>
         // </div> 
         
-        // <div class="card">
+        // <div class="card" id="this.name">
         const newCardElem = createElement('div')
         addClassToElement(newCardElem, 'card')
         addIdToElement(newCardElem, this.name)
