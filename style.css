@@ -1,3 +1,9 @@
+
+:root {
+    --card-width: 125px;
+    --card-height: 200px;
+}
+
 body {
     margin: 0;
     height: 100vh;
@@ -10,7 +16,7 @@ main {
     width: 100%;
     display: grid;
     grid-template-columns: 0.2fr 0.6fr 0.2fr;
-    grid-template-rows: 0.2fr 0.6fr 0.2fr;
+    grid-template-rows: 0.35fr 0.3fr 0.35fr;
     grid-template-areas: "p4 p3 p2"
                          "p4 d p2"
                          "p4 p1 p2";
@@ -42,4 +48,129 @@ main {
     justify-content: center;
     align-items: center;
     border: 1px solid black;
+}
+
+.cards-container {
+    height: var(--card-height);
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+}
+
+.deck {
+    position: relative;
+    height: calc(var(--card-height) + 10px);
+    width: calc(var(--card-width) + 10px);
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#deck-cards-container{
+    gap: 100px;
+}
+
+#player1-cards-container{
+    flex-direction: row-reverse;
+}
+#player2-cards-container{
+    flex-direction: column;
+}
+#player3-cards-container{
+    flex-direction: row;
+}
+#player4-cards-container{
+    flex-direction: column-reverse;
+}
+
+#player1-cards-container,
+#player3-cards-container{
+    height: var(--card-height);
+    width: 100%;
+}
+
+#player2-cards-container,
+#player4-cards-container{
+    width: var(--card-height);
+    height: 100%;
+}
+
+
+#player1-cards-container .card{
+    transform: rotate(0deg);
+}
+#player3-cards-container .card{
+    transform: rotate(180deg);
+}
+#player2-cards-container .card{
+    transform: rotate(-90deg);
+}
+#player4-cards-container .card{
+    transform: rotate(90deg);
+}
+
+#player1-cards-container .card,
+#player3-cards-container .card{
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#player2-cards-container .card,
+#player4-cards-container .card{
+    margin-top: -33px;
+    margin-bottom: -33px;
+}
+
+.card {
+    height: var(--card-height);
+    width: var(--card-width);
+    border: 1px solid black;
+    perspective: 1000px;
+    cursor: pointer;
+    transition: transform 0.6s ease-in-out;
+}
+
+.card-inner {
+    border-radius: 20px;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.card-front, .card-back {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.card-img {
+    height: 100%;
+}
+
+.card-front {
+    background-color: bisque;
+    transform: rotateY(180deg);
+}
+
+.card-back {
+    background-color: aqua;
+}
+
+.card:hover .card-inner {
+    transform: rotateY(180deg);
+    /* transform: translateX(50px) translateZ(150px); */
+    /* transform: translateZ(-150px); */
+}
+
+.deck .card {
+    position: absolute;
 }
