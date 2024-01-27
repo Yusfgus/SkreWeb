@@ -13,9 +13,11 @@ export default class Card {
         this.name = name
         this.value = value
         this.owner = owner
+        this.isFlipped = false // back is up
 
         this.command = this.getCardCommand()
         this.cardElem = this.creatCard()
+        this.assignCardToOwner()
     }
 
     creatCard() {
@@ -68,9 +70,6 @@ export default class Card {
         
         addchildElement(newCardElem, cardInnerElem)
 
-        this.attatchClickEventHandlerToCard(newCardElem)
-        this.assignCardToPlayer(newCardElem)
-        
         return newCardElem
     }
 
@@ -81,47 +80,33 @@ export default class Card {
         }
         return ''
     }
-
-    get cardDivElem() { 
-        return this.cardElem
-    }
     
-    assignCardToPlayer(card) {
-        const parent = document.getElementById(this.owner)
-        addchildElement(parent, card)
+    assignCardToOwner() {
+        addchildElement(this.owner, this.cardElem)
     }
 
-    attatchClickEventHandlerToCard(card) {
-        card.addEventListener('click', () => chooseCard(card))
-    }
+    flipCard() {
+        const innerCardElem = this.cardElem.firstChild
 
-    chooseCard(card) {
-        if(canChooseCard())
-        {
-            flipCard(card, false)
+        if(!this.isFlipped) {
+            innerCardElem.style.transform = 'rotateY(180deg)'
         }
-    }
-
-    canChooseCard() {
-        // return gameInProgress && !shufflingInProgress && !cardsRevealed
-        return true
-    }
-
-    flipCard(card, flipToBack) {
-        // const innerCardElem = card.firstChild
-        // const isInnerCardElemContainsClassFlipIt = innerCardElem.classList.contains('flip-it')
-    
-        // if(flipToBack && !isInnerCardElemContainsClassFlipIt) {
-        //     innerCardElem.classList.add('flip-it')
-        // }
-        // else if(isInnerCardElemContainsClassFlipIt){
-        //     innerCardElem.classList.remove('flip-it')
-        // }
+        else {
+            innerCardElem.style.transform = ''
+        }
+        this.isFlipped = !this.isFlipped
     }
 
     static shuffle() {
 
     }
+
+    setOwnerContainer(owner) {this.owner = owner}
+    
+    get cardName() {return this.name}
+    get cardDivElem() {return this.cardElem}
+    get cardOwnerContainer() {return this.owner}
+    get cardIsFlipped() {return this.isFlipped}
 }
 
 
