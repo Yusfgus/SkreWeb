@@ -1,10 +1,20 @@
+const commands = {
+    '7': 'lookYours',
+    '8': 'lookYours',
+    '9': 'lookOthers',
+    '10': 'lookOthers',
+    'exchange': 'exchange',
+    'lookAll': 'lookAll',
+    'pasra': 'pasra'
+}
 
 export default class Card {
-    constructor(name, value, command, owner) {
+    constructor(name, value, owner) {
         this.name = name
         this.value = value
-        this.command = command
         this.owner = owner
+
+        this.command = this.getCardCommand()
         this.cardElem = this.creatCard()
     }
 
@@ -33,7 +43,7 @@ export default class Card {
         // <div class="card-front">
         const cardFrontElem = createElement('div')
         addClassToElement(cardFrontElem, 'card-front')
-        updateInnerHTML(cardFrontElem, this.name)
+        updateInnerHTML(cardFrontElem, this.command)
 
         // <div class="card-back">
         const cardBackElem = createElement('div')
@@ -64,12 +74,20 @@ export default class Card {
         return newCardElem
     }
 
+    getCardCommand() {
+        if(this.value >= 7 && this.value <=10)
+        {
+            return commands[this.name]
+        }
+        return ''
+    }
+
     get cardDivElem() { 
         return this.cardElem
     }
     
     assignCardToPlayer(card) {
-        const parent = document.getElementById('primaryDeck')
+        const parent = document.getElementById(this.owner)
         addchildElement(parent, card)
     }
 
@@ -99,6 +117,10 @@ export default class Card {
         // else if(isInnerCardElemContainsClassFlipIt){
         //     innerCardElem.classList.remove('flip-it')
         // }
+    }
+
+    static shuffle() {
+
     }
 }
 
