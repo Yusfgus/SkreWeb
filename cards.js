@@ -18,7 +18,7 @@ export default class Card {
 
         this.command = this.getCardCommand()
         this.cardElem = this.creatCard()
-        this.assignCardToOwner()
+        // this.assignCardToOwner()
     }
 
     creatCard() {
@@ -85,6 +85,7 @@ export default class Card {
     
     assignCardToOwner() {
         addchildElement(this.owner, this.cardElem)
+        console.log('card', this.cardIndex,'new owner =', this.owner)
     }
 
     flipCard() {
@@ -103,7 +104,13 @@ export default class Card {
 
     }
 
-    setOwnerContainer(owner) {this.owner = owner}
+    setOwnerContainer(owner) {
+        console.log('card', this.cardIndex,'old owner =', this.owner)
+        this.owner = owner}
+    setDataValue(value) {
+        this.cardIndex = value
+        addDataValueToElement(this.cardElem, this.cardIndex)
+    }
     
     get cardName() {return this.name}
     get cardDivElem() {return this.cardElem}

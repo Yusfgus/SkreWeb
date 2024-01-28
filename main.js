@@ -42,15 +42,23 @@ function loadGame() {
     attatchClickEventHandlerToDecks()
     
     createCards()
+    shuffleCards()
 
     initRound()
 }
 
 async function initRound() {
+    addCardsToPrimaryDeck()
     await wait(distributeCards, distributionsTime)
-    console.log('here')
     showFirstTwoCards()
     roundStarted = true
+}
+
+function addCardsToPrimaryDeck() {
+    cards.forEach((card) => {
+        primaryDeckcards.push(card)
+        card.assignCardToOwner()
+    })
 }
 
 async function showFirstTwoCards() {
@@ -107,6 +115,8 @@ function attatchClickEventHandlerToDecks() {
 }
 
 function distributeCards() {
+    console.log('here')
+
     let ctr = 0
     let maxCards = maxPlayersNum * 4
     const id = setInterval(() => {
@@ -124,8 +134,26 @@ function distributeCards() {
 function initCard(name, value, owner, cardIndex) {
     const card = new Card(name, value, owner, cardIndex)
     cards.push(card)
-    primaryDeckcards.push(card)
+    // primaryDeckcards.push(card)
     attatchClickEventHandlerToCard(card)
+}
+
+function shuffleCards() {
+    const maxIndex = cards.length
+    let ctr = 200
+    while(ctr-- > 0)
+    {
+        const random1 = Math.floor(Math.random() * maxIndex)
+        const random2 = Math.floor(Math.random() * maxIndex)
+
+        const temp = cards[random1]
+        cards[random1] = cards[random2]
+        cards[random2] = temp
+
+        cards[random1].setDataValue(random1)
+        cards[random2].setDataValue(random2)
+    }
+    console.log(cards)
 }
 
 function createCards() {
@@ -160,7 +188,7 @@ function createCards() {
 
     initCard("-1", -1, getOwnerContainer(0), cardIndex++)
 
-    Card.shuffle()
+    // Card.shuffle()
 }
 
 function getOwnerContainer(ownerId) {
