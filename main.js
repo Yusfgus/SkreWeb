@@ -1,6 +1,7 @@
 import Card from "./cards.js";
 import { addchildElement } from "./cards.js";
 
+let cards = []
 let primaryDeckcards = []
 let secondaryDeckcards = []
 
@@ -16,6 +17,10 @@ let secondaryDeckClicked = false
 
 let selectedCard = null
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 loadGame()
 
 function loadGame() {
@@ -29,6 +34,13 @@ function loadGame() {
 
 function initRound() {
     distributeCards()
+    showFirstTwoCards()
+}
+
+async function showFirstTwoCards() {
+
+
+    await sleep(4000)
 }
 
 function putFirstCard() {
@@ -69,52 +81,44 @@ function distributeCards() {
     }, 600)
 }
 
+function initCard(name, value, owner, cardIndex) {
+    const card = new Card(name, value, owner, cardIndex)
+    cards.push(card)
+    primaryDeckcards.push(card)
+    attatchClickEventHandlerToCard(card)
+}
+
 function createCards() {
+    let cardIndex = 0
     // normal cards
     for(let j=1; j<=4; ++j) 
     {
         for(let i=1; i<=10; ++i) 
         {
-            const normalCard = new Card(`${i}`, i, getOwnerContainer(0))
-            primaryDeckcards.push(normalCard)
-            attatchClickEventHandlerToCard(normalCard)
+            initCard(`${i}`, i, getOwnerContainer(0), cardIndex++)
         }
     }
 
     // command cards
     for(let i=1; i<=4; ++i) 
     {
-        const exchangeCard = new Card("exchange", 10, getOwnerContainer(0))
-        primaryDeckcards.push(exchangeCard)
-        attatchClickEventHandlerToCard(exchangeCard)
+        initCard("exchange", 10, getOwnerContainer(0), cardIndex++)
 
-        const plus20Card = new Card("20", 20, getOwnerContainer(0))
-        primaryDeckcards.push(plus20Card)
-        attatchClickEventHandlerToCard(plus20Card)
+        initCard("20", 20, getOwnerContainer(0), cardIndex++)
     }
 
     for(let i=1; i<=2; ++i) 
     {
-        const lookAllCard = new Card("lookAll", 10, getOwnerContainer(0))
-        primaryDeckcards.push(lookAllCard)
-        attatchClickEventHandlerToCard(lookAllCard)
+        initCard("lookAll", 10, getOwnerContainer(0), cardIndex++)
 
-        const pasraCard = new Card("pasra", 10, getOwnerContainer(0))
-        primaryDeckcards.push(pasraCard)
-        attatchClickEventHandlerToCard(pasraCard)
+        initCard("pasra", 10, getOwnerContainer(0), cardIndex++)
 
-        const redSkrewCard = new Card("redSkrew", 25, getOwnerContainer(0))
-        primaryDeckcards.push(redSkrewCard)
-        attatchClickEventHandlerToCard(redSkrewCard)
+        initCard("redSkrew", 25, getOwnerContainer(0), cardIndex++)
 
-        const skrewDriverCard = new Card("skrewDriver", 0, getOwnerContainer(0))
-        primaryDeckcards.push(skrewDriverCard)
-        attatchClickEventHandlerToCard(skrewDriverCard)
+        initCard("skrewDriver", 0, getOwnerContainer(0), cardIndex++)
     }
 
-    const negativeOneCard = new Card("-1", -1, getOwnerContainer(0))
-    primaryDeckcards.push(negativeOneCard)
-    attatchClickEventHandlerToCard(negativeOneCard)
+    initCard("-1", -1, getOwnerContainer(0), cardIndex++)
 
     Card.shuffle()
 }

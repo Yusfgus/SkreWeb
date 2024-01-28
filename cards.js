@@ -9,10 +9,11 @@ const commands = {
 }
 
 export default class Card {
-    constructor(name, value, owner) {
+    constructor(name, value, owner, cardIndex) {
         this.name = name
         this.value = value
         this.owner = owner
+        this.cardIndex = cardIndex
         this.isFlipped = false // back is up
 
         this.command = this.getCardCommand()
@@ -37,6 +38,7 @@ export default class Card {
         const newCardElem = createElement('div')
         addClassToElement(newCardElem, 'card')
         addIdToElement(newCardElem, this.name)
+        addDataValueToElement(newCardElem, this.cardIndex)
         
         // <div class="card-inner">
         const cardInnerElem = createElement('div')
@@ -124,6 +126,10 @@ function addClassToElement(elem, className) {
 
 function addIdToElement(elem, id) {
     elem.id = id
+}
+
+function addDataValueToElement(elem, value) {
+    elem.dataset.value = value
 }
 
 function addSrcToImageElem(imgElem, src) {
