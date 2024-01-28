@@ -18,8 +18,8 @@ let secondaryDeckClicked = false
 let roundStarted = false
 let selectedCard = null
 
-async function wait(Function, ms) {
-    await new Promise(resoleve => {
+function wait(Function, ms) {
+    return new Promise(resoleve => {
         Function()
         setTimeout(() => {
             console.log('lol')
@@ -43,8 +43,8 @@ function loadGame() {
     initRound()
 }
 
-function initRound() {
-    wait(distributeCards, 10000)
+async function initRound() {
+    await wait(distributeCards, 10000)
     console.log('here')
     showFirstTwoCards()
     roundStarted = true
