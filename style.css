@@ -163,6 +163,7 @@ main {
 
 .card-back {
     background-color: aqua;
+    /* transform: rotateY(180deg); */
 }
 
 /* .card:hover .card-inner {

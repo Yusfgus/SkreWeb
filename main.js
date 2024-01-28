@@ -1,4 +1,5 @@
 import Card from "./cards.js";
+import { addchildElement } from "./cards.js";
 
 let primaryDeckcards = []
 let secondaryDeckcards = []
@@ -11,6 +12,7 @@ let currentPlayer = 1
 let playerTurn = 1
 
 let primaryDeckClicked = false
+let secondaryDeckClicked = false
 
 let selectedCard = null
 
@@ -21,21 +23,50 @@ function loadGame() {
     attatchClickEventHandlerToDecks()
     
     createCards()
+
+    initRound()
 }
 
 function initRound() {
+    distributeCards()
+}
 
+function putFirstCard() {
+    const firstCard = primaryDeckcards.pop()
+    secondaryDeckcards.push(firstCard)
+    changeCardOwner(firstCard, secondaryDeckCardContainer, true)
 }
 
 function changeTurn() {
     //console.log('Change Turn')
     playerTurn = playerTurn % maxPlayersNum + 1
     currentPlayer = currentPlayer% maxPlayersNum + 1
+
+    primaryDeckClicked = false
+    secondaryDeckClicked = false
+    selectedCard = null
+
+    alert(`player ${playerTurn} turn`)
 }
 
 function attatchClickEventHandlerToDecks() {
     primaryDeckCardContainer.addEventListener('click', () => {primaryDeckClick()})
     secondaryDeckCardContainer.addEventListener('click', () => {secondaryDeckClick()})
+}
+
+function distributeCards() {
+    let ctr = 0
+    let maxCards = maxPlayersNum * 4
+    const id = setInterval(() => {
+        const card = primaryDeckcards.pop()
+        const playerContainer = getOwnerContainer(ctr++ % maxPlayersNum + 1)
+        changeCardOwner(card, playerContainer, false)
+        // addchildElement(playerContainer, card)
+        if(--maxCards == 0) {
+            clearInterval(id)
+            putFirstCard()
+        }
+    }, 100)
 }
 
 function createCards() {
@@ -46,7 +77,40 @@ function createCards() {
         attatchClickEventHandlerToCard(normalCard)
     }
 
+    // command cards
+    for(let i=1; i<=4; ++i) 
+    {
+        const exchangeCard = new Card("exchange", 10, getOwnerContainer(0))
+        primaryDeckcards.push(exchangeCard)
+        attatchClickEventHandlerToCard(exchangeCard)
 
+        const plus20Card = new Card("20", 20, getOwnerContainer(0))
+        primaryDeckcards.push(plus20Card)
+        attatchClickEventHandlerToCard(plus20Card)
+    }
+
+    for(let i=1; i<=2; ++i) 
+    {
+        const lookAllCard = new Card("lookAll", 10, getOwnerContainer(0))
+        primaryDeckcards.push(lookAllCard)
+        attatchClickEventHandlerToCard(lookAllCard)
+
+        const pasraCard = new Card("pasra", 10, getOwnerContainer(0))
+        primaryDeckcards.push(pasraCard)
+        attatchClickEventHandlerToCard(pasraCard)
+
+        const redSkrewCard = new Card("redSkrew", 25, getOwnerContainer(0))
+        primaryDeckcards.push(redSkrewCard)
+        attatchClickEventHandlerToCard(redSkrewCard)
+
+        const skrewDriverCard = new Card("skrewDriver", 0, getOwnerContainer(0))
+        primaryDeckcards.push(skrewDriverCard)
+        attatchClickEventHandlerToCard(skrewDriverCard)
+    }
+
+    const negativeOneCard = new Card("-1", -1, getOwnerContainer(0))
+    primaryDeckcards.push(negativeOneCard)
+    attatchClickEventHandlerToCard(negativeOneCard)
 
     Card.shuffle()
 }
@@ -67,78 +131,102 @@ function attatchClickEventHandlerToCard(card) {
     card.cardDivElem.addEventListener('click', () => {
         selectedCard = card
         //console.log('card name =', selectedCard.cardName)
-        chooseCard(card)
+        if(selectedCard.cardOwnerContainer === getOwnerContainer(playerTurn)){
+            chooseCard(card)
+        }
     })
 }
 
-function changeCardOwner(card, owner) {
+function changeCardOwner(card, owner, flip) {
+    if(flip){
+        card.flipCard()
+    }
     card.setOwnerContainer(owner)
     card.assignCardToOwner()
 }
 
 function canChooseCard() {
-    return (
-            currentPlayer == playerTurn && 
-            (selectedCard.cardOwnerContainer === primaryDeckCardContainer || selectedCard.cardOwnerContainer === secondaryDeckCardContainer)
-            )
+    return (currentPlayer == playerTurn)
+}
+
+function primaryDeckClick() {
+    if(!primaryDeckClicked && primaryDeckcards.length > 0) {
+        const card = primaryDeckcards[primaryDeckcards.length - 1]
+        card.flipCard()
+        primaryDeckClicked = true
+    }
 }
 
 function chooseCard(card) 
 {
     if(!canChooseCard()) {
-        // //console.log('in chooseCard() can not choose')
         return
     }
     // //console.log('in chooseCard() can choose')
+    if(primaryDeckClicked) {
+        // from primary deck to secondary deck
+        const choosedCard = primaryDeckcards.pop()
 
-}
+        changeCardOwner(card, secondaryDeckCardContainer, true)
+        secondaryDeckcards.push(card)
 
-function primaryDeckClick() {
-    if(!canChooseCard()) {
-        // //console.log('in primaryDeckClick() can not choose')
-        return
-    }
-    // console.log('in primaryDeckClick() can choose')
-
-    if(!primaryDeckClicked && primaryDeckcards.length) {
-        const card = primaryDeckcards[primaryDeckcards.length - 1]
-        card.flipCard()
-        primaryDeckClicked = true
-    }
-    else if(primaryDeckClicked) {
-        const card = primaryDeckcards[primaryDeckcards.length - 1]
-        card.flipCard()
-        changeCardOwner(card, getOwnerContainer(playerTurn))
-        primaryDeckcards.pop()
+        changeCardOwner(choosedCard, getOwnerContainer(playerTurn), true)
         primaryDeckClicked = false
-        changeTurn()
     }
+    else if (secondaryDeckcards.length > 0)
+    {
+        if(secondaryDeckClicked)
+        {
+            const choosedCard = secondaryDeckcards.pop()
+            // choose from second deck
+            changeCardOwner(choosedCard, getOwnerContainer(playerTurn), true)
+            changeCardOwner(card, secondaryDeckCardContainer, true)
+            secondaryDeckcards.push(card)
+            secondaryDeckClicked = false
+        }
+        else {
+            //pasra
+            const lastSecondaryCard = secondaryDeckcards[secondaryDeckcards.length - 1]
+            card.flipCard()
+            setTimeout(() => {
+                if(card.cardName === lastSecondaryCard.cardName)
+                {
+                //succeded
+                secondaryDeckcards.push(card)
+                changeCardOwner(card, secondaryDeckCardContainer, true)
+                }
+                else {
+                    // failed
+                    // card.flipCard()
+                    card.flipCard()
+                    secondaryDeckcards.pop()
+                    changeCardOwner(lastSecondaryCard, getOwnerContainer(playerTurn), true)
+                }
+            }, 1500)
+        }
+    }
+    setTimeout(() => {
+        changeTurn()
+    }, 2000)
 }
 
 function secondaryDeckClick() {
-    //console.log('in secondaryDeckClick =', primaryDeckClicked)
     if(!canChooseCard()) {
-        //console.log('in secondaryDeckClick() can not choose')
         return
     }
-    //console.log('in secondaryDeckClick() can choose')
 
     if(primaryDeckClicked) {
         // from primary deck to secondary deck
         const victimCard = primaryDeckcards.pop()
-        changeCardOwner(victimCard, secondaryDeckCardContainer)
+        changeCardOwner(victimCard, secondaryDeckCardContainer, false)
         secondaryDeckcards.push(victimCard)
         primaryDeckClicked = false
         changeTurn()
     }
-    else if (secondaryDeckcards.length > 0)
+    else if(secondaryDeckcards.length > 0 )
     {
-        const card = secondaryDeckcards[secondaryDeckcards.length - 1]
-        // choose from second deck
-        card.flipCard()
-        changeCardOwner(card, getOwnerContainer(playerTurn))
-        secondaryDeckcards.pop()
-        changeTurn()
+        // from secondary to player
+        secondaryDeckClicked = true
     }
 }
 

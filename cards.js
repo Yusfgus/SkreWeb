@@ -45,7 +45,7 @@ export default class Card {
         // <div class="card-front">
         const cardFrontElem = createElement('div')
         addClassToElement(cardFrontElem, 'card-front')
-        updateInnerHTML(cardFrontElem, this.command)
+        updateInnerHTML(cardFrontElem, this.name)
 
         // <div class="card-back">
         const cardBackElem = createElement('div')
@@ -130,7 +130,7 @@ function addSrcToImageElem(imgElem, src) {
     imgElem.src = src
 }
 
-function addchildElement(parentElem, childElem) {
+export function addchildElement(parentElem, childElem) {
     parentElem.appendChild(childElem)
 }
 
