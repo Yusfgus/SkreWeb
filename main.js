@@ -15,7 +15,18 @@ let playerTurn = 1
 let primaryDeckClicked = false
 let secondaryDeckClicked = false
 
+let roundStarted = false
 let selectedCard = null
+
+async function wait(Function, ms) {
+    await new Promise(resoleve => {
+        Function()
+        setTimeout(() => {
+            console.log('lol')
+            resoleve()
+        }, ms)
+    })
+} 
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -33,8 +44,10 @@ function loadGame() {
 }
 
 function initRound() {
-    distributeCards()
+    wait(distributeCards, 10000)
+    console.log('here')
     showFirstTwoCards()
+    roundStarted = true
 }
 
 async function showFirstTwoCards() {
@@ -154,10 +167,14 @@ function changeCardOwner(card, owner, flip) {
 }
 
 function canChooseCard() {
-    return (currentPlayer == playerTurn)
+    return (roundStarted && currentPlayer == playerTurn)
 }
 
 function primaryDeckClick() {
+    if(!canChooseCard()){
+        return
+    }
+
     if(!primaryDeckClicked && primaryDeckcards.length > 0) {
         const card = primaryDeckcards[primaryDeckcards.length - 1]
         card.flipCard()
