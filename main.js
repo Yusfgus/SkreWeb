@@ -18,6 +18,9 @@ let secondaryDeckClicked = false
 let roundStarted = false
 let selectedCard = null
 
+const distributionsTime = 10000
+const showFirstTwoCardsTime = 4000
+
 function wait(Function, ms) {
     return new Promise(resoleve => {
         Function()
@@ -44,7 +47,7 @@ function loadGame() {
 }
 
 async function initRound() {
-    await wait(distributeCards, 10000)
+    await wait(distributeCards, distributionsTime)
     console.log('here')
     showFirstTwoCards()
     roundStarted = true
@@ -52,8 +55,32 @@ async function initRound() {
 
 async function showFirstTwoCards() {
 
+    const cardContainers = document.querySelectorAll('.player')
+    cardContainers.forEach((container) => {
+        const firstChild = getDivChild(container, 0)
+        const secondChild = getDivChild(container, 1)
+
+        getCardClass(firstChild).flipCard()
+        getCardClass(secondChild).flipCard()
+    })
 
     await sleep(4000)
+
+    cardContainers.forEach((container) => {
+        const firstChild = getDivChild(container, 0)
+        const secondChild = getDivChild(container, 1)
+
+        getCardClass(firstChild).flipCard()
+        getCardClass(secondChild).flipCard()
+    })
+}
+
+function getDivChild(paretDiv, index) {
+    return paretDiv.children.item(index)
+}
+
+function getCardClass(cardElem) {
+    return cards[cardElem.dataset.value]
 }
 
 function putFirstCard() {
@@ -91,7 +118,7 @@ function distributeCards() {
             clearInterval(id)
             putFirstCard()
         }
-    }, 600)
+    }, distributionsTime/(4*4 + 1))
 }
 
 function initCard(name, value, owner, cardIndex) {
