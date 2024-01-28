@@ -45,7 +45,7 @@ export default class Card {
         // <div class="card-front">
         const cardFrontElem = createElement('div')
         addClassToElement(cardFrontElem, 'card-front')
-        updateInnerHTML(cardFrontElem, this.name)
+        // updateInnerHTML(cardFrontElem, this.name)
 
         // <div class="card-back">
         const cardBackElem = createElement('div')
@@ -53,12 +53,12 @@ export default class Card {
 
         // <img src="images/card-JackClubs.png" class="card-img">
         const cardFrontImg = createElement('img')
-        addSrcToImageElem(cardFrontImg, '')
+        addSrcToImageElem(cardFrontImg, `images/${this.name}.png`)
         addClassToElement(cardFrontImg, 'card-img')
-
+        
         // <img src="images/card-back-Blue.png" class="card-img">
         const cardBackImg = createElement('img')
-        addSrcToImageElem(cardBackImg, '')
+        addSrcToImageElem(cardBackImg, 'images/back.png')
         addClassToElement(cardBackImg, 'card-img')
 
         // Add childs

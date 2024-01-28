@@ -46,7 +46,7 @@ function changeTurn() {
     secondaryDeckClicked = false
     selectedCard = null
 
-    alert(`player ${playerTurn} turn`)
+    // alert(`player ${playerTurn} turn`)
 }
 
 function attatchClickEventHandlerToDecks() {
@@ -66,15 +66,19 @@ function distributeCards() {
             clearInterval(id)
             putFirstCard()
         }
-    }, 100)
+    }, 600)
 }
 
 function createCards() {
     // normal cards
-    for(let i=1; i<=10; ++i) {
-        const normalCard = new Card(`${i}`, i, getOwnerContainer(0))
-        primaryDeckcards.push(normalCard)
-        attatchClickEventHandlerToCard(normalCard)
+    for(let j=1; j<=4; ++j) 
+    {
+        for(let i=1; i<=10; ++i) 
+        {
+            const normalCard = new Card(`${i}`, i, getOwnerContainer(0))
+            primaryDeckcards.push(normalCard)
+            attatchClickEventHandlerToCard(normalCard)
+        }
     }
 
     // command cards
@@ -172,6 +176,10 @@ function chooseCard(card)
 
         changeCardOwner(choosedCard, getOwnerContainer(playerTurn), true)
         primaryDeckClicked = false
+    
+        setTimeout(() => {
+            changeTurn()
+        }, 2000)
     }
     else if (secondaryDeckcards.length > 0)
     {
@@ -191,9 +199,9 @@ function chooseCard(card)
             setTimeout(() => {
                 if(card.cardName === lastSecondaryCard.cardName)
                 {
-                //succeded
-                secondaryDeckcards.push(card)
-                changeCardOwner(card, secondaryDeckCardContainer, true)
+                    //succeded
+                    secondaryDeckcards.push(card)
+                    changeCardOwner(card, secondaryDeckCardContainer, false)
                 }
                 else {
                     // failed
@@ -204,10 +212,10 @@ function chooseCard(card)
                 }
             }, 1500)
         }
+        setTimeout(() => {
+            changeTurn()
+        }, 2000)
     }
-    setTimeout(() => {
-        changeTurn()
-    }, 2000)
 }
 
 function secondaryDeckClick() {
