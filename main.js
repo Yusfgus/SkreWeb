@@ -18,7 +18,7 @@ let secondaryDeckClicked = false
 let roundStarted = false
 
 const distributionsTime = 1000
-const showFirstTwoCardsTime = 4000
+const showFirstTwoCardsTime = 1000
 
 let commandCardActivated = ''
 let inCommand = false
@@ -41,7 +41,7 @@ loadGame()
 function tempCreateCards() {
     let cardIndex = 0
     for(let i=0; i<=50; ++i){
-        initCard('7', 7, getOwnerContainer(0), cardIndex++)
+        initCard('lookAll', 10, getOwnerContainer(0), cardIndex++)
     }
 }
 
@@ -58,7 +58,7 @@ function loadGame() {
 async function initRound() {
     addCardsToPrimaryDeck()
     await wait(distributeCards, distributionsTime)
-    await wait(showFirstTwoCards, 4500)
+    await wait(showFirstTwoCards, showFirstTwoCardsTime + 500)
     putFirstCard()
     roundStarted = true
     changeTurn(1000)
@@ -472,14 +472,20 @@ function commandLookAll(card) {
         return
     }
 
+    console.log('here')
+    let can = true
     lookedCards.forEach((lookedCardParent) => {
         if(lookedCardParent === cardOwner){
             console.log('cant not look here again')
+            can = false
             return
         }
     })
 
-    inCommand = true
+    // inCommand = true
+    if(!can){
+        return
+    }
 
     card.flipCard()
     setTimeout(() => {
