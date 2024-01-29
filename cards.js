@@ -16,7 +16,7 @@ export default class Card {
         this.cardIndex = cardIndex
         this.isFlipped = false // back is up
 
-        this.command = this.getCardCommand()
+        this.command = this.setCardCommand()
         this.cardElem = this.creatCard()
         // this.assignCardToOwner()
     }
@@ -75,7 +75,7 @@ export default class Card {
         return newCardElem
     }
 
-    getCardCommand() {
+    setCardCommand() {
         if(this.value >= 7 && this.value <=10)
         {
             return commands[this.name]
@@ -114,6 +114,7 @@ export default class Card {
     get cardDivElem() {return this.cardElem}
     get cardOwnerContainer() {return this.owner}
     get cardIsFlipped() {return this.isFlipped}
+    get cardCommand() {return this.command}
 }
 
 

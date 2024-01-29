@@ -16,16 +16,17 @@ let primaryDeckClicked = false
 let secondaryDeckClicked = false
 
 let roundStarted = false
-let selectedCard = null
 
-const distributionsTime = 10000
+const distributionsTime = 1000
 const showFirstTwoCardsTime = 4000
+
+let commandCardActivated = ''
+let inCommand = false
 
 function wait(Function, ms) {
     return new Promise(resoleve => {
         Function()
         setTimeout(() => {
-            //console.log('lol')
             resoleve()
         }, ms)
     })
@@ -37,11 +38,18 @@ function sleep(ms) {
 
 loadGame()
 
+function tempCreateCards() {
+    let cardIndex = 0
+    for(let i=0; i<=50; ++i){
+        initCard('7', 7, getOwnerContainer(0), cardIndex++)
+    }
+}
+
 function loadGame() {
-    
     attatchClickEventHandlerToDecks()
     
-    createCards()
+    // createCards()
+    tempCreateCards()
     shuffleCards()
 
     initRound()
@@ -51,8 +59,9 @@ async function initRound() {
     addCardsToPrimaryDeck()
     await wait(distributeCards, distributionsTime)
     await wait(showFirstTwoCards, 4500)
+    putFirstCard()
     roundStarted = true
-    changeTurn()
+    changeTurn(1000)
 }
 
 function addCardsToPrimaryDeck() {
@@ -73,7 +82,7 @@ async function showFirstTwoCards() {
         getCardClass(secondChild).flipCard()
     })
 
-    await sleep(4000)
+    await sleep(showFirstTwoCardsTime)
 
     cardContainers.forEach((container) => {
         const firstChild = getDivChild(container, 0)
@@ -98,17 +107,18 @@ function putFirstCard() {
     changeCardOwner(firstCard, secondaryDeckCardContainer, true)
 }
 
-function changeTurn() {
-    ////console.log('Change Turn')
-    playerTurn = playerTurn % maxPlayersNum + 1
-    currentPlayer = currentPlayer% maxPlayersNum + 1
-    console.log(playerTurn)
+function changeTurn(ms = 2000) {
 
-    primaryDeckClicked = false
-    secondaryDeckClicked = false
-    selectedCard = null
-
-    // alert(`player ${playerTurn} turn`)
+    setTimeout(() => {
+        ////console.log('Change Turn')
+        playerTurn = playerTurn % maxPlayersNum + 1
+        currentPlayer = currentPlayer% maxPlayersNum + 1
+    
+        primaryDeckClicked = false
+        secondaryDeckClicked = false
+    
+        console.log(`player ${playerTurn} turn`)
+    }, ms)
 }
 
 function attatchClickEventHandlerToDecks() {
@@ -128,7 +138,7 @@ function distributeCards() {
         // addchildElement(playerContainer, card)
         if(--maxCards == 0) {
             clearInterval(id)
-            putFirstCard()
+            // putFirstCard()
         }
     }, distributionsTime/(4*4 + 1))
 }
@@ -163,7 +173,7 @@ function createCards() {
     // normal cards
     for(let j=1; j<=4; ++j) 
     {
-        for(let i=1; i<=10; ++i) 
+        for(let i=7; i<=10; ++i) 
         {
             initCard(`${i}`, i, getOwnerContainer(0), cardIndex++)
         }
@@ -207,12 +217,14 @@ function getOwnerContainer(ownerId) {
 
 function attatchClickEventHandlerToCard(card) {
     card.cardDivElem.addEventListener('click', () => {
-        selectedCard = card
-        ////console.log('card name =', selectedCard.cardName)   
-        // const parent = card.cardOwnerContainer
-        // console.log(Array.from(parent.children).indexOf(card.cardDivElem))
 
-        if(selectedCard.cardOwnerContainer === getOwnerContainer(playerTurn)){
+        if(inCommand){
+            console.log('in command')
+        }
+        else if(commandCardActivated !== ''){
+            commandActivate(card)
+        }
+        else if(card.cardOwnerContainer === getOwnerContainer(playerTurn)){
             chooseCard(card)
         }
     })
@@ -231,8 +243,7 @@ function changeCardOwner(card, owner, flip, assing = true) {
 }
 
 function canChooseCard() {
-    //console.log(roundStarted)
-    return (roundStarted && currentPlayer == playerTurn)
+    return (roundStarted && playerTurn != 0 && currentPlayer == playerTurn && !inCommand)
 }
 
 function primaryDeckClick() {
@@ -240,7 +251,7 @@ function primaryDeckClick() {
         return
     }
     
-    if(!primaryDeckClicked && primaryDeckcards.length > 0) {
+    if(commandCardActivated === '' && !primaryDeckClicked && primaryDeckcards.length > 0) {
         const card = primaryDeckcards[primaryDeckcards.length - 1]
         card.flipCard()
         primaryDeckClicked = true
@@ -253,20 +264,25 @@ function insertCardInIndex(card, parent, index) {
     parent.insertBefore(card.cardDivElem, referenceNode);
 }
 
-function exchangeCard(myCard, choosedCard, toSecondaryDeck = false) {
+function exchangeTwoCards(card1, card2) {
 
-    const myCardContainer = myCard.cardOwnerContainer
-    const otherCardContainer = toSecondaryDeck? secondaryDeckCardContainer: choosedCard.cardOwnerContainer
+    const card1Container = card1.cardOwnerContainer
+    const card2Container = card2.cardOwnerContainer
     
-    const index1 = Array.from(myCardContainer.children).indexOf(myCard.cardDivElem)
-    changeCardOwner(myCard, otherCardContainer, true, toSecondaryDeck)
-    changeCardOwner(choosedCard, myCardContainer, true, false)
-
-    insertCardInIndex(choosedCard, myCardContainer, index1)
+    const index1 = Array.from(card1Container.children).indexOf(card1.cardDivElem)
+    changeCardOwner(card2, card1Container, true, false)
+    insertCardInIndex(card2, card1Container, index1)
     
-    if(!toSecondaryDeck){
-        const index2 = Array.from(otherCardContainer.children).indexOf(choosedCard.cardDivElem)
-        insertCardInIndex(myCard, otherCardContainer, index2)
+    if(card2Container === secondaryDeckCardContainer){
+        changeCardOwner(card1, card2Container, true, true)
+    }
+    else if(card2Container === primaryDeckCardContainer){
+        changeCardOwner(card1, secondaryDeckCardContainer, true, true)
+    }
+    else {
+        const index2 = Array.from(card2Container.children).indexOf(card2.cardDivElem)
+        changeCardOwner(card1, card2Container, true, false) 
+        insertCardInIndex(card1, card2Container, index2)
     }
     
 }
@@ -282,11 +298,7 @@ function chooseCard(card)
         secondaryDeckcards.push(card)
         primaryDeckClicked = false
     
-        exchangeCard(card, choosedCard, true)
-    
-        // setTimeout(() => {
-        //     changeTurn()
-        // }, 2000)
+        exchangeTwoCards(card, choosedCard)
     }
     else if (secondaryDeckcards.length > 0)
     {
@@ -297,7 +309,7 @@ function chooseCard(card)
             secondaryDeckcards.push(card)
             secondaryDeckClicked = false
 
-            exchangeCard(card, choosedCard, true)
+            exchangeTwoCards(card, choosedCard)
         }
         else {
             //pasra
@@ -312,16 +324,12 @@ function chooseCard(card)
                 }
                 else {
                     // failed
-                    // card.flipCard()
                     card.flipCard()
                     secondaryDeckcards.pop()
                     changeCardOwner(lastSecondaryCard, getOwnerContainer(playerTurn), true)
                 }
             }, 1500)
         }
-        // setTimeout(() => {
-        //     changeTurn()
-        // }, 2000)
     }
     setTimeout(() => {
         changeTurn()
@@ -339,12 +347,162 @@ function secondaryDeckClick() {
         changeCardOwner(victimCard, secondaryDeckCardContainer, false)
         secondaryDeckcards.push(victimCard)
         primaryDeckClicked = false
-        changeTurn()
+        
+        commandCardActivated = victimCard.cardCommand
+        
+        if(commandCardActivated === ''){
+            console.log('not command then change turn')
+            changeTurn()
+        }
+        // else {
+        //     console.log('command is', commandCardActivated)
+        // }
     }
-    else if(secondaryDeckcards.length > 0 )
+    else if(secondaryDeckcards.length > 0 && commandCardActivated === '')
     {
         // from secondary to player
         secondaryDeckClicked = true
     }
 }
 
+async function commandActivate(selectedCard) {
+    console.log('command is', commandCardActivated)
+
+    await wait(() => 
+    {
+        if(commandCardActivated === 'lookYours') {
+            commandLookYours(selectedCard)
+        }
+        else if(commandCardActivated === 'lookOthers') {
+            commandLookOthers(selectedCard)
+        }
+        else if(commandCardActivated === 'exchange') {
+            commandExchangeCard(selectedCard)
+        }
+        else if(commandCardActivated === 'lookAll') {
+            commandLookAll(selectedCard)
+        }
+        else if(commandCardActivated === 'pasra') {
+            commandPasra(selectedCard)
+        }
+    }, 0)
+}
+
+function finishCommand(ms) {
+    console.log('command finished')
+    commandCardActivated = ''
+    setTimeout(() => {
+        inCommand = false
+        changeTurn(0)
+    }, ms)
+}
+
+async function commandLookYours(card) {
+    if(card.cardOwnerContainer !== getOwnerContainer(playerTurn)){
+        return
+    }
+
+    inCommand = true
+    
+    card.flipCard()
+    console.log('here1')
+    await wait(() => {
+        console.log('in wait funtion')
+        setTimeout(() => {
+            card.flipCard()
+        }, 3000)
+    },3100)
+
+    finishCommand(3000)
+}
+
+async function commandLookOthers(card) {
+    console.log('in commandLookOthers()')
+    if(card.cardOwnerContainer === getOwnerContainer(playerTurn)
+        || card.cardOwnerContainer === primaryDeckCardContainer
+        || card.cardOwnerContainer === secondaryDeckCardContainer)
+    {
+        return
+    }
+
+    inCommand = true
+
+    card.flipCard()
+    await wait(() => {
+        setTimeout(() => {
+            card.flipCard()
+        }, 3000)
+    },0)
+
+    finishCommand(3000)
+}
+
+let cardToExchange = ''
+function commandExchangeCard(card) {
+
+    if(card.cardOwnerContainer === primaryDeckCardContainer
+        || card.cardOwnerContainer === secondaryDeckCardContainer)
+    {
+        return
+    }
+
+    if(card.cardOwnerContainer === getOwnerContainer(playerTurn) 
+        && cardToExchange === '')
+    {
+        cardToExchange = card
+        return
+    }
+    else if(card.cardOwnerContainer === getOwnerContainer(playerTurn)){
+        return
+    }
+
+    inCommand = true
+
+    exchangeTwoCards(cardToExchange, card)
+    cardToExchange = ''
+    finishCommand(500)
+}
+
+let lookedCards = []
+function commandLookAll(card) {
+    const cardOwner = card.cardOwnerContainer
+    if(cardOwner === primaryDeckCardContainer
+        || cardOwner === secondaryDeckCardContainer)
+    {
+        return
+    }
+
+    lookedCards.forEach((lookedCardParent) => {
+        if(lookedCardParent === cardOwner){
+            console.log('cant not look here again')
+            return
+        }
+    })
+
+    inCommand = true
+
+    card.flipCard()
+    setTimeout(() => {
+        card.flipCard()
+    }, 3000)
+
+    if(lookedCards.length == 3){
+        lookedCards = []
+        finishCommand(3000)
+        return
+    }
+    lookedCards.push(cardOwner)
+}
+
+function commandPasra(card) {
+    if(card.cardOwnerContainer !== getOwnerContainer(playerTurn)){
+        return
+    }
+
+    inCommand = true
+
+    card.flipCard()
+    changeCardOwner(card, secondaryDeckCardContainer, false)
+
+    finishCommand(500)
+}
