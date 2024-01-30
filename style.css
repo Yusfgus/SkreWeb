@@ -24,6 +24,7 @@ main {
 
 #main-container {
     grid-area: d;
+    position: relative;
 }
 #player1-container {
     grid-area: p1;
@@ -118,7 +119,6 @@ main {
     width: var(--card-height);
     height: 100%;
 }
-
 
 #player1-cards-container .card{
     transform: rotate(0deg);

@@ -111,6 +111,7 @@ export default class Card {
     }
     
     get cardName() {return this.name}
+    get cardValue() {return this.value}
     get cardDivElem() {return this.cardElem}
     get cardOwnerContainer() {return this.owner}
     get cardIsFlipped() {return this.isFlipped}
@@ -146,8 +147,8 @@ export function addchildElement(parentElem, childElem) {
     parentElem.appendChild(childElem)
 }
 
-function addCardToGridCell(card) {
-    const cardPositionClassName = mapCardIdToGridCell(card.id)
-    const cardPosElem = document.querySelector(cardPositionClassName)
-    addchildElement(cardPosElem, card)
-}
+// function addCardToGridCell(card) {
+//     const cardPositionClassName = mapCardIdToGridCell(card.id)
+//     const cardPosElem = document.querySelector(cardPositionClassName)
+//     addchildElement(cardPosElem, card)
+// }
