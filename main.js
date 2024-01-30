@@ -305,37 +305,30 @@ function createCards() {
     {
         for(let i=1; i<=10; ++i) 
         {
-            // initCard(`${i}`, i, getOwnerContainer(0), cardIndex++)
-            initCard(encodeName(i), i, getOwnerContainer(0), cardIndex++)
+            initCard(`${i}`, i, getOwnerContainer(0), cardIndex++)
         }
     }
 
     // command cards
     for(let i=1; i<=4; ++i) 
     {
-        // initCard("exchange", 10, getOwnerContainer(0), cardIndex++)
-        initCard(encodeName(11), 10, getOwnerContainer(0), cardIndex++)
+        initCard("exchange", 10, getOwnerContainer(0), cardIndex++)
 
-        // initCard("20", 20, getOwnerContainer(0), cardIndex++)
-        initCard(encodeName(15), 20, getOwnerContainer(0), cardIndex++)
+        initCard("20", 20, getOwnerContainer(0), cardIndex++)
     }
 
     for(let i=1; i<=2; ++i) 
     {
-        // initCard("lookAll", 10, getOwnerContainer(0), cardIndex++)
-        initCard(encodeName(12), 10, getOwnerContainer(0), cardIndex++)
+        initCard("lookAll", 10, getOwnerContainer(0), cardIndex++)
 
-        // initCard("pasra", 10, getOwnerContainer(0), cardIndex++)
-        initCard(encodeName(13), 10, getOwnerContainer(0), cardIndex++)
+        initCard("pasra", 10, getOwnerContainer(0), cardIndex++)
 
-        // initCard("redSkrew", 25, getOwnerContainer(0), cardIndex++)
-        initCard(encodeName(16), 25, getOwnerContainer(0), cardIndex++)
+        initCard("redSkrew", 25, getOwnerContainer(0), cardIndex++)
 
-        // initCard("skrewDriver", 0, getOwnerContainer(0), cardIndex++)
-        initCard(encodeName(0), 0, getOwnerContainer(0), cardIndex++)
+        initCard("skrewDriver", 0, getOwnerContainer(0), cardIndex++)
     }
 
-    initCard(encodeName(14), -1, getOwnerContainer(0), cardIndex++)
+    initCard('-1', -1, getOwnerContainer(0), cardIndex++)
 
     // Card.shuffle()
 }

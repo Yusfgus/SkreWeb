@@ -8,10 +8,6 @@ const commands = {
     'pasra': 'pasra'
 }
 
-function decodeName(name) {
-    return atob(name);
-}
-
 function getImagePath(metaData) {
     return `images/${metaData}.png`
 }
@@ -28,8 +24,6 @@ export default class Card {
         this.cardElem = this.creatCard()
         // this.cardFrontImg = null
         // this.assignCardToOwner()
-
-        this.decodedName = decodeName(this.name)
     }
 
     creatCard() {
@@ -48,7 +42,7 @@ export default class Card {
         // <div class="card" id="this.name">
         const newCardElem = createElement('div')
         addClassToElement(newCardElem, 'card')
-        addIdToElement(newCardElem, this.name)
+        // addIdToElement(newCardElem, this.name)
         addDataValueToElement(newCardElem, this.cardIndex)
         
         // <div class="card-inner">
@@ -91,8 +85,7 @@ export default class Card {
     setCardCommand() {
         if(this.value >= 7 && this.value <=10)
         {
-            // return commands[this.name]
-            return commands[this.decodedName]
+            return commands[this.name]
         }
         return ''
     }
@@ -105,7 +98,7 @@ export default class Card {
         const innerCardElem = this.cardElem.firstChild
 
         if(this.isFlipped) {
-            const imagePath = getImagePath(this.decodedName)
+            const imagePath = getImagePath(this.name)
             addSrcToImageElem(this.cardFrontImg, imagePath)
 
             innerCardElem.style.transform = 'rotateY(180deg)'
