@@ -10,6 +10,7 @@ let playersScore = []
 const primaryDeckCardContainer = document.getElementById('primaryDeck')
 const secondaryDeckCardContainer = document.getElementById('secondaryDeck')
 const skrewButton = document.getElementById('skrew-button')
+const skrewAudio = new Audio('audio/skrew.mp3')
 
 const maxPlayersNum = 4
 let currentPlayer = 0
@@ -78,7 +79,7 @@ async function startRound() {
 async function initRound() {
     shuffleCards()
     
-    // skrewButton.style.display = 'none'
+    skrewButton.style.display = 'none'
     playersScore = [0, 0, 0, 0]
     playerTurn = 0
     turnCounter = 0
@@ -134,8 +135,12 @@ function calculateScores(playerSaidSkrew) {
     console.log("total players scores =", totalPlayersScore)
 }
 
-function endRound(playerSaidSkrew) {
+async function endRound(playerSaidSkrew) {
     
+    await wait(() => {
+        skrewAudio.play()
+    }, 2000)
+
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
     for(let i=1; i<=maxPlayersNum; ++i) {
@@ -238,6 +243,7 @@ function distributeCards() {
             // putFirstCard()
         }
     }, distributionsTime/(4*4 + 1))
+
 }
 
 function initCard(name, value, owner, cardIndex) {

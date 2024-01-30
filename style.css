@@ -2,13 +2,16 @@
     --card-width: 67px;
     --card-height: 100px;
 
+    --card-width-p1: 100px;
+    --card-height-p1: 150px;
+
     --negMargin: -12px
 }
 
 body {
     margin: 0;
     height: 100vh;
-    width: 100%;
+    width: 100hh;
 }
 
 main {
@@ -16,12 +19,14 @@ main {
     height: 100%;
     width: 100%;
     display: grid;
-    grid-template-columns: 0.2fr 0.6fr 0.2fr;
-    grid-template-rows: 0.35fr 0.3fr 0.35fr;
+    /* grid-template-columns: 0.2fr 0.6fr 0.2fr;
+    grid-template-rows: 0.35fr 0.3fr 0.35fr; */
+    grid-template-columns: 20% 60% 20%;
+    grid-template-rows: 35% 30% 35%;
     grid-template-areas: "p4 p3 p2"
                          "p4 d p2"
                          "p4 p1 p2";
-    gap: 5px;
+    /* gap: 5px; */
 
     background-image: url('images/background2.png');
     background-size: cover;
@@ -51,7 +56,7 @@ main {
 #player3-container,
 #player4-container {
     display: flex;
-    border: 1px solid white;
+    /* border: 1px solid white; */
     padding: 10px;
 }
 
@@ -60,28 +65,33 @@ main {
     justify-content: center;
 }
 #player1-container {
-    justify-content: center;
-    align-items: end;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
 }
 #player2-container {
+    flex-direction: row;
     justify-content: end;
     align-items: center;
 }
 #player3-container {
-    justify-content: center;
-    align-items: start;
+    flex-direction: column-reverse;
+    justify-content: start;
+    align-items: center;
 }
 #player4-container {
+    flex-direction: row-reverse;
     justify-content: start;
     align-items: center;
 }
 
+.cards-container2,
 .cards-container {
-    padding: 10px;
+    /* padding: 10px; */
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid white;
+    /* border: 1px solid white; */
 }
 
 .deck {
@@ -99,55 +109,73 @@ main {
     gap: 100px;
 }
 
+#player1-cards-container2,
 #player1-cards-container{
     flex-direction: row-reverse;
 }
+#player2-cards-container2,
 #player2-cards-container{
     flex-direction: column;
 }
+#player3-cards-container2,
 #player3-cards-container{
     flex-direction: row;
 }
+#player4-cards-container2,
 #player4-cards-container{
     flex-direction: column-reverse;
 }
 
+#player1-cards-container2,
+#player3-cards-container2,
 #player1-cards-container,
 #player3-cards-container{
     height: var(--card-height);
     width: 100%;
 }
 
+#player2-cards-container2,
+#player4-cards-container2,
 #player2-cards-container,
 #player4-cards-container{
     width: var(--card-height);
     height: 100%;
 }
 
+#player1-cards-container2 .card,
 #player1-cards-container .card{
     transform: rotate(0deg);
 }
+#player3-cards-container2 .card,
 #player3-cards-container .card{
     transform: rotate(180deg);
 }
+#player2-cards-container2 .card,
 #player2-cards-container .card{
     transform: rotate(-90deg);
 }
+#player4-cards-container2 .card,
 #player4-cards-container .card{
     transform: rotate(90deg);
 }
 
+#player1-cards-container2 .card,
+#player3-cards-container2 .card,
 #player1-cards-container .card,
 #player3-cards-container .card{
     margin-left: 5px;
     margin-right: 5px;
 }
 
+#player2-cards-container2 .card,
+#player4-cards-container2 .card,
 #player2-cards-container .card,
 #player4-cards-container .card{
     margin-top: var(--negMargin);
     margin-bottom: var(--negMargin);
 }
+
+/*============================================================*/
 
 .card {
     height: var(--card-height);
@@ -157,6 +185,15 @@ main {
     cursor: pointer;
     transition: transform 0.6s ease-in-out;
 }
+
+/* #player1-container .cards-container,
+#player1-container .cards-container2,
+#player1-container .card {
+    height: var(--card-height-p1);
+}
+#player1-container .card {
+    width: var(--card-width-p1);
+} */
 
 .card-inner {
     border-radius: 20px;
