@@ -21,9 +21,10 @@ let secondaryDeckClicked = false
 
 // let roundStarted = false
 let turnCounter = 0
+let turnsAfterSkrew = -1
 
 const distributionsTime = 1000
-const showFirstTwoCardsTime = 1000
+const showCardsTime = 1000
 
 let commandCardActivated = ''
 // let inCommand = false
@@ -69,7 +70,7 @@ function initGame() {
 }
 
 async function startRound() {
-    await wait(initRound, distributionsTime + showFirstTwoCardsTime + 500)
+    await wait(initRound, distributionsTime + showCardsTime + 500)
     putFirstCard()
     // roundStarted = true
 
@@ -79,10 +80,12 @@ async function startRound() {
 async function initRound() {
     shuffleCards()
     
-    skrewButton.style.display = 'none'
+    // skrewButton.style.display = 'none'
+    // skrewButton.removeEventListener('click', endRoundClickHandler)
     playersScore = [0, 0, 0, 0]
     playerTurn = 0
     turnCounter = 0
+    turnsAfterSkrew = -1
     currentPlayer = 0
     commandCardActivated = ''
     // inCommand = false
@@ -91,7 +94,27 @@ async function initRound() {
     await wait(distributeCards, distributionsTime)
     console.log('initial players scores =', playersScore)
 
-    await wait(showFirstTwoCards, showFirstTwoCardsTime + 500)
+    await wait(showFirstTwoCards, showCardsTime + 500)
+}
+
+function changeTurn(ms = 1500) {
+
+    if(turnsAfterSkrew != -1 && turnsAfterSkrew++ == 3){
+        endRound()
+        return
+    }
+
+    turnCounter++
+
+    setTimeout(() => {
+        playerTurn = playerTurn % maxPlayersNum + 1
+        currentPlayer = currentPlayer% maxPlayersNum + 1
+    
+        primaryDeckClicked = 0
+        secondaryDeckClicked = false
+    
+        console.log(`player ${playerTurn} turn`)
+    }, ms)
 }
 
 function winOrPunish(playerSaidSkrew) {
@@ -135,22 +158,34 @@ function calculateScores(playerSaidSkrew) {
     console.log("total players scores =", totalPlayersScore)
 }
 
-async function endRound(playerSaidSkrew) {
-    
-    await wait(() => {
-        skrewAudio.play()
-    }, 2000)
+function endRound(playerSaidSkrew) {
 
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
     for(let i=1; i<=maxPlayersNum; ++i) {
         removeCardsFrom(document.getElementById(`player${i}-cards-container`))
+        removeCardsFrom(document.getElementById(`player${i}-cards-container2`))
     }
 
     calculateScores(playerSaidSkrew)
 
     startRound()
     // console.log("primary deck lenght", primaryDeckCardContainer.children.length)
+}
+
+async function saySkrew() {
+    console.log('say skrew')
+    console.log(turnsAfterSkrew)
+    console.log(turnCounter)
+    if(turnsAfterSkrew == -1 && playerTurn == currentPlayer && turnCounter > 4)
+    {
+        await wait(() => {
+            skrewAudio.play()
+        }, 2000)
+        // skrewButton.style.display = 'inline-block'
+        turnsAfterSkrew = 0
+        changeTurn()
+    }
 }
 
 function removeCardsFrom(parentDiv, flip = false) {
@@ -181,7 +216,7 @@ async function showFirstTwoCards() {
         getCardClass(secondChild).flipCard()
     })
 
-    await sleep(showFirstTwoCardsTime)
+    await sleep(showCardsTime)
 
     cardContainers.forEach((container) => {
         const firstChild = getDivChild(container, 0)
@@ -206,25 +241,10 @@ function putFirstCard() {
     changeCardOwner(firstCard, secondaryDeckCardContainer, true)
 }
 
-function changeTurn(ms = 1500) {
-
-    setTimeout(() => {
-        playerTurn = playerTurn % maxPlayersNum + 1
-        currentPlayer = currentPlayer% maxPlayersNum + 1
-    
-        primaryDeckClicked = 0
-        secondaryDeckClicked = false
-
-        showSkrewButton()
-    
-        console.log(`player ${playerTurn} turn`)
-    }, ms)
-}
-
 function attatchClickEventHandler() {
-    primaryDeckCardContainer.addEventListener('click', () => {primaryDeckClick()})
-    secondaryDeckCardContainer.addEventListener('click', () => {secondaryDeckClick()})
-    skrewButton.addEventListener('click', () => {endRound(playerTurn - 1)})
+    primaryDeckCardContainer.addEventListener('click', primaryDeckClick)
+    secondaryDeckCardContainer.addEventListener('click', secondaryDeckClick)
+    skrewButton.addEventListener('click', saySkrew)
 }
 
 function distributeCards() {
@@ -509,8 +529,8 @@ async function commandLookYours(card) {
     await wait(() => {
         setTimeout(() => {
             card.flipCard()
-        }, 3000)
-    },3000)
+        }, showCardsTime)
+    },showCardsTime)
 
     finishCommand(0)
 }
@@ -529,8 +549,8 @@ async function commandLookOthers(card) {
     await wait(() => {
         setTimeout(() => {
             card.flipCard()
-        }, 3000)
-    },3000)
+        }, showCardsTime)
+    },showCardsTime)
 
     finishCommand(0)
 }
@@ -640,7 +660,7 @@ function commandLookAll(card) {
     card.flipCard()
     setTimeout(() => {
         card.flipCard()
-    }, 3000)
+    }, showCardsTime)
     
     if(lookedCards.length == 3){
         // inCommand = true
@@ -662,11 +682,4 @@ function commandPasra(card) {
     changeCardOwner(card, secondaryDeckCardContainer, false)
 
     finishCommand(500)
-}
-
-function showSkrewButton() {
-    if(playerTurn == currentPlayer && ++turnCounter == 5)
-    {
-        skrewButton.style.display = 'inline-block'
-    }
 }
