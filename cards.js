@@ -8,17 +8,28 @@ const commands = {
     'pasra': 'pasra'
 }
 
+function decodeName(name) {
+    return atob(name);
+}
+
+function getImagePath(metaData) {
+    return `images/${metaData}.png`
+}
+
 export default class Card {
     constructor(name, value, owner, cardIndex) {
         this.name = name
         this.value = value
         this.owner = owner
         this.cardIndex = cardIndex
-        this.isFlipped = false // back is up
+        this.isFlipped = true // back is up
 
         this.command = this.setCardCommand()
         this.cardElem = this.creatCard()
+        // this.cardFrontImg = null
         // this.assignCardToOwner()
+
+        this.decodedName = decodeName(this.name)
     }
 
     creatCard() {
@@ -55,7 +66,9 @@ export default class Card {
 
         // <img src="images/card-JackClubs.png" class="card-img">
         const cardFrontImg = createElement('img')
-        addSrcToImageElem(cardFrontImg, `images/${this.name}.png`)
+        this.cardFrontImg = cardFrontImg
+        const imagePath = getImagePath('surprise-mf')
+        addSrcToImageElem(cardFrontImg, imagePath)
         addClassToElement(cardFrontImg, 'card-img')
         
         // <img src="images/card-back-Blue.png" class="card-img">
@@ -78,7 +91,8 @@ export default class Card {
     setCardCommand() {
         if(this.value >= 7 && this.value <=10)
         {
-            return commands[this.name]
+            // return commands[this.name]
+            return commands[this.decodedName]
         }
         return ''
     }
@@ -90,11 +104,19 @@ export default class Card {
     flipCard() {
         const innerCardElem = this.cardElem.firstChild
 
-        if(!this.isFlipped) {
+        if(this.isFlipped) {
+            const imagePath = getImagePath(this.decodedName)
+            addSrcToImageElem(this.cardFrontImg, imagePath)
+
             innerCardElem.style.transform = 'rotateY(180deg)'
         }
         else {
             innerCardElem.style.transform = ''
+
+            setTimeout(() => {
+                const imagePath = getImagePath('surprise-mf')
+                addSrcToImageElem(this.cardFrontImg, imagePath)
+            }, 1000)
         }
         this.isFlipped = !this.isFlipped
     }

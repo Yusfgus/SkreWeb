@@ -1,5 +1,8 @@
 import Card from "./cards.js";
 
+const cardNames = ['skrewDriver', '1', '2', '3', '4', '5','6', '7', '8', '9', '10', 'exchange', 'lookAll', 'pasra', '-1', '20', 'redSkrew']
+//                 //       0         1    2    3    4    5   6    7    8    9    10       11         12         13     14    15       16
+
 let cards = []
 let primaryDeckcards = []
 let secondaryDeckcards = []
@@ -291,6 +294,10 @@ function shuffleCards() {
     console.log(cards)
 }
 
+function encodeName(index){
+    return btoa(cardNames[index]);
+}
+
 function createCards() {
     let cardIndex = 0
     // normal cards
@@ -298,30 +305,37 @@ function createCards() {
     {
         for(let i=1; i<=10; ++i) 
         {
-            initCard(`${i}`, i, getOwnerContainer(0), cardIndex++)
+            // initCard(`${i}`, i, getOwnerContainer(0), cardIndex++)
+            initCard(encodeName(i), i, getOwnerContainer(0), cardIndex++)
         }
     }
 
     // command cards
     for(let i=1; i<=4; ++i) 
     {
-        initCard("exchange", 10, getOwnerContainer(0), cardIndex++)
+        // initCard("exchange", 10, getOwnerContainer(0), cardIndex++)
+        initCard(encodeName(11), 10, getOwnerContainer(0), cardIndex++)
 
-        initCard("20", 20, getOwnerContainer(0), cardIndex++)
+        // initCard("20", 20, getOwnerContainer(0), cardIndex++)
+        initCard(encodeName(15), 20, getOwnerContainer(0), cardIndex++)
     }
 
     for(let i=1; i<=2; ++i) 
     {
-        initCard("lookAll", 10, getOwnerContainer(0), cardIndex++)
+        // initCard("lookAll", 10, getOwnerContainer(0), cardIndex++)
+        initCard(encodeName(12), 10, getOwnerContainer(0), cardIndex++)
 
-        initCard("pasra", 10, getOwnerContainer(0), cardIndex++)
+        // initCard("pasra", 10, getOwnerContainer(0), cardIndex++)
+        initCard(encodeName(13), 10, getOwnerContainer(0), cardIndex++)
 
-        initCard("redSkrew", 25, getOwnerContainer(0), cardIndex++)
+        // initCard("redSkrew", 25, getOwnerContainer(0), cardIndex++)
+        initCard(encodeName(16), 25, getOwnerContainer(0), cardIndex++)
 
-        initCard("skrewDriver", 0, getOwnerContainer(0), cardIndex++)
+        // initCard("skrewDriver", 0, getOwnerContainer(0), cardIndex++)
+        initCard(encodeName(0), 0, getOwnerContainer(0), cardIndex++)
     }
 
-    initCard("-1", -1, getOwnerContainer(0), cardIndex++)
+    initCard(encodeName(14), -1, getOwnerContainer(0), cardIndex++)
 
     // Card.shuffle()
 }
@@ -330,7 +344,7 @@ function updateScore(playerIndex, valueToAdd) {
     playersScore[playerIndex] += valueToAdd
 }
 
-function getOwnerContainer(ownerId) {
+function getOwnerContainer(ownerId, secondContainer = false) {
     if(ownerId == 0) {
         return primaryDeckCardContainer
     }
@@ -338,7 +352,10 @@ function getOwnerContainer(ownerId) {
         return secondaryDeckCardContainer
     }
     else {
-        return document.getElementById(`player${ownerId}-cards-container`)
+        if(!secondContainer)
+            return document.getElementById(`player${ownerId}-cards-container`)
+        else
+            return document.getElementById(`player${ownerId}-cards-container2`)
     }
 }
 
@@ -357,7 +374,9 @@ function attatchClickEventHandlerToCard(card) {
             console.log('in command')
             commandActivate(card)
         }
-        else if(card.cardOwnerContainer === getOwnerContainer(playerTurn)){
+        else if(card.cardOwnerContainer === getOwnerContainer(playerTurn)
+                || card.cardOwnerContainer === getOwnerContainer(playerTurn, true))
+        {
             chooseCard(card)
         }
     })
@@ -392,7 +411,7 @@ function primaryDeckClick() {
 }
 
 function addCardsToSecondaryDeck(myCard, choosedCard) {
-    const playerContainer = getOwnerContainer(playerTurn)
+    const playerContainer = myCard.cardOwnerContainer
     const myCardIndex = Array.from(playerContainer.children).indexOf(myCard.cardDivElem)
     
     changeCardOwner(choosedCard, playerContainer, true, false) 
@@ -447,7 +466,8 @@ function chooseCard(card)
                     // failed
                     card.flipCard()
                     secondaryDeckcards.pop()
-                    changeCardOwner(lastSecondaryCard, getOwnerContainer(playerTurn), true)
+                    
+                    changeCardOwner(lastSecondaryCard, getOwnerContainer(playerTurn, true), true)
                     updateScore(playerTurn - 1, lastSecondaryCard.cardValue)
                 }
             }, 1300)
@@ -519,7 +539,8 @@ function finishCommand(ms) {
 }
 
 async function commandLookYours(card) {
-    if(card.cardOwnerContainer !== getOwnerContainer(playerTurn)){
+    if(card.cardOwnerContainer !== getOwnerContainer(playerTurn)
+        && card.cardOwnerContainer !== getOwnerContainer(playerTurn, true)){
         return
     }
 
@@ -537,6 +558,7 @@ async function commandLookYours(card) {
 
 async function commandLookOthers(card) {
     if(card.cardOwnerContainer === getOwnerContainer(playerTurn)
+        || card.cardOwnerContainer === getOwnerContainer(playerTurn, true)
         || card.cardOwnerContainer === primaryDeckCardContainer
         || card.cardOwnerContainer === secondaryDeckCardContainer)
     {
@@ -603,12 +625,17 @@ function commandExchangeCard(card) {
         return
     }
 
-    const playerContainer = getOwnerContainer(playerTurn)
+    const playerContainer1 = getOwnerContainer(playerTurn)
+    const playerContainer2 = getOwnerContainer(playerTurn, true)
     const cardContainer = card.cardOwnerContainer
     const cardToExchangeContainer = cardToExchange.cardOwnerContainer
-    if(cardContainer === cardToExchangeContainer
-        || (cardContainer !== playerContainer && cardToExchangeContainer !== playerContainer)
-        )
+
+    const noOneOfThemIsHis = (cardContainer !== playerContainer1 
+                            && cardToExchangeContainer !== playerContainer1 
+                            && cardContainer !== playerContainer2 
+                            && cardToExchangeContainer !== playerContainer2)
+
+    if(cardContainer === cardToExchangeContainer || noOneOfThemIsHis)
     {
          return
     }
@@ -618,7 +645,7 @@ function commandExchangeCard(card) {
     const value1 = cardToExchange.cardValue - card.cardValue
     const value2 = card.cardValue - cardToExchange.cardValue
 
-    if(cardContainer === playerContainer) {
+    if(cardContainer === playerContainer1 || cardContainer === playerContainer2) {
         updateScore(playerTurn - 1, value1)
         updateScore(getPlayerIndex(cardToExchangeContainer), value2)
     }
@@ -672,7 +699,8 @@ function commandLookAll(card) {
 }
 
 function commandPasra(card) {
-    if(card.cardOwnerContainer !== getOwnerContainer(playerTurn)){
+    if(card.cardOwnerContainer !== getOwnerContainer(playerTurn)
+        && card.cardOwnerContainer !== getOwnerContainer(playerTurn, true)){
         return
     }
 
