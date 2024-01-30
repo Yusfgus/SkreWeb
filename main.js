@@ -3,7 +3,9 @@ import Card from "./cards.js";
 let cards = []
 let primaryDeckcards = []
 let secondaryDeckcards = []
-let playersScore = [0, 0, 0, 0]
+
+let totalPlayersScore = []
+let playersScore = []
 
 const primaryDeckCardContainer = document.getElementById('primaryDeck')
 const secondaryDeckCardContainer = document.getElementById('secondaryDeck')
@@ -16,14 +18,14 @@ let playerTurn = 0
 let primaryDeckClicked = 0
 let secondaryDeckClicked = false
 
-let roundStarted = false
+// let roundStarted = false
 let turnCounter = 0
 
 const distributionsTime = 1000
 const showFirstTwoCardsTime = 1000
 
 let commandCardActivated = ''
-let inCommand = false
+// let inCommand = false
 
 function wait(Function, ms) {
     return new Promise(resoleve => {
@@ -48,29 +50,117 @@ function tempCreateCards() {
 }
 
 function loadGame() {
-    attatchClickEventHandlerToDecks()
+    attatchClickEventHandler()
     
     createCards()
     // tempCreateCards()
-    shuffleCards()
+    
+    startGame()
+}
 
-    initRound()
+function startGame() {
+    initGame()
+    startRound()
+}
+
+function initGame() {
+    totalPlayersScore = [0, 0, 0, 0]
+}
+
+async function startRound() {
+    await wait(initRound, distributionsTime + showFirstTwoCardsTime + 500)
+    putFirstCard()
+    // roundStarted = true
+
+    changeTurn(800)
 }
 
 async function initRound() {
+    shuffleCards()
+    
+    skrewButton.style.display = 'none'
+    playersScore = [0, 0, 0, 0]
+    playerTurn = 0
+    turnCounter = 0
+    currentPlayer = 0
+    commandCardActivated = ''
+    // inCommand = false
+
     addCardsToPrimaryDeck()
     await wait(distributeCards, distributionsTime)
     console.log('initial players scores =', playersScore)
+
     await wait(showFirstTwoCards, showFirstTwoCardsTime + 500)
-    putFirstCard()
-    roundStarted = true
-    turnCounter = 0
-    changeTurn(1000)
+}
+
+function winOrPunish(playerSaidSkrew) {
+        
+    let minScorePlayerIndex = [0]
+    let minScore = playersScore[minScorePlayerIndex[0]]
+
+    playersScore.forEach((score, index) => {
+        minScore = playersScore[minScorePlayerIndex[0]]
+        if(score < minScore){
+            minScorePlayerIndex = [index]
+        }
+        else if(score == minScore){
+            minScorePlayerIndex.push(index)
+        }
+    })
+
+    console.log('round scores is', playersScore)
+    console.log('min score is', minScore)
+
+    playersScore.forEach((score, index) => {
+        if(score == minScore){
+            playersScore[index] = 0
+        }
+    })
+
+    if(playersScore[playerSaidSkrew] != 0) {
+        // double
+        playersScore[playerSaidSkrew] *= 2
+    }
+}
+
+function calculateScores(playerSaidSkrew) {
+    
+    winOrPunish(playerSaidSkrew)
+    
+    playersScore.forEach((score, index) => {
+        totalPlayersScore[index] += score
+    })
+
+    console.log("total players scores =", totalPlayersScore)
+}
+
+function endRound(playerSaidSkrew) {
+    
+    removeCardsFrom(primaryDeckCardContainer)
+    removeCardsFrom(secondaryDeckCardContainer, true)
+    for(let i=1; i<=maxPlayersNum; ++i) {
+        removeCardsFrom(document.getElementById(`player${i}-cards-container`))
+    }
+
+    calculateScores(playerSaidSkrew)
+
+    startRound()
+    // console.log("primary deck lenght", primaryDeckCardContainer.children.length)
+}
+
+function removeCardsFrom(parentDiv, flip = false) {
+    while (parentDiv.firstChild) {
+        if(flip){
+            getCardClass(parentDiv.firstChild).flipCard()
+        }
+        parentDiv.removeChild(parentDiv.firstChild);
+    }
 }
 
 function addCardsToPrimaryDeck() {
     cards.forEach((card) => {
         primaryDeckcards.push(card)
+        card.setOwnerContainer(primaryDeckCardContainer)
         card.assignCardToOwner()
     })
 }
@@ -126,9 +216,10 @@ function changeTurn(ms = 1500) {
     }, ms)
 }
 
-function attatchClickEventHandlerToDecks() {
+function attatchClickEventHandler() {
     primaryDeckCardContainer.addEventListener('click', () => {primaryDeckClick()})
     secondaryDeckCardContainer.addEventListener('click', () => {secondaryDeckClick()})
+    skrewButton.addEventListener('click', () => {endRound(playerTurn - 1)})
 }
 
 function distributeCards() {
@@ -233,10 +324,11 @@ function attatchClickEventHandlerToCard(card) {
     card.cardDivElem.addEventListener('click', () => {
 
         console.log('card clicked')
-        if(inCommand){
+        /*if(inCommand){
             console.log('in command')
         }
-        else if(commandCardActivated !== ''){
+        else*/ if(commandCardActivated !== ''){
+            console.log('in command')
             commandActivate(card)
         }
         else if(card.cardOwnerContainer === getOwnerContainer(playerTurn)){
@@ -258,14 +350,14 @@ function changeCardOwner(card, owner, flip, assing = true) {
 }
 
 function canChooseCard() {
-    return (roundStarted && playerTurn != 0 && currentPlayer == playerTurn && !inCommand)
+    return (playerTurn != 0 && currentPlayer == playerTurn && commandCardActivated === '')
 }
 
 function primaryDeckClick() {
     if(!canChooseCard()){
         return
     }
-    
+    console.log('primary deck clicked')
     if(commandCardActivated === '' && primaryDeckClicked == 0 && primaryDeckcards.length > 0) {
         const card = primaryDeckcards[primaryDeckcards.length - 1]
         card.flipCard()
@@ -393,9 +485,9 @@ async function commandActivate(selectedCard) {
 
 function finishCommand(ms) {
     console.log('command finished')
-    commandCardActivated = ''
     setTimeout(() => {
-        inCommand = false
+        commandCardActivated = ''
+        // inCommand = false
         changeTurn(0)
     }, ms)
 }
@@ -405,14 +497,14 @@ async function commandLookYours(card) {
         return
     }
 
-    inCommand = true
+    // inCommand = true
     
     card.flipCard()
     await wait(() => {
         setTimeout(() => {
             card.flipCard()
         }, 3000)
-    },3100)
+    },3000)
 
     finishCommand(0)
 }
@@ -425,14 +517,14 @@ async function commandLookOthers(card) {
         return
     }
 
-    inCommand = true
+    // inCommand = true
 
     card.flipCard()
     await wait(() => {
         setTimeout(() => {
             card.flipCard()
         }, 3000)
-    },0)
+    },3000)
 
     finishCommand(0)
 }
@@ -495,7 +587,7 @@ function commandExchangeCard(card) {
          return
     }
 
-    inCommand = true
+    // inCommand = true
 
     const value1 = cardToExchange.cardValue - card.cardValue
     const value2 = card.cardValue - cardToExchange.cardValue
@@ -545,7 +637,7 @@ function commandLookAll(card) {
     }, 3000)
     
     if(lookedCards.length == 3){
-        inCommand = true
+        // inCommand = true
         lookedCards = []
         finishCommand(3000)
         return
@@ -558,7 +650,7 @@ function commandPasra(card) {
         return
     }
 
-    inCommand = true
+    // inCommand = true
 
     card.flipCard()
     changeCardOwner(card, secondaryDeckCardContainer, false)
@@ -571,8 +663,4 @@ function showSkrewButton() {
     {
         skrewButton.style.display = 'inline-block'
     }
-}
-
-function endRound() {
-
 }
