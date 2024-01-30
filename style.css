@@ -20,6 +20,9 @@ main {
                          "p4 d p2"
                          "p4 p1 p2";
     gap: 5px;
+    background-image:  url("images/background2.png");
+    background-size: cover;
+    background-position: center;
 }
 
 #main-container {
@@ -45,8 +48,8 @@ main {
 #player3-container,
 #player4-container {
     display: flex;
-    /* border: 1px solid black; */
-    padding: 20px;
+    border: 1px solid white;
+    /* padding: 20px; */
 }
 
 #main-container {
@@ -54,37 +57,50 @@ main {
     justify-content: center;
 }
 #player1-container {
-    justify-content: center;
-    align-items: end;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
 }
 #player2-container {
+    flex-direction: row;
     justify-content: end;
     align-items: center;
 }
 #player3-container {
+    flex-direction: column-reverse;
     justify-content: center;
     align-items: start;
 }
 #player4-container {
+    flex-direction: row-reverse;
     justify-content: start;
     align-items: center;
 }
 
-.cards-container {
-    height: var(--card-height);
-    width: 100%;
+.cards-container1,
+.cards-container2 {
     padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* border: 1px solid black; */
+    border: 1px solid white;
+    background-color: yellow;
+}
+
+.cards-container1 {
+    z-index: 1;
+}
+
+.cards-container2 {
+    background-color: aqua;
 }
 
 .deck {
     position: relative;
-    height: calc(var(--card-height) + 10px);
-    width: calc(var(--card-width) + 10px);
-    border: 3px dashed black;
+    height: var(--card-height);
+    width: var(--card-width);
+    padding: 4px;
+    border: 3px dashed white;
     border-radius: 10px;
     display: flex;
     justify-content: center;
@@ -95,52 +111,90 @@ main {
     gap: 100px;
 }
 
-#player1-cards-container{
+#player1-cards-container1,
+#player1-cards-container2{
     flex-direction: row-reverse;
 }
-#player2-cards-container{
+#player2-cards-container1,
+#player2-cards-container2{
     flex-direction: column;
 }
-#player3-cards-container{
+#player3-cards-container1,
+#player3-cards-container2{
     flex-direction: row;
 }
-#player4-cards-container{
+#player4-cards-container1,
+#player4-cards-container2{
     flex-direction: column-reverse;
 }
 
-#player1-cards-container,
-#player3-cards-container{
+#player1-cards-container1,
+#player3-cards-container1,
+#deck-cards-container{
     height: var(--card-height);
     width: 100%;
 }
 
-#player2-cards-container,
-#player4-cards-container{
+#player2-cards-container1,
+#player4-cards-container1
+{
+    width: var(--card-height);
+    height: 50%;
+}
+
+#player1-cards-container2,
+#player3-cards-container2{
+    /* height: calc(var(--card-height) - 100px); */
+    height: var(--card-height);
+    width: 100%;
+}
+
+#player2-cards-container2,
+#player4-cards-container2
+{
+    /* width: calc(var(--card-height) - 100px); */
     width: var(--card-height);
     height: 100%;
 }
 
-#player1-cards-container .card{
+#player1-cards-container2 {
+    margin-bottom: -75px;
+}
+
+#player2-cards-container2 {
+    margin-right: -75px;
+}
+
+#player3-cards-container2 {
+    margin-top: -75px;
+}
+
+#player4-cards-container2 {
+    margin-left: -75px;
+}
+
+
+#player1-cards-container1 .card{
     transform: rotate(0deg);
 }
-#player3-cards-container .card{
+#player3-cards-container1 .card{
     transform: rotate(180deg);
 }
-#player2-cards-container .card{
+#player2-cards-container1 .card{
     transform: rotate(-90deg);
 }
-#player4-cards-container .card{
+#player4-cards-container1 .card{
     transform: rotate(90deg);
 }
 
-#player1-cards-container .card,
-#player3-cards-container .card{
+#player1-cards-container1 .card,
+#player3-cards-container1 .card{
     margin-left: 5px;
     margin-right: 5px;
 }
 
-#player2-cards-container .card,
-#player4-cards-container .card{
+#player2-cards-container1 .card,
+#player4-cards-container1 .card{
     margin-top: -22px;
     margin-bottom: -22px;
 }
@@ -148,7 +202,7 @@ main {
 .card {
     height: var(--card-height);
     width: var(--card-width);
-    /* border: 1px solid black; */
+    /* border: 1px solid white; */
     perspective: 1000px;
     cursor: pointer;
     transition: transform 0.6s ease-in-out;
@@ -174,6 +228,7 @@ main {
 
 .card-img {
     height: 100%;
+    width: 100%;
 }
 
 .card-front {

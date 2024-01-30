@@ -40,7 +40,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-loadGame()
+// loadGame()
 
 function tempCreateCards() {
     let cardIndex = 0
@@ -139,7 +139,7 @@ function endRound(playerSaidSkrew) {
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
     for(let i=1; i<=maxPlayersNum; ++i) {
-        removeCardsFrom(document.getElementById(`player${i}-cards-container`))
+        removeCardsFrom(document.getElementById(`player${i}-cards-container1`))
     }
 
     calculateScores(playerSaidSkrew)
@@ -312,7 +312,7 @@ function getOwnerContainer(ownerId) {
         return secondaryDeckCardContainer
     }
     else {
-        return document.getElementById(`player${ownerId}-cards-container`)
+        return document.getElementById(`player${ownerId}-cards-container1`)
     }
 }
 
