@@ -16,13 +16,18 @@ const skrewButton = document.getElementById('skrew-button')
 const skrewAudio = new Audio('audio/skrew.mp3')
 
 const maxPlayersNum = 4
+const maxRoundNum = 2
+const minTurnsNumBeforSkrew = 1
+
 let currentPlayer = 0
 let playerTurn = 0
+let playerSaidSkrew = 0
 
 let primaryDeckClicked = 0
 let secondaryDeckClicked = false
 
 // let roundStarted = false
+let roundCounter = 0
 let turnCounter = 0
 let turnsAfterSkrew = -1
 
@@ -70,12 +75,21 @@ function startGame() {
 
 function initGame() {
     totalPlayersScore = [0, 0, 0, 0]
+    roundCounter = 0
 }
 
 async function startRound() {
+
+    if(++roundCounter > maxRoundNum)
+    {
+        alert("game is finished")
+        return
+    }
+
     await wait(initRound, distributionsTime + showCardsTime + 500)
     putFirstCard()
     // roundStarted = true
+    // roundCounter++
 
     changeTurn(800)
 }
@@ -102,7 +116,7 @@ async function initRound() {
 
 function changeTurn(ms = 1500) {
 
-    if(turnsAfterSkrew != -1 && turnsAfterSkrew++ == 3){
+    if(turnsAfterSkrew != -1 && turnsAfterSkrew++ == maxPlayersNum-1){
         endRound()
         return
     }
@@ -120,7 +134,7 @@ function changeTurn(ms = 1500) {
     }, ms)
 }
 
-function winOrPunish(playerSaidSkrew) {
+function winOrPunish() {
         
     let minScorePlayerIndex = [0]
     let minScore = playersScore[minScorePlayerIndex[0]]
@@ -144,15 +158,21 @@ function winOrPunish(playerSaidSkrew) {
         }
     })
 
+    if(roundCounter == maxRoundNum) {
+        for(let i=0; i<maxPlayersNum; ++i){
+            playersScore[i] *= 2
+        }
+    }
+
     if(playersScore[playerSaidSkrew] != 0) {
         // double
         playersScore[playerSaidSkrew] *= 2
     }
 }
 
-function calculateScores(playerSaidSkrew) {
+function calculateScores() {
     
-    winOrPunish(playerSaidSkrew)
+    winOrPunish()
     
     playersScore.forEach((score, index) => {
         totalPlayersScore[index] += score
@@ -161,7 +181,7 @@ function calculateScores(playerSaidSkrew) {
     console.log("total players scores =", totalPlayersScore)
 }
 
-function endRound(playerSaidSkrew) {
+function endRound() {
 
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
@@ -170,24 +190,23 @@ function endRound(playerSaidSkrew) {
         removeCardsFrom(document.getElementById(`player${i}-cards-container2`))
     }
 
-    calculateScores(playerSaidSkrew)
+    calculateScores()
 
     startRound()
     // console.log("primary deck lenght", primaryDeckCardContainer.children.length)
 }
 
 async function saySkrew() {
-    console.log('say skrew')
-    console.log(turnsAfterSkrew)
-    console.log(turnCounter)
-    if(turnsAfterSkrew == -1 && playerTurn == currentPlayer && turnCounter > 4)
+
+    if(turnsAfterSkrew == -1 && playerTurn == currentPlayer && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew)
     {
+        turnsAfterSkrew = 0
+        playerSaidSkrew = playerTurn - 1
         await wait(() => {
             skrewAudio.play()
         }, 2000)
         // skrewButton.style.display = 'inline-block'
-        turnsAfterSkrew = 0
-        changeTurn()
+        changeTurn(0)
     }
 }
 
@@ -294,10 +313,6 @@ function shuffleCards() {
     console.log(cards)
 }
 
-function encodeName(index){
-    return btoa(cardNames[index]);
-}
-
 function createCards() {
     let cardIndex = 0
     // normal cards
@@ -388,7 +403,7 @@ function changeCardOwner(card, owner, flip, assing = true) {
 }
 
 function canChooseCard() {
-    return (playerTurn != 0 && currentPlayer == playerTurn && commandCardActivated === '')
+    return (turnsAfterSkrew != 0 && playerTurn != 0 && currentPlayer == playerTurn && commandCardActivated === '')
 }
 
 function primaryDeckClick() {

@@ -114,10 +114,6 @@ export default class Card {
         this.isFlipped = !this.isFlipped
     }
 
-    static shuffle() {
-
-    }
-
     setOwnerContainer(owner) {this.owner = owner}
 
     setDataValue(value) {
@@ -134,9 +130,9 @@ export default class Card {
 }
 
 
-function updateInnerHTML(elem, innerHTML) {
-    elem.innerHTML = innerHTML
-}
+// function updateInnerHTML(elem, innerHTML) {
+//     elem.innerHTML = innerHTML
+// }
 
 function createElement(elemType) {
     return document.createElement(elemType)
