@@ -101,9 +101,9 @@ async function initRound() {
     // skrewButton.removeEventListener('click', endRoundClickHandler)
     playersScore = [0, 0, 0, 0]
     // playerTurn = 0
+    // currentPlayer = 0
     turnCounter = 0
     turnsAfterSkrew = -1
-    currentPlayer = 0
     commandCardActivated = ''
     // inCommand = false
 
@@ -124,10 +124,7 @@ function changeTurn(ms = 1500) {
     turnCounter++
 
     setTimeout(() => {
-        if(playerTurn != 0){
-            // getPlayerTurnLine(playerTurn).style.backgroundColor = ''
-            getPlayerTurnLine(playerTurn).style.animation = ''
-        }
+        turnOffPlayerTurnLine()
         playerTurn = playerTurn % maxPlayersNum + 1
         currentPlayer = currentPlayer% maxPlayersNum + 1
     
@@ -139,32 +136,40 @@ function changeTurn(ms = 1500) {
     }, ms)
 }
 
+function turnOffPlayerTurnLine() {
+    for(let i=1; i<=maxPlayersNum; ++i){
+        getPlayerTurnLine(i).style.animation = ''
+    }
+}
+
 function getPlayerTurnLine(playerIndex) {
     return document.getElementById(`player${playerIndex}-turn-line`)
 }
 
 function winOrPunish() {
-        
+    playersScore = [20, 25, 1, 20]
     let minScorePlayerIndex = [0]
     let minScore = playersScore[minScorePlayerIndex[0]]
 
-    playersScore.forEach((score, index) => {
-        minScore = playersScore[minScorePlayerIndex[0]]
+    for(let i = 1; i<maxPlayersNum; ++i) 
+    {
+        const score = playersScore[i]
         if(score < minScore){
-            minScorePlayerIndex = [index]
+            minScorePlayerIndex = [i]
         }
         else if(score == minScore){
-            minScorePlayerIndex.push(index)
+            minScorePlayerIndex.push(i)
         }
-    })
+        minScore = playersScore[minScorePlayerIndex[0]]
+    }
 
     console.log('round scores is', playersScore)
     console.log('min score is', minScore)
 
-    for(let i = maxPlayersNum; i>=0; --i) {
+    for(let i = maxPlayersNum-1 ; i>=0; --i) {
         if(playersScore[i] == minScore){
             playersScore[i] = 0
-            playerTurn = i
+            currentPlayer = playerTurn = i
         }
     }
 
@@ -177,7 +182,9 @@ function winOrPunish() {
     if(playersScore[playerSaidSkrew] != 0) {
         // double
         playersScore[playerSaidSkrew] *= 2
-        playerTurn = playerSaidSkrew
+    }
+    else{
+        currentPlayer = playerTurn = playerSaidSkrew
     }
 }
 
@@ -391,6 +398,7 @@ function cardClicked(card) {
     else if(card.cardOwnerContainer === getOwnerContainer(playerTurn)
     || card.cardOwnerContainer === getOwnerContainer(playerTurn, true))
     {
+        console.log('call choosCard')
         chooseCard(card)
     }
 }
@@ -428,6 +436,9 @@ function changeCardOwner(card, owner, flip, assing = true) {
 }
 
 function canChooseCard() {
+    console.log('playerTurn =', playerTurn)
+    console.log('currentPlayer =', currentPlayer)
+    console.log('commandCardActivated =', commandCardActivated)
     return (turnsAfterSkrew != 0 && playerTurn != 0 && currentPlayer == playerTurn && commandCardActivated === '')
 }
 
@@ -459,6 +470,7 @@ function addCardsToSecondaryDeck(myCard, choosedCard) {
 function chooseCard(card) 
 {
     if(!canChooseCard()) {
+        console.log('cant choose')
         return
     }
 
