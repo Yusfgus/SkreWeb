@@ -19,9 +19,10 @@ const maxPlayersNum = 4
 const maxRoundNum = 2
 const minTurnsNumBeforSkrew = 1
 
-let currentPlayer = 0
+let currentPlayer = 1
 let playerTurn = 0
 let playerSaidSkrew = 0
+let startTurn = 0
 
 let primaryDeckClicked = 0
 let secondaryDeckClicked = false
@@ -76,6 +77,24 @@ function startGame() {
 function initGame() {
     totalPlayersScore = [0, 0, 0, 0]
     roundCounter = 0
+    startTurn = 0
+    initPlayerTurn()
+}
+
+function initPlayerTurn() {
+    if(currentPlayer == 1){
+        startTurn = 1
+    }
+    else if(currentPlayer == 2){
+        startTurn = 4
+    }
+    else if(currentPlayer == 3){
+        startTurn = 3
+    }
+    else if(currentPlayer == 4){
+        startTurn = 2
+    }
+    currentPlayer = startTurn
 }
 
 async function startRound() {
@@ -100,8 +119,8 @@ async function initRound() {
     // skrewButton.style.display = 'none'
     // skrewButton.removeEventListener('click', endRoundClickHandler)
     playersScore = [0, 0, 0, 0]
-    // playerTurn = 0
-    // currentPlayer = 0
+    playerTurn = 0
+    currentPlayer = 0
     turnCounter = 0
     turnsAfterSkrew = -1
     commandCardActivated = ''
@@ -125,14 +144,21 @@ function changeTurn(ms = 1500) {
 
     setTimeout(() => {
         turnOffPlayerTurnLine()
-        playerTurn = playerTurn % maxPlayersNum + 1
-        currentPlayer = currentPlayer% maxPlayersNum + 1
-    
+
+        if(playerTurn == 0){
+            playerTurn = startTurn % maxPlayersNum
+        }
+        else {
+            playerTurn = playerTurn % maxPlayersNum + 1
+        }
+        
+        currentPlayer = playerTurn
+
         primaryDeckClicked = 0
         secondaryDeckClicked = false
     
+        console.log(`player ${playerTurn} turn`)
         getPlayerTurnLine(playerTurn).style.animation = 'glow 2.5s ease-in-out infinite'
-        // console.log(`player ${playerTurn} turn`)
     }, ms)
 }
 
@@ -147,7 +173,7 @@ function getPlayerTurnLine(playerIndex) {
 }
 
 function winOrPunish() {
-    playersScore = [20, 25, 1, 20]
+    // playersScore = [20, 25, 1, 20]
     let minScorePlayerIndex = [0]
     let minScore = playersScore[minScorePlayerIndex[0]]
 
@@ -169,7 +195,7 @@ function winOrPunish() {
     for(let i = maxPlayersNum-1 ; i>=0; --i) {
         if(playersScore[i] == minScore){
             playersScore[i] = 0
-            currentPlayer = playerTurn = i
+            startTurn = i+1
         }
     }
 
@@ -184,7 +210,7 @@ function winOrPunish() {
         playersScore[playerSaidSkrew] *= 2
     }
     else{
-        currentPlayer = playerTurn = playerSaidSkrew
+        startTurn = playerSaidSkrew+1
     }
 }
 
