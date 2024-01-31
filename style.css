@@ -5,7 +5,10 @@
     --card-width-p1: 100px;
     --card-height-p1: 150px;
 
-    --negMargin: -12px
+    --negMargin: -12px;
+
+    /* --turn-line-color: rgb(197, 133, 54); */
+    --turn-line-color: orangered;
 }
 
 body {
@@ -58,7 +61,7 @@ main {
     display: flex;
     /* border: 1px solid white; */
     padding: 10px;
-    gap: 5px;
+    gap: 10px;
 }
 
 #main-container {
@@ -69,21 +72,25 @@ main {
     flex-direction: column;
     justify-content: end;
     align-items: center;
+    padding-bottom: 0px;
 }
 #player2-container {
     flex-direction: row;
     justify-content: end;
     align-items: center;
+    padding-right: 0px;
 }
 #player3-container {
     flex-direction: column-reverse;
     justify-content: start;
     align-items: center;
+    padding-top: 0px;
 }
 #player4-container {
     flex-direction: row-reverse;
     justify-content: start;
     align-items: center;
+    padding-left: 0px;
 }
 
 .cards-container2,
@@ -234,4 +241,56 @@ main {
 
 .deck .card {
     position: absolute;
+}
+
+.turn-line {
+    border-radius: 10px;
+    /* animation: glow 1.5s ease-in-out infinite; */
+}
+
+#player1-turn-line,
+#player3-turn-line {
+    /* height: 3px; */
+    width: 50%;
+    /* background-color: rgb(197, 133, 54); */
+}
+
+#player2-turn-line,
+#player4-turn-line {
+    /* width: 3px; */
+    height: 50%;
+    /* background-color: rgb(197, 133, 54); */
+}
+
+@keyframes glow {
+    0% {
+    box-shadow: 0px 0px 10px 0px var(--turn-line-color);
+    }
+    10% {
+        box-shadow: 0px 0px 25px 3px var(--turn-line-color); 
+    }
+    20% {
+        box-shadow: 0px 0px 50px 8px var(--turn-line-color);
+    }
+    30% {
+        box-shadow: 0px 0px 75px 15px var(--turn-line-color); 
+    }
+    45% {
+        box-shadow: 0px 0px 100px 20px var(--turn-line-color);
+    }
+    55% {
+        box-shadow: 0px 0px 100px 20px var(--turn-line-color);
+    }
+    70% {
+        box-shadow: 0px 0px 75px 15px var(--turn-line-color); /* Increase the size for a pulsating effect */
+    }
+    80% {
+    box-shadow: 0px 0px 50px 8px var(--turn-line-color);
+    }
+    90% {
+    box-shadow: 0px 0px 25px 3px var(--turn-line-color); /* Increase the size for a pulsating effect */
+    }
+    100% {
+    box-shadow: 0px 0px 10px 0px var(--turn-line-color); /* Set your glow color */
+    }
 }

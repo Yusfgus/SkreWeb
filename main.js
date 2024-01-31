@@ -124,14 +124,23 @@ function changeTurn(ms = 1500) {
     turnCounter++
 
     setTimeout(() => {
+        if(playerTurn != 0){
+            // getPlayerTurnLine(playerTurn).style.backgroundColor = ''
+            getPlayerTurnLine(playerTurn).style.animation = ''
+        }
         playerTurn = playerTurn % maxPlayersNum + 1
         currentPlayer = currentPlayer% maxPlayersNum + 1
     
         primaryDeckClicked = 0
         secondaryDeckClicked = false
     
-        console.log(`player ${playerTurn} turn`)
+        getPlayerTurnLine(playerTurn).style.animation = 'glow 2.5s ease-in-out infinite'
+        // console.log(`player ${playerTurn} turn`)
     }, ms)
+}
+
+function getPlayerTurnLine(playerIndex) {
+    return document.getElementById(`player${playerIndex}-turn-line`)
 }
 
 function winOrPunish() {
