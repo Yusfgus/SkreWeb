@@ -17,6 +17,7 @@ body {
     width: 100hh;
 
     user-select: none;
+    overflow: hidden;
 }
 
 main {
@@ -303,8 +304,9 @@ main {
     position: absolute;
     width: 100%;
     height: 100%;
-    top: -100%;
-    transition: top 1s ease;
+    /* top: -100%; */
+    bottom: -100%;
+    transition: top 1s ease, bottom 1s ease;
     background-image: url('images/round-background.png');
     background-size: cover;
     background-position: center;

@@ -36,7 +36,8 @@ let turnsAfterSkrew = -1
 
 const distributionsTime = 1000
 const showCardsTime = 1000
-const dashBoardTime = 6000
+const dashBoardDelayTime = 600
+const showRoundNameTime = 4000
 
 let commandCardActivated = ''
 // let inCommand = false
@@ -109,8 +110,8 @@ async function startRound() {
     }
 
     await wait(() => {
-        showDashBoard(showRoundName)
-    }, dashBoardTime)
+        showDashBoard(showRoundName, showRoundNameTime)
+    }, dashBoardDelayTime*2 + showRoundNameTime + 1000)
 
     await wait(initRound, distributionsTime + showCardsTime + 500)
     putFirstCard()
@@ -187,19 +188,23 @@ function showRoundName() {
     setTimeout(() => {
         roundName.style.height = '0'
         roundName.style.width = '0'
-    }, 4000)
+    }, showRoundNameTime)
 }
 
-async function showDashBoard(Function, ms = 4000) {
-    dashboard.style.top = '0'
+async function showDashBoard(Function, ms) {
+    // dashboard.style.top = '0'
+    dashboard.style.bottom = '0'
 
-    const delay = 600
+    await sleep(dashBoardDelayTime)
 
-    await sleep(delay)
+    if(roundCounter != 0) {
+        
+    }
 
-    await wait(Function, ms + delay)
+    await wait(Function, ms + dashBoardDelayTime)
 
-    dashboard.style.top = '-100%'
+    // dashboard.style.top = '-100%'
+    dashboard.style.bottom = '-100%'
 }
 
 function winOrPunish() {
