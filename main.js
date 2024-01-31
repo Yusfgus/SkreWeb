@@ -382,23 +382,37 @@ function getPlayerIndex(playerCardsContainer) {
     return playerCardsContainer.id[6] - 1
 }
 
-function attatchClickEventHandlerToCard(card) {
-    card.cardDivElem.addEventListener('click', () => {
+function cardClicked(card) {
+    console.log('card clicked')
+    if(commandCardActivated !== ''){
+        console.log('in command')
+        commandActivate(card)
+    }
+    else if(card.cardOwnerContainer === getOwnerContainer(playerTurn)
+    || card.cardOwnerContainer === getOwnerContainer(playerTurn, true))
+    {
+        chooseCard(card)
+    }
+}
 
-        console.log('card clicked')
-        /*if(inCommand){
-            console.log('in command')
-        }
-        else*/ if(commandCardActivated !== ''){
-            console.log('in command')
-            commandActivate(card)
-        }
-        else if(card.cardOwnerContainer === getOwnerContainer(playerTurn)
-                || card.cardOwnerContainer === getOwnerContainer(playerTurn, true))
-        {
-            chooseCard(card)
-        }
+function cheating(card) {
+
+    if(card.cardOwnerContainer === getOwnerContainer(currentPlayer)
+    || card.cardOwnerContainer === getOwnerContainer(currentPlayer, true))
+    {
+        alert(`player ${currentPlayer} is cheating`)
+        // console.log(playersScore)
+        playersScore[currentPlayer-1] += 10
+        // console.log(playersScore)
+    }
+}
+
+function attatchClickEventHandlerToCard(card) {
+    card.cardDivElem.addEventListener('contextmenu', function (event) {
+        event.preventDefault();
+        cheating(card)
     })
+    card.cardDivElem.addEventListener('click', () => { cardClicked(card) })
 }
 
 function changeCardOwner(card, owner, flip, assing = true) {
