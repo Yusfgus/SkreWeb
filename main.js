@@ -14,9 +14,10 @@ const primaryDeckCardContainer = document.getElementById('primaryDeck')
 const secondaryDeckCardContainer = document.getElementById('secondaryDeck')
 const skrewButton = document.getElementById('skrew-button')
 const skrewAudio = new Audio('audio/skrew.mp3')
+const scoreTable = document.getElementById('Score-table')
 
 const maxPlayersNum = 4
-const maxRoundNum = 2
+const maxRoundNum = 5
 const minTurnsNumBeforSkrew = 1
 
 let currentPlayer = 1
@@ -116,8 +117,6 @@ async function startRound() {
 async function initRound() {
     shuffleCards()
     
-    // skrewButton.style.display = 'none'
-    // skrewButton.removeEventListener('click', endRoundClickHandler)
     playersScore = [0, 0, 0, 0]
     playerTurn = 0
     currentPlayer = 0
@@ -146,7 +145,7 @@ function changeTurn(ms = 1500) {
         turnOffPlayerTurnLine()
 
         if(playerTurn == 0){
-            playerTurn = startTurn % maxPlayersNum
+            playerTurn = startTurn
         }
         else {
             playerTurn = playerTurn % maxPlayersNum + 1
@@ -172,8 +171,16 @@ function getPlayerTurnLine(playerIndex) {
     return document.getElementById(`player${playerIndex}-turn-line`)
 }
 
+function showScoreTable() {
+    scoreTable.style.top = '0'
+    setTimeout(() => {
+        scoreTable.style.top = '-100%'
+    }, 5000)
+}
+
 function winOrPunish() {
     // playersScore = [20, 25, 1, 20]
+    console.log('round scores is', playersScore)
     let minScorePlayerIndex = [0]
     let minScore = playersScore[minScorePlayerIndex[0]]
 
@@ -188,8 +195,6 @@ function winOrPunish() {
         }
         minScore = playersScore[minScorePlayerIndex[0]]
     }
-
-    console.log('round scores is', playersScore)
     console.log('min score is', minScore)
 
     for(let i = maxPlayersNum-1 ; i>=0; --i) {
@@ -225,7 +230,7 @@ function calculateScores() {
     console.log("total players scores =", totalPlayersScore)
 }
 
-function endRound() {
+async function endRound() {
 
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
@@ -235,6 +240,8 @@ function endRound() {
     }
 
     calculateScores()
+
+    await wait(showScoreTable, 6000)
 
     startRound()
     // console.log("primary deck lenght", primaryDeckCardContainer.children.length)
