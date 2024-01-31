@@ -1,6 +1,6 @@
 import Card from "./cards.js";
 
-const cardNames = ['skrewDriver', '1', '2', '3', '4', '5','6', '7', '8', '9', '10', 'exchange', 'lookAll', 'pasra', '-1', '20', 'redSkrew']
+// const cardNames = ['skrewDriver', '1', '2', '3', '4', '5','6', '7', '8', '9', '10', 'exchange', 'lookAll', 'pasra', '-1', '20', 'redSkrew']
 //                 //       0         1    2    3    4    5   6    7    8    9    10       11         12         13     14    15       16
 
 let cards = []
@@ -100,7 +100,7 @@ async function initRound() {
     // skrewButton.style.display = 'none'
     // skrewButton.removeEventListener('click', endRoundClickHandler)
     playersScore = [0, 0, 0, 0]
-    playerTurn = 0
+    // playerTurn = 0
     turnCounter = 0
     turnsAfterSkrew = -1
     currentPlayer = 0
@@ -152,11 +152,12 @@ function winOrPunish() {
     console.log('round scores is', playersScore)
     console.log('min score is', minScore)
 
-    playersScore.forEach((score, index) => {
-        if(score == minScore){
-            playersScore[index] = 0
+    for(let i=0; i<maxPlayersNum; ++i) {
+        if(playersScore[i] == minScore){
+            playersScore[i] = 0
+            playerTurn = i
         }
-    })
+    }
 
     if(roundCounter == maxRoundNum) {
         for(let i=0; i<maxPlayersNum; ++i){
