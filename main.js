@@ -14,7 +14,8 @@ const primaryDeckCardContainer = document.getElementById('primaryDeck')
 const secondaryDeckCardContainer = document.getElementById('secondaryDeck')
 const skrewButton = document.getElementById('skrew-button')
 const skrewAudio = new Audio('audio/skrew.mp3')
-const scoreTable = document.getElementById('Score-table')
+const dashboard = document.getElementById('dashboard')
+const roundName = document.getElementById('round-name')
 
 const maxPlayersNum = 4
 const maxRoundNum = 5
@@ -35,6 +36,7 @@ let turnsAfterSkrew = -1
 
 const distributionsTime = 1000
 const showCardsTime = 1000
+const dashBoardTime = 6000
 
 let commandCardActivated = ''
 // let inCommand = false
@@ -106,6 +108,10 @@ async function startRound() {
         return
     }
 
+    await wait(() => {
+        showDashBoard(showRoundName)
+    }, dashBoardTime)
+
     await wait(initRound, distributionsTime + showCardsTime + 500)
     putFirstCard()
     // roundStarted = true
@@ -171,16 +177,32 @@ function getPlayerTurnLine(playerIndex) {
     return document.getElementById(`player${playerIndex}-turn-line`)
 }
 
-function showScoreTable() {
-    scoreTable.style.top = '0'
+function showRoundName() {
+    const imgPath = `url('images/round${roundCounter}-background.png')`
+    console.log(imgPath)
+    roundName.style.backgroundImage = (imgPath)
+    roundName.style.height = '30rem'
+    roundName.style.width = '30rem'
+
     setTimeout(() => {
-        scoreTable.style.top = '-100%'
-    }, 5000)
+        roundName.style.height = '0'
+        roundName.style.width = '0'
+    }, 4000)
+}
+
+async function showDashBoard(Function, ms = 4000) {
+    dashboard.style.top = '0'
+
+    const delay = 600
+
+    await sleep(delay)
+
+    await wait(Function, ms + delay)
+
+    dashboard.style.top = '-100%'
 }
 
 function winOrPunish() {
-    // playersScore = [20, 25, 1, 20]
-    console.log('round scores is', playersScore)
     let minScorePlayerIndex = [0]
     let minScore = playersScore[minScorePlayerIndex[0]]
 
@@ -217,6 +239,8 @@ function winOrPunish() {
     else{
         startTurn = playerSaidSkrew+1
     }
+
+    console.log('round scores is', playersScore)
 }
 
 function calculateScores() {
@@ -232,6 +256,9 @@ function calculateScores() {
 
 async function endRound() {
 
+    // playersScore = [20, 25, 1, 20]
+    console.log('round scores is', playersScore)
+
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
     for(let i=1; i<=maxPlayersNum; ++i) {
@@ -241,7 +268,7 @@ async function endRound() {
 
     calculateScores()
 
-    await wait(showScoreTable, 6000)
+    // await wait(showDashBoard, 6000)  // show score table
 
     startRound()
     // console.log("primary deck lenght", primaryDeckCardContainer.children.length)
