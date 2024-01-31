@@ -152,7 +152,7 @@ function winOrPunish() {
     console.log('round scores is', playersScore)
     console.log('min score is', minScore)
 
-    for(let i=0; i<maxPlayersNum; ++i) {
+    for(let i = maxPlayersNum; i>=0; --i) {
         if(playersScore[i] == minScore){
             playersScore[i] = 0
             playerTurn = i
@@ -168,6 +168,7 @@ function winOrPunish() {
     if(playersScore[playerSaidSkrew] != 0) {
         // double
         playersScore[playerSaidSkrew] *= 2
+        playerTurn = playerSaidSkrew
     }
 }
 
