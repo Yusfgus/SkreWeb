@@ -48,6 +48,7 @@ const showCardsTime = 1000
 const dashBoardDelayTime = 600
 const showRoundNameTime = 3000
 const showScoreTableTime = 5000
+const showPlayersCardsTime = 5000
 
 let commandCardActivated = ''
 // let inCommand = false
@@ -70,7 +71,7 @@ loadGame()
 function tempCreateCards() {
     let cardIndex = 0
     for(let i=0; i<=50; ++i){
-        initCard('exchange', 10, getOwnerContainer(0), cardIndex++)
+        initCard('7', 7, getOwnerContainer(0), cardIndex++)
     }
 }
 
@@ -80,8 +81,8 @@ function loadGame() {
 
     attatchClickEventHandler()
     
-    createCards()
-    // tempCreateCards()
+    // createCards()
+    tempCreateCards()
     
     startGame()
 }
@@ -334,7 +335,6 @@ function colorScoreTableCells(columnsIndex) {
 }
 
 function updateScoreTable() {
-    console.log(roundColumnIndex)
     player1ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[0]
     player2ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[1]
     player3ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[2]
@@ -368,6 +368,7 @@ function winOrPunish() {
         for(let i=0; i<maxPlayersNum; ++i){
             playersScore[i] *= 2
         }
+        console.log('roundCounter = maxRoundNum = ', maxRoundNum)
     }
 
     if(playersScore[playerSaidSkrew] != 0) {
@@ -394,10 +395,35 @@ function calculateScores() {
     console.log("total players scores =", totalPlayersScore)
 }
 
+function showCards(parentDiv) {
+    for (let i = 0; i < parentDiv.children.length; ++i) {
+        const card = parentDiv.children[i]
+        getCardClass(card).flipCard()
+    }
+}
+
+function showPlayersCards() {
+    for(let i=1; i<=maxPlayersNum; ++i) {
+        showCards(document.getElementById(`player${i}-cards-container`))
+        showCards(document.getElementById(`player${i}-cards-container2`))
+    }
+    
+    setTimeout(() => {
+        for(let i=1; i<=maxPlayersNum; ++i) {
+            showCards(document.getElementById(`player${i}-cards-container`))
+            showCards(document.getElementById(`player${i}-cards-container2`))
+        }
+    }, showPlayersCardsTime)
+}
+
 async function endRound() {
 
+    await sleep(800)
+    await wait(showPlayersCards, showPlayersCardsTime + 100)
+    await sleep(1000)
     // playersScore = [20, 25, 1, 20]
     console.log('round scores is', playersScore)
+    calculateScores()
 
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
@@ -405,9 +431,6 @@ async function endRound() {
         removeCardsFrom(document.getElementById(`player${i}-cards-container`))
         removeCardsFrom(document.getElementById(`player${i}-cards-container2`))
     }
-
-    calculateScores()
-
     // await wait(showDashBoard, 6000)  // show score table
 
     startRound()

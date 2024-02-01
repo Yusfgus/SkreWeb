@@ -109,7 +109,7 @@ export default class Card {
             setTimeout(() => {
                 const imagePath = getImagePath('surprise-mf')
                 addSrcToImageElem(this.cardFrontImg, imagePath)
-            }, 1000)
+            }, 500)
         }
         this.isFlipped = !this.isFlipped
     }
