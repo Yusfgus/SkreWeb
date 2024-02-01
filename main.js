@@ -19,12 +19,18 @@ const roundName = document.getElementById('round-name')
 // const scoreTable = document.getElementById('score-table')
 const rowToRight = document.querySelectorAll('.row-to-right')
 const rowToLeft = document.querySelectorAll('.row-to-left')
+const player1ScoreRow = document.getElementById('player1-score-row')
+const player2ScoreRow = document.getElementById('player2-score-row')
+const player3ScoreRow = document.getElementById('player3-score-row')
+const player4ScoreRow = document.getElementById('player4-score-row')
+
+let roundColumnIndex = 5
 
 const maxPlayersNum = 4
-const maxRoundNum = 2
+const maxRoundNum = 1
 const minTurnsNumBeforSkrew = 1
 
-let currentPlayer = 1
+let currentPlayer = 2
 let playerTurn = 0
 let playerSaidSkrew = 0
 let startTurn = 0
@@ -69,6 +75,9 @@ function tempCreateCards() {
 }
 
 function loadGame() {
+
+    initScoreTable()
+
     attatchClickEventHandler()
     
     createCards()
@@ -112,7 +121,7 @@ async function startRound() {
     {
         await wait(() => {
             showDashBoard(true, false)
-            // showDashBoard(true)
+            // showDashBoard(true, false)
         }, waitTime)
         alert("game is finished")
         return
@@ -123,7 +132,7 @@ async function startRound() {
     }
     await wait(() => {
         showDashBoard(roundCounter > 1, true)
-        // showDashBoard(true)
+        // showDashBoard(true, true)
     }, waitTime)
 
     await wait(initRound, distributionsTime + showCardsTime + 500)
@@ -233,29 +242,119 @@ async function showDashBoard(flag1 = false, flag2 = true) {
     }
 
     if(flag2){
-        await wait(showRoundName, showRoundNameTime)
+        await wait(showRoundName, showRoundNameTime + 200)
     }
 
     // dashboard.style.top = '-100%'
     dashboard.style.bottom = '-100%'
 }
 
-function winOrPunish() {
-    let minScorePlayerIndex = [0]
-    let minScore = playersScore[minScorePlayerIndex[0]]
+// function editScoreTableCell(table, column, value) {
+//     table.rows[0].cells[column].textContent = value
+// }
+
+function initScoreTable() {
+    roundColumnIndex = 5
+    player1ScoreRow.rows[0].cells[6].textContent = 'Player1'
+    player2ScoreRow.rows[0].cells[6].textContent = 'Player2'
+    player3ScoreRow.rows[0].cells[6].textContent = 'Player3'
+    player4ScoreRow.rows[0].cells[6].textContent = 'Player4'
+}
+
+function getScore(arr, min) {
+    let ScorePlayerIndex = [0]
+    let Score = arr[ScorePlayerIndex[0]]
 
     for(let i = 1; i<maxPlayersNum; ++i) 
     {
-        const score = playersScore[i]
-        if(score < minScore){
-            minScorePlayerIndex = [i]
+        const score = arr[i]
+        if(min && score < Score){
+            ScorePlayerIndex = [i]
         }
-        else if(score == minScore){
-            minScorePlayerIndex.push(i)
+        else if(!min && score > Score){
+            ScorePlayerIndex = [i]
         }
-        minScore = playersScore[minScorePlayerIndex[0]]
+        else if(score == Score){
+            ScorePlayerIndex.push(i)
+        }
+        Score = arr[ScorePlayerIndex[0]]
         // console.log(score)
     }
+
+    return Score
+}
+
+// function getMinScores(arr) {
+//     let minScorePlayerIndex = [0]
+//     let minScore = arr[minScorePlayerIndex[0]]
+
+//     for(let i = 1; i<maxPlayersNum; ++i) 
+//     {
+//         const score = arr[i]
+//         if(score < minScore){
+//             minScorePlayerIndex = [i]
+//         }
+//         else if(score == minScore){
+//             minScorePlayerIndex.push(i)
+//         }
+//         minScore = arr[minScorePlayerIndex[0]]
+//         // console.log(score)
+//     }
+
+//     return minScore
+// }
+
+function colorScoreTableCells(columnsIndex) {
+
+    const arr = columnsIndex == 0? totalPlayersScore: playersScore 
+
+    const maxScore = getScore(arr, false)
+    // console.log('max score is', maxScore)
+    const minScore = getScore(arr, true)
+
+    arr.forEach((score, index) => {
+        if(score == minScore)
+        {
+            const wonPlayerRow = document.getElementById(`player${index+1}-score-row`)
+            wonPlayerRow.rows[0].cells[columnsIndex].style.backgroundColor = '#51A500'
+
+            if(columnsIndex == 0){
+                for(let i=1; i<7; ++i){
+                    wonPlayerRow.rows[0].cells[i].style.backgroundColor = '#51A500'
+                }
+            }
+
+        }
+        else if(score == maxScore)
+        {
+            const losePlayerRow = document.getElementById(`player${index+1}-score-row`)
+            losePlayerRow.rows[0].cells[columnsIndex].style.backgroundColor = '#6A0102'
+        }
+    })
+}
+
+function updateScoreTable() {
+    console.log(roundColumnIndex)
+    player1ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[0]
+    player2ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[1]
+    player3ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[2]
+    player4ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[3]
+
+    player1ScoreRow.rows[0].cells[0].textContent = totalPlayersScore[0]
+    player2ScoreRow.rows[0].cells[0].textContent = totalPlayersScore[1]
+    player3ScoreRow.rows[0].cells[0].textContent = totalPlayersScore[2]
+    player4ScoreRow.rows[0].cells[0].textContent = totalPlayersScore[3]
+    
+    colorScoreTableCells(roundColumnIndex)
+    if(roundCounter == maxRoundNum){
+        colorScoreTableCells(0)
+    }
+    roundColumnIndex--
+}
+
+function winOrPunish() {
+    // playersScore = [1, 5, 1, 5]
+    let minScore = getScore(playersScore, true)
     console.log('min score is', minScore)
 
     for(let i = maxPlayersNum-1 ; i>=0; --i) {
@@ -290,6 +389,8 @@ function calculateScores() {
         totalPlayersScore[index] += score
     })
 
+    updateScoreTable()
+
     console.log("total players scores =", totalPlayersScore)
 }
 
@@ -313,12 +414,21 @@ async function endRound() {
     // console.log("primary deck lenght", primaryDeckCardContainer.children.length)
 }
 
+function canSaySkrew() {
+    return  canChooseCard() && turnsAfterSkrew == -1 && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew
+}
+
 async function saySkrew() {
 
-    if(turnsAfterSkrew == -1 && playerTurn == currentPlayer && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew)
+    if(!canSaySkrew()){
+        return
+    }
+
+    // if(turnsAfterSkrew == -1 && playerTurn == currentPlayer && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew)
     {
         turnsAfterSkrew = 0
         playerSaidSkrew = playerTurn - 1
+        console.log('player sad skrew', playerTurn)
         await wait(() => {
             skrewAudio.play()
         }, 2000)
@@ -535,9 +645,9 @@ function changeCardOwner(card, owner, flip, assing = true) {
 }
 
 function canChooseCard() {
-    console.log('playerTurn =', playerTurn)
-    console.log('currentPlayer =', currentPlayer)
-    console.log('commandCardActivated =', commandCardActivated)
+    // console.log('playerTurn =', playerTurn)
+    // console.log('currentPlayer =', currentPlayer)
+    // console.log('commandCardActivated =', commandCardActivated)
     return (turnsAfterSkrew != 0 && playerTurn != 0 && currentPlayer == playerTurn && commandCardActivated === '')
 }
 
