@@ -197,8 +197,10 @@ main {
     /* border: 1px solid white; */
     perspective: 1000px;
     cursor: pointer;
-    /* transition: transform 0.6s ease-in-out; */
-    transition: 1s;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* #player1-container .cards-container,
@@ -218,6 +220,7 @@ main {
     text-align: center;
     transition: transform 0.6s;
     transform-style: preserve-3d;
+    transition: transform 0.6s ease-in-out, width 0.8s ease, height 0.75s ease;
 }
 
 .card-front, .card-back {

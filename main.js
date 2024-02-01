@@ -71,7 +71,7 @@ loadGame()
 function tempCreateCards() {
     let cardIndex = 0
     for(let i=0; i<=50; ++i){
-        initCard('7', 7, getOwnerContainer(0), cardIndex++)
+        initCard('exchange', 10, getOwnerContainer(0), cardIndex++)
     }
 }
 
@@ -81,8 +81,8 @@ function loadGame() {
 
     attatchClickEventHandler()
     
-    // createCards()
-    tempCreateCards()
+    createCards()
+    // tempCreateCards()
     
     startGame()
 }
@@ -869,9 +869,19 @@ async function animationExchange(card1, card2)
 }
 
 function insertCardInIndex(card, parent, index) {
+
+    console.log(card.cardDivElem)
+    const cardInnerElem = card.cardDivElem.firstChild
+    cardInnerElem.style.height = '0'
+    cardInnerElem.style.width = '0'
+    
     const referenceNode = parent.children.item(index);
     // Insert the new child before the reference node
     parent.insertBefore(card.cardDivElem, referenceNode);
+    setTimeout(() => {
+        cardInnerElem.style.width = '100%'
+        cardInnerElem.style.height = '100%'
+    }, 500)
 }
 
 function exchangeTwoCards(card1, card2, flip = true) {
@@ -936,7 +946,7 @@ function commandExchangeCard(card) {
 
     exchangeTwoCards(cardToExchange, card, false)
 
-    animationExchange(cardToExchange, card)
+    // animationExchange(cardToExchange, card)
 
     cardToExchange = null
     finishCommand(500)
