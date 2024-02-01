@@ -16,9 +16,12 @@ const skrewButton = document.getElementById('skrew-button')
 const skrewAudio = new Audio('audio/skrew.mp3')
 const dashboard = document.getElementById('dashboard')
 const roundName = document.getElementById('round-name')
+// const scoreTable = document.getElementById('score-table')
+const rowToRight = document.querySelectorAll('.row-to-right')
+const rowToLeft = document.querySelectorAll('.row-to-left')
 
 const maxPlayersNum = 4
-const maxRoundNum = 5
+const maxRoundNum = 2
 const minTurnsNumBeforSkrew = 1
 
 let currentPlayer = 1
@@ -37,7 +40,8 @@ let turnsAfterSkrew = -1
 const distributionsTime = 1000
 const showCardsTime = 1000
 const dashBoardDelayTime = 600
-const showRoundNameTime = 4000
+const showRoundNameTime = 3000
+const showScoreTableTime = 5000
 
 let commandCardActivated = ''
 // let inCommand = false
@@ -103,15 +107,24 @@ function initPlayerTurn() {
 
 async function startRound() {
 
+    let waitTime = dashBoardDelayTime + showRoundNameTime + 1000
     if(++roundCounter > maxRoundNum)
     {
+        await wait(() => {
+            showDashBoard(true, false)
+            // showDashBoard(true)
+        }, waitTime)
         alert("game is finished")
         return
     }
 
+    if(roundCounter > 1) {
+        waitTime += dashBoardDelayTime
+    }
     await wait(() => {
-        showDashBoard(showRoundName, showRoundNameTime)
-    }, dashBoardDelayTime*2 + showRoundNameTime + 1000)
+        showDashBoard(roundCounter > 1, true)
+        // showDashBoard(true)
+    }, waitTime)
 
     await wait(initRound, distributionsTime + showCardsTime + 500)
     putFirstCard()
@@ -180,7 +193,7 @@ function getPlayerTurnLine(playerIndex) {
 
 function showRoundName() {
     const imgPath = `url('images/round${roundCounter}-background.png')`
-    console.log(imgPath)
+    // console.log(imgPath)
     roundName.style.backgroundImage = (imgPath)
     roundName.style.height = '30rem'
     roundName.style.width = '30rem'
@@ -191,17 +204,37 @@ function showRoundName() {
     }, showRoundNameTime)
 }
 
-async function showDashBoard(Function, ms) {
+function showScoreTable() {
+    rowToRight.forEach(function(element) {
+        element.style.right = '0';
+    });
+    rowToLeft.forEach(function(element) {
+        element.style.left = '0';
+    });
+
+    setTimeout(() => {
+        rowToRight.forEach(function(element) {
+            element.style.right = '-150%';
+        });
+        rowToLeft.forEach(function(element) {
+            element.style.left = '-150%';
+        });
+    }, showScoreTableTime)
+}
+
+async function showDashBoard(flag1 = false, flag2 = true) {
     // dashboard.style.top = '0'
     dashboard.style.bottom = '0'
 
     await sleep(dashBoardDelayTime)
 
-    if(roundCounter != 0) {
-        
+    if(flag1) {
+        await wait(showScoreTable, showScoreTableTime + dashBoardDelayTime)
     }
 
-    await wait(Function, ms + dashBoardDelayTime)
+    if(flag2){
+        await wait(showRoundName, showRoundNameTime)
+    }
 
     // dashboard.style.top = '-100%'
     dashboard.style.bottom = '-100%'
@@ -221,6 +254,7 @@ function winOrPunish() {
             minScorePlayerIndex.push(i)
         }
         minScore = playersScore[minScorePlayerIndex[0]]
+        // console.log(score)
     }
     console.log('min score is', minScore)
 
@@ -245,7 +279,7 @@ function winOrPunish() {
         startTurn = playerSaidSkrew+1
     }
 
-    console.log('round scores is', playersScore)
+    // console.log('round scores is', playersScore)
 }
 
 function calculateScores() {
@@ -393,7 +427,7 @@ function shuffleCards() {
         cards[random1].setDataValue(random1)
         cards[random2].setDataValue(random2)
     }
-    console.log(cards)
+    // console.log(cards)
 }
 
 function createCards() {
@@ -655,6 +689,7 @@ async function commandLookYours(card) {
     }
 
     // inCommand = true
+    commandCardActivated = 'wait'
     
     card.flipCard()
     await wait(() => {
@@ -676,6 +711,7 @@ async function commandLookOthers(card) {
     }
 
     // inCommand = true
+    commandCardActivated = 'wait'
 
     card.flipCard()
     await wait(() => {
@@ -751,6 +787,7 @@ function commandExchangeCard(card) {
     }
 
     // inCommand = true
+    commandCardActivated = 'wait'
 
     const value1 = cardToExchange.cardValue - card.cardValue
     const value2 = card.cardValue - cardToExchange.cardValue
@@ -801,6 +838,7 @@ function commandLookAll(card) {
     
     if(lookedCards.length == 3){
         // inCommand = true
+        commandCardActivated = 'wait'
         lookedCards = []
         finishCommand(3000)
         return
@@ -815,6 +853,7 @@ function commandPasra(card) {
     }
 
     // inCommand = true
+    commandCardActivated = 'wait'
 
     card.flipCard()
     changeCardOwner(card, secondaryDeckCardContainer, false)
