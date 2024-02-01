@@ -73,6 +73,7 @@ main {
 #main-container {
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 #player1-container {
     flex-direction: column;

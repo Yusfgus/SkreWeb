@@ -71,7 +71,7 @@ loadGame()
 function tempCreateCards() {
     let cardIndex = 0
     for(let i=0; i<=50; ++i){
-        initCard('exchange', 10, getOwnerContainer(0), cardIndex++)
+        initCard('lookAll', 10, getOwnerContainer(0), cardIndex++)
     }
 }
 
@@ -470,9 +470,14 @@ function removeCardsFrom(parentDiv, flip = false) {
 }
 
 function addCardsToPrimaryDeck() {
+    // let margTop = 0, margLeft = 0
     cards.forEach((card) => {
         primaryDeckcards.push(card)
         card.setOwnerContainer(primaryDeckCardContainer)
+        // card.cardDivElem.style.marginTop = `${margTop}px`
+        // card.cardDivElem.style.marginLeft = `${margLeft}px`
+        // margTop += 0.35
+        // margLeft += 0.5
         card.assignCardToOwner()
     })
 }
@@ -514,8 +519,8 @@ function putFirstCard() {
 }
 
 function attatchClickEventHandler() {
-    primaryDeckCardContainer.addEventListener('click', primaryDeckClick)
-    secondaryDeckCardContainer.addEventListener('click', secondaryDeckClick)
+    // primaryDeckCardContainer.addEventListener('click', primaryDeckClick)
+    // secondaryDeckCardContainer.addEventListener('click', secondaryDeckClick)
     skrewButton.addEventListener('click', saySkrew)
 }
 
@@ -623,6 +628,7 @@ function getPlayerIndex(playerCardsContainer) {
 
 function cardClicked(card) {
     console.log('card clicked')
+    const cardOwnerElem = card.cardOwnerContainer
     if(commandCardActivated !== ''){
         console.log('in command')
         commandActivate(card)
@@ -632,6 +638,12 @@ function cardClicked(card) {
     {
         console.log('call choosCard')
         chooseCard(card)
+    }
+    else if(cardOwnerElem === primaryDeckCardContainer){
+        primaryDeckClick()
+    }
+    else if(cardOwnerElem === secondaryDeckCardContainer){
+        secondaryDeckClick()
     }
 }
 
@@ -676,7 +688,7 @@ function canChooseCard() {
     // console.log('playerTurn =', playerTurn)
     // console.log('currentPlayer =', currentPlayer)
     // console.log('commandCardActivated =', commandCardActivated)
-    return (turnsAfterSkrew != 0 && playerTurn != 0 && currentPlayer == playerTurn && commandCardActivated === '')
+    return (turnsAfterSkrew != 0 && playerTurn != 0 && currentPlayer == playerTurn/* && commandCardActivated === ''*/)
 }
 
 function primaryDeckClick() {

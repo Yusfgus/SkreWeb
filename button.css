@@ -1,7 +1,8 @@
 #skrew-button {
     position: absolute;
-    left: 415px;
-    bottom: 250px;
+    left: 30%;
+    bottom: 30%;
+    /* margin-left: 15%; */
 
     /* display: none; */
     /* transform: rotateX(60deg); */
