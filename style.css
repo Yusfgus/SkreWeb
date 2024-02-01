@@ -220,7 +220,7 @@ main {
     text-align: center;
     transition: transform 0.6s;
     transform-style: preserve-3d;
-    transition: transform 0.6s ease-in-out, width 0.8s ease, height 0.75s ease;
+    transition: transform 0.6s ease-in-out, width 0.8s ease-in-out, height 0.75s ease-in-out;
 }
 
 .card-front, .card-back {

@@ -655,12 +655,17 @@ function attatchClickEventHandlerToCard(card) {
     card.cardDivElem.addEventListener('click', () => { cardClicked(card) })
 }
 
-function changeCardOwner(card, owner, flip, assing = true) {
+function changeCardOwner(card, owner, flip, assing = true, hide = false) {
     if(flip){
         card.flipCard()
     }
 
     card.setOwnerContainer(owner)
+    if(hide){
+        const cardInnerElem = card.cardDivElem.firstChild
+        cardInnerElem.style.height = '0'
+        cardInnerElem.style.width = '0'
+    }
 
     if(assing){
         card.assignCardToOwner()
@@ -690,11 +695,16 @@ function addCardsToSecondaryDeck(myCard, choosedCard) {
     const playerContainer = myCard.cardOwnerContainer
     const myCardIndex = Array.from(playerContainer.children).indexOf(myCard.cardDivElem)
     
-    changeCardOwner(choosedCard, playerContainer, true, false) 
+    changeCardOwner(choosedCard, playerContainer, true, false, true) 
     insertCardInIndex(choosedCard, playerContainer, myCardIndex)
     
     secondaryDeckcards.push(myCard)
-    changeCardOwner(myCard, secondaryDeckCardContainer, true, true) 
+    changeCardOwner(myCard, secondaryDeckCardContainer, true, true, false) 
+    // setTimeout(() => {
+    //     const cardInnerElem = myCard.cardDivElem.firstChild
+    //     cardInnerElem.style.width = '100%'
+    //     cardInnerElem.style.height = '100%'
+    // }, 500)
 
     updateScore(playerTurn - 1, choosedCard.cardValue - myCard.cardValue)
 }
@@ -872,8 +882,8 @@ function insertCardInIndex(card, parent, index) {
 
     console.log(card.cardDivElem)
     const cardInnerElem = card.cardDivElem.firstChild
-    cardInnerElem.style.height = '0'
-    cardInnerElem.style.width = '0'
+    // cardInnerElem.style.height = '0'
+    // cardInnerElem.style.width = '0'
     
     const referenceNode = parent.children.item(index);
     // Insert the new child before the reference node
@@ -892,10 +902,10 @@ function exchangeTwoCards(card1, card2, flip = true) {
     const card1CurrentIndex = Array.from(card1Container.children).indexOf(card1.cardDivElem)
     const card2CurrentIndex = Array.from(card2Container.children).indexOf(card2.cardDivElem)
     
-    changeCardOwner(card1, card2Container, flip, false) 
+    changeCardOwner(card1, card2Container, flip, false, true) 
     insertCardInIndex(card1, card2Container, card2CurrentIndex)
     
-    changeCardOwner(card2, card1Container, flip, false)
+    changeCardOwner(card2, card1Container, flip, false, true)
     insertCardInIndex(card2, card1Container, card1CurrentIndex)
 }
 
