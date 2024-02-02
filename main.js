@@ -69,6 +69,7 @@ function sleep(ms) {
 
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
+        console.log('load game')
         loadGame()
     }, 2000)
 })

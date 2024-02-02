@@ -23,6 +23,13 @@ body {
     overflow: hidden;
 }
 
+@media only screen and (max-width: 600px) {
+    /* Styles for small screens (e.g., mobile devices) */
+    body {
+      overflow: hidden;
+    }
+}
+
 main {
     position: relative;
     height: 100%;
