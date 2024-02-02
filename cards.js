@@ -61,7 +61,8 @@ export default class Card {
         // <img src="images/card-JackClubs.png" class="card-img">
         const cardFrontImg = createElement('img')
         this.cardFrontImg = cardFrontImg
-        const imagePath = getImagePath('surprise-mf')
+        // const imagePath = getImagePath('surprise-mf')
+        const imagePath = getImagePath(this.name)
         addSrcToImageElem(cardFrontImg, imagePath)
         addClassToElement(cardFrontImg, 'card-img')
         
