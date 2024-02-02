@@ -27,7 +27,7 @@ const player4ScoreRow = document.getElementById('player4-score-row')
 let roundColumnIndex = 5
 
 const maxPlayersNum = 4
-const maxRoundNum = 1
+const maxRoundNum = 2
 const minTurnsNumBeforSkrew = 1
 
 let currentPlayer = 2
@@ -43,8 +43,9 @@ let roundCounter = 0
 let turnCounter = 0
 let turnsAfterSkrew = -1
 
-const distributionsTime = 1000
+const distributionsTime = 3000
 const showCardsTime = 1000
+const insertCardTime = 0
 const dashBoardDelayTime = 600
 const showRoundNameTime = 3000
 const showScoreTableTime = 5000
@@ -117,7 +118,7 @@ function initPlayerTurn() {
 
 async function startRound() {
 
-    let waitTime = dashBoardDelayTime + showRoundNameTime + 1000
+    let waitTime = dashBoardDelayTime + showRoundNameTime + 2000
     if(++roundCounter > maxRoundNum)
     {
         await wait(() => {
@@ -129,7 +130,7 @@ async function startRound() {
     }
 
     if(roundCounter > 1) {
-        waitTime += dashBoardDelayTime
+        waitTime += dashBoardDelayTime + showScoreTableTime
     }
     await wait(() => {
         showDashBoard(roundCounter > 1, true)
@@ -156,6 +157,7 @@ async function initRound() {
     // inCommand = false
 
     addCardsToPrimaryDeck()
+    console.log('distribute')
     await wait(distributeCards, distributionsTime)
     console.log('initial players scores =', playersScore)
 
@@ -526,7 +528,7 @@ function attatchClickEventHandler() {
 
 function distributeCards() {
 
-    let ctr = 0
+    let ctr = startTurn - 1
     let maxCards = maxPlayersNum * 4
     const id = setInterval(() => {
         const card = primaryDeckcards.pop()
@@ -903,7 +905,7 @@ function insertCardInIndex(card, parent, index) {
     setTimeout(() => {
         cardInnerElem.style.width = '100%'
         cardInnerElem.style.height = '100%'
-    }, 500)
+    }, insertCardTime)
 }
 
 function exchangeTwoCards(card1, card2, flip = true) {

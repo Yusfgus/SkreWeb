@@ -355,6 +355,7 @@ main {
     /* border: 1px solid white; */
     position: relative;;
     padding: 0;
+    border-radius: 10px;
 }
 
 table {
