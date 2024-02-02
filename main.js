@@ -43,8 +43,8 @@ let roundCounter = 0
 let turnCounter = 0
 let turnsAfterSkrew = -1
 
-const distributionsTime = 3000
-const showCardsTime = 1000
+const distributionsTime = 5000
+const showCardsTime = 2000
 const insertCardTime = 0
 const dashBoardDelayTime = 600
 const showRoundNameTime = 3000
@@ -70,7 +70,7 @@ function sleep(ms) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         loadGame()
-    }, 3000)
+    }, 2000)
 })
 
 function tempCreateCards() {
@@ -141,7 +141,7 @@ async function startRound() {
         // showDashBoard(true, true)
     }, waitTime)
 
-    await wait(initRound, distributionsTime + showCardsTime + 500)
+    await wait(initRound, distributionsTime + showCardsTime + 2000)
     putFirstCard()
     // roundStarted = true
     // roundCounter++
@@ -165,7 +165,7 @@ async function initRound() {
     await wait(distributeCards, distributionsTime)
     console.log('initial players scores =', playersScore)
 
-    await wait(showFirstTwoCards, showCardsTime + 500)
+    await wait(showFirstTwoCards, showCardsTime + 1000)
 }
 
 function changeTurn(ms = 1500) {
@@ -491,15 +491,19 @@ function addCardsToPrimaryDeck() {
 async function showFirstTwoCards() {
 
     const cardContainers = document.querySelectorAll('.player')
-    cardContainers.forEach((container) => {
-        const firstChild = getDivChild(container, 0)
-        const secondChild = getDivChild(container, 1)
+    await wait( () => {
+        setTimeout(() => {
+            cardContainers.forEach((container) => {
+                const firstChild = getDivChild(container, 0)
+                const secondChild = getDivChild(container, 1)
+        
+                getCardClass(firstChild).flipCard()
+                getCardClass(secondChild).flipCard()
+            })
+        }, 800)
+    },showCardsTime + 800)
 
-        getCardClass(firstChild).flipCard()
-        getCardClass(secondChild).flipCard()
-    })
-
-    await sleep(showCardsTime)
+    // await sleep(showCardsTime + 800)
 
     cardContainers.forEach((container) => {
         const firstChild = getDivChild(container, 0)
