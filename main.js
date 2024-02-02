@@ -30,7 +30,7 @@ const maxPlayersNum = 4
 const maxRoundNum = 2
 const minTurnsNumBeforSkrew = 1
 
-let currentPlayer = 2
+let currentPlayer = 1
 let playerTurn = 0
 let playerSaidSkrew = 0
 let startTurn = 0
@@ -67,7 +67,11 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-loadGame()
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        loadGame()
+    }, 3000)
+})
 
 function tempCreateCards() {
     let cardIndex = 0
