@@ -27,8 +27,8 @@ const player4ScoreRow = document.getElementById('player4-score-row')
 let roundColumnIndex = 5
 
 const maxPlayersNum = 4
-const maxRoundNum = 2
-const minTurnsNumBeforSkrew = 1
+const maxRoundNum = 5
+const minTurnsNumBeforSkrew = 3
 
 let currentPlayer = 1
 let playerTurn = 0
@@ -425,7 +425,7 @@ function showPlayersCards() {
 
 async function endRound() {
 
-    await sleep(800)
+    await sleep(2000)
     await wait(showPlayersCards, showPlayersCardsTime + 100)
     await sleep(1000)
     // playersScore = [20, 25, 1, 20]
