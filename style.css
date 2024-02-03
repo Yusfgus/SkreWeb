@@ -53,24 +53,24 @@ main {
     grid-area: d;
     /* position: relative; */
 }
-#player1-container {
+#bottom-container {
     grid-area: p1;
 }
-#player2-container {
+#right-container {
     grid-area: p2;
 }
-#player3-container {
+#top-container {
     grid-area: p3;
 }
-#player4-container {
+#left-container {
     grid-area: p4;
 }
 
 #main-container,
-#player1-container,
-#player2-container,
-#player3-container,
-#player4-container {
+#bottom-container,
+#right-container,
+#top-container,
+#left-container {
     display: flex;
     /* border: 1px solid white; */
     padding: 10px;
@@ -82,25 +82,25 @@ main {
     justify-content: center;
     position: relative;
 }
-#player1-container {
+#bottom-container {
     flex-direction: column;
     justify-content: end;
     align-items: center;
     padding-bottom: 0px;
 }
-#player2-container {
+#right-container {
     flex-direction: row;
     justify-content: end;
     align-items: center;
     padding-right: 0px;
 }
-#player3-container {
+#top-container {
     flex-direction: column-reverse;
     justify-content: start;
     align-items: center;
     padding-top: 0px;
 }
-#player4-container {
+#left-container {
     flex-direction: row-reverse;
     justify-content: start;
     align-items: center;
@@ -131,68 +131,68 @@ main {
     gap: 100px;
 }
 
-#player1-cards-container2,
-#player1-cards-container{
+#bottom-container .cards-container2,
+#bottom-container .cards-container{
     flex-direction: row-reverse;
 }
-#player2-cards-container2,
-#player2-cards-container{
+#right-container .cards-container2,
+#right-container .cards-container{
     flex-direction: column;
 }
-#player3-cards-container2,
-#player3-cards-container{
+#top-container .cards-container2,
+#top-container .cards-container{
     flex-direction: row;
 }
-#player4-cards-container2,
-#player4-cards-container{
+#left-container .cards-container2,
+#left-container .cards-container{
     flex-direction: column-reverse;
 }
 
-#player1-cards-container2,
-#player3-cards-container2,
-#player1-cards-container,
-#player3-cards-container{
+#bottom-container .cards-container2,
+#top-container .cards-container2,
+#bottom-container .cards-container,
+#top-container .cards-container{
     height: var(--card-height);
     width: 100%;
 }
 
-#player2-cards-container2,
-#player4-cards-container2,
-#player2-cards-container,
-#player4-cards-container{
+#right-container .cards-container2,
+#left-container .cards-container2,
+#right-container .cards-container,
+#left-container .cards-container{
     width: var(--card-height);
     height: 100%;
 }
 
-#player1-cards-container2 .card,
-#player1-cards-container .card{
+#bottom-container .cards-container2 .card,
+#bottom-container .cards-container .card{
     transform: rotate(0deg);
 }
-#player3-cards-container2 .card,
-#player3-cards-container .card{
+#top-container .cards-container2 .card,
+#top-container .cards-container .card{
     transform: rotate(180deg);
 }
-#player2-cards-container2 .card,
-#player2-cards-container .card{
+#right-container .cards-container2 .card,
+#right-container .cards-container .card{
     transform: rotate(-90deg);
 }
-#player4-cards-container2 .card,
-#player4-cards-container .card{
+#left-container .cards-container2 .card,
+#left-container .cards-container .card{
     transform: rotate(90deg);
 }
 
-#player1-cards-container2 .card,
-#player3-cards-container2 .card,
-#player1-cards-container .card,
-#player3-cards-container .card{
+#bottom-container .cards-container2 .card,
+#top-container .cards-container2 .card,
+#bottom-container .cards-container .card,
+#top-container .cards-container .card{
     margin-left: 5px;
     margin-right: 5px;
 }
 
-#player2-cards-container2 .card,
-#player4-cards-container2 .card,
-#player2-cards-container .card,
-#player4-cards-container .card{
+#right-container .cards-container2 .card,
+#left-container .cards-container2 .card,
+#right-container .cards-container .card,
+#left-container .cards-container .card{
     margin-top: var(--negMargin);
     margin-bottom: var(--negMargin);
 }
@@ -211,12 +211,12 @@ main {
     justify-content: center;
 }
 
-/* #player1-container .cards-container,
-#player1-container .cards-container2,
-#player1-container .card {
+/* #bottom-container .cards-container,
+#bottom-container .cards-container2,
+#bottom-container .card {
     height: var(--card-height-p1);
 }
-#player1-container .card {
+#bottom-container .card {
     width: var(--card-width-p1);
 } */
 
@@ -266,15 +266,15 @@ main {
     /* animation: glow 1.5s ease-in-out infinite; */
 }
 
-#player1-turn-line,
-#player3-turn-line {
+#bottom-container .turn-line,
+#top-container .turn-line {
     /* height: 3px; */
     width: 50%;
     /* background-color: rgb(197, 133, 54); */
 }
 
-#player2-turn-line,
-#player4-turn-line {
+#right-container .turn-line,
+#left-container .turn-line {
     /* width: 3px; */
     height: 50%;
     /* background-color: rgb(197, 133, 54); */

@@ -30,10 +30,11 @@ const maxPlayersNum = 4
 const maxRoundNum = 5
 const minTurnsNumBeforSkrew = 3
 
-let currentPlayer = 1
+let roomCode
+export let currentPlayer = 0
 let playerTurn = 0
 let playerSaidSkrew = 0
-let startTurn = 0
+let startTurn = 1
 
 let primaryDeckClicked = 0
 let secondaryDeckClicked = false
@@ -67,12 +68,17 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        console.log('load game')
-        loadGame()
-    }, 2000)
-})
+export function setter(str, value) {
+    if(str === 'currentPlayer'){
+        currentPlayer = value
+    }
+}
+
+export function getter(str){
+    if(str === 'currentPlayer'){
+        return currentPlayer
+    }
+}
 
 function tempCreateCards() {
     let cardIndex = 0
@@ -81,7 +87,9 @@ function tempCreateCards() {
     }
 }
 
-function loadGame() {
+export function loadGame() {
+
+    console.log('currentPlayer =', currentPlayer)
 
     initScoreTable()
 
@@ -101,25 +109,25 @@ function startGame() {
 function initGame() {
     totalPlayersScore = [0, 0, 0, 0]
     roundCounter = 0
-    startTurn = 0
-    initPlayerTurn()
+    // startTurn = 0
+    // initPlayerTurn()
 }
 
-function initPlayerTurn() {
-    if(currentPlayer == 1){
-        startTurn = 1
-    }
-    else if(currentPlayer == 2){
-        startTurn = 4
-    }
-    else if(currentPlayer == 3){
-        startTurn = 3
-    }
-    else if(currentPlayer == 4){
-        startTurn = 2
-    }
-    currentPlayer = startTurn
-}
+// function initPlayerTurn() {
+//     if(currentPlayer == 1){
+//         startTurn = 1
+//     }
+//     else if(currentPlayer == 2){
+//         startTurn = 4
+//     }
+//     else if(currentPlayer == 3){
+//         startTurn = 3
+//     }
+//     else if(currentPlayer == 4){
+//         startTurn = 2
+//     }
+//     currentPlayer = startTurn
+// }
 
 async function startRound() {
 
@@ -155,7 +163,7 @@ async function initRound() {
     
     playersScore = [0, 0, 0, 0]
     playerTurn = 0
-    currentPlayer = 0
+    // currentPlayer = 0
     turnCounter = 0
     turnsAfterSkrew = -1
     commandCardActivated = ''
@@ -188,7 +196,7 @@ function changeTurn(ms = 1500) {
             playerTurn = playerTurn % maxPlayersNum + 1
         }
         
-        currentPlayer = playerTurn
+        // currentPlayer = playerTurn
 
         primaryDeckClicked = 0
         secondaryDeckClicked = false
@@ -562,6 +570,9 @@ function initCard(name, value, owner, cardIndex) {
 }
 
 function shuffleCards() {
+    if(currentPlayer != 1){
+        return
+    }
     const maxIndex = cards.length
     let ctr = 1000
     while(ctr-- > 0)
@@ -618,7 +629,7 @@ function updateScore(playerIndex, valueToAdd) {
     playersScore[playerIndex] += valueToAdd
 }
 
-function getOwnerContainer(ownerId, secondContainer = false) {
+export function getOwnerContainer(ownerId, secondContainer = false) {
     if(ownerId == 0) {
         return primaryDeckCardContainer
     }
