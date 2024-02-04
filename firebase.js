@@ -109,8 +109,8 @@ export function fireCardClicked(cardIndex) {
     update(gameRef, { clickedCardIndex: cardIndex })
 }
 
-export function fireSecondaryDeckClick(){
-    update(gameRef, { secondaryDeckClicked: currentPlayer })
+export function fireSecondaryDeckClick(value = true){
+    update(gameRef, { secondaryDeckClicked: value })
 }
 
 export function fireSaySkrew(){
@@ -120,6 +120,7 @@ export function fireSaySkrew(){
 export function fireShuffleCards(shuffledCards)
 {
     const shuffledCardsStr = shuffledCards.join(',');
+    // const shuffledCardsStr = '40,14,34,42,33,54,29,32,2,51,21,43,15,37,45,52,49,4,47,0,22,41,18,12,36,27,35,38,11,48,10,30,5,16,8,55,50,39,7,3,24,20,56,13,1,46,9,17,19,53,25,26,6,31,28,44,23';
     update(gameRef, {
         shuffledCards: shuffledCardsStr
     })
@@ -140,6 +141,7 @@ function cardClickedIndexListener() {
         console.log('cardClickedIndex =', cardIndex)
         if(cardIndex >= 0){
             cardClicked(cardIndex)
+            fireCardClicked(-1)
         }
     })  
 }
@@ -162,6 +164,7 @@ function shuffledCardsListener() {
         if(shuffledCards !== ""){
             setter('cardsShuffled', true)
             reOrderCards(shuffledCards)
+            fireShuffleCards([])
         }
     })
 }
@@ -169,8 +172,9 @@ function shuffledCardsListener() {
 function secondaryDeckClickedListener(){
     onValue(secondaryDeckClickedRef, (snapshot) => {
         //secondaryDeckClickedRef
-        if(snapshot.val() != 0){
+        if(snapshot.val() != false){
             secondaryDeckClick()
+            fireSecondaryDeckClick(false)
         }
     })
 }

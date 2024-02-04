@@ -736,7 +736,7 @@ function attatchClickEventHandler() {
     // primaryDeckCardContainer.addEventListener('click', primaryDeckClick)
     secondaryDeckCardContainer.addEventListener('click', () => {
         if(canChooseCard()) {
-            fireSecondaryDeckClick()
+            fireSecondaryDeckClick(true)
         }
     })
     skrewButton.addEventListener('click', () => {
@@ -754,7 +754,7 @@ function changeCardOwner(card, owner, flip, assign = true, hide = false) {
 
     card.setOwnerContainer(owner)
     console.log('hide=', hide)
-    console.log(card)
+    // console.log(card)
     if(hide){
         const cardInnerElem = card.cardDivElem.firstChild
         cardInnerElem.style.height = '0'
@@ -777,7 +777,6 @@ function primaryDeckClick() {
     // if(!canChooseCard()){
     //     return
     // }
-    console.log('primary deck clicked')
     if(commandCardActivated === '' && primaryDeckClicked == 0 && primaryDeckcards.length > 0) {
         const card = primaryDeckcards[primaryDeckcards.length - 1]
         if(currentPlayer == turnPlayer){
@@ -785,6 +784,7 @@ function primaryDeckClick() {
         }
         primaryDeckClicked++
     }
+    console.log('in primaryDeckClick primaryDeckClicked =', primaryDeckClicked)
 }
 
 function addCardsToSecondaryDeck(myCard, choosedCard) 
@@ -813,6 +813,7 @@ function chooseCard(card)
     //     return
     // }
 
+    console.log('in chooseCard primaryDeckClicked =', primaryDeckClicked)
     if(primaryDeckClicked == 1) {
         console.log('from primary deck to player', turnPlayer)
         const choosedCard = primaryDeckcards.pop()
@@ -865,6 +866,8 @@ export function secondaryDeckClick() {
     //     return
     // }
 
+    
+    console.log('in secondaryDeckClick primaryDeckClicked =', primaryDeckClicked)
     if(primaryDeckClicked == 1) {
         console.log('from primary deck to secondary deck')
         const victimCard = primaryDeckcards.pop()

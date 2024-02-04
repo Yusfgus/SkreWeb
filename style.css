@@ -204,11 +204,21 @@ main {
     width: var(--card-width);
     /* border: 1px solid white; */
     perspective: 1000px;
-    cursor: pointer;
-
+    cursor: not-allowed;
+    
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.deck .card,
+#bottom-container .card {
+    cursor: pointer;
+}
+
+.card:active {
+    transform: scale(0.9);
+    transition: transform 0.2s ease;
 }
 
 /* #bottom-container .cards-container,
