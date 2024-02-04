@@ -45,7 +45,8 @@ import {loadGame, setter, getter,
         } from './main.js'
 
 document.addEventListener('DOMContentLoaded', () => {
-    initPlayer()
+    // initPlayer()
+    signIn()
 })
 
 async function initPlayer() {
@@ -53,6 +54,14 @@ async function initPlayer() {
     initFirebase()
     await setCurrentPlayer()
     addEventListeners()
+}
+
+function signIn() {
+    signInAnonymously(auth).then(() => {
+        initPlayer()
+    }).catch((error) => {
+        console.log(error.code, error.message)
+    })
 }
 
 export function initFirebase(firstTime = false) {
