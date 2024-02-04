@@ -1,3 +1,5 @@
+// import { currentPlayer, playerTurn, getOwnerContainer, secondaryDeckCardContainer } from "./main";
+
 const commands = {
     '7': 'lookYours',
     '8': 'lookYours',
@@ -48,27 +50,29 @@ export default class Card {
         // <div class="card-inner">
         const cardInnerElem = createElement('div')
         addClassToElement(cardInnerElem, 'card-inner')
-
+        
         // <div class="card-front">
         const cardFrontElem = createElement('div')
         addClassToElement(cardFrontElem, 'card-front')
         // updateInnerHTML(cardFrontElem, this.name)
-
+        
         // <div class="card-back">
         const cardBackElem = createElement('div')
         addClassToElement(cardBackElem, 'card-back')
-
+        
         // <img src="images/card-JackClubs.png" class="card-img">
         const cardFrontImg = createElement('img')
         this.cardFrontImg = cardFrontImg
         // const imagePath = getImagePath('surprise-mf')
-        const imagePath = getImagePath(this.name)
+        let imagePath = getImagePath(this.name)
         addSrcToImageElem(cardFrontImg, imagePath)
         addClassToElement(cardFrontImg, 'card-img')
         
         // <img src="images/card-back-Blue.png" class="card-img">
         const cardBackImg = createElement('img')
-        addSrcToImageElem(cardBackImg, 'images/back.png')
+        this.cardBackImg = cardBackImg
+        imagePath = getImagePath('back')
+        addSrcToImageElem(cardBackImg, imagePath)
         addClassToElement(cardBackImg, 'card-img')
 
         // Add childs
@@ -95,22 +99,38 @@ export default class Card {
         addchildElement(this.owner, this.cardElem)
     }
 
-    flipCard() {
+    flipCard(flip = true) 
+    {
         const innerCardElem = this.cardElem.firstChild
 
         if(this.isFlipped) {
-            const imagePath = getImagePath(this.name)
-            addSrcToImageElem(this.cardFrontImg, imagePath)
-
-            innerCardElem.style.transform = 'rotateY(180deg)'
+            if(flip){
+                const imagePath = getImagePath(this.name)
+                addSrcToImageElem(this.cardFrontImg, imagePath)
+                
+                innerCardElem.style.transform = 'rotateY(180deg)'
+            }
+            else {
+                //put eye
+                const imagePath = getImagePath('eye')
+                addSrcToImageElem(this.cardBackImg, imagePath)
+            }
         }
         else {
-            innerCardElem.style.transform = ''
-
-            setTimeout(() => {
-                const imagePath = getImagePath('surprise-mf')
-                addSrcToImageElem(this.cardFrontImg, imagePath)
-            }, 500)
+            if(flip)
+            {
+                innerCardElem.style.transform = ''
+                
+                setTimeout(() => {
+                    const imagePath = getImagePath('surprise-mf')
+                    addSrcToImageElem(this.cardFrontImg, imagePath)
+                }, 500)
+            }
+            else {
+                //remove eye
+                const imagePath = getImagePath('back')
+                addSrcToImageElem(this.cardBackImg, imagePath)
+            }
         }
         this.isFlipped = !this.isFlipped
     }

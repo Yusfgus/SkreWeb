@@ -36,7 +36,7 @@ const minTurnsNumBeforSkrew = 1
 
 let roomCode
 let currentPlayer = 0
-let playerTurn = 0
+let turnPlayer = 0
 let playerSaidSkrew = 0
 let startTurn = 1
 
@@ -51,11 +51,11 @@ let turnsAfterSkrew = -1
 
 const distributionsTime = 5000
 const showCardsTime = 2000
-const insertCardTime = 0
+const insertCardTime = 50
 const dashBoardDelayTime = 600
 const showRoundNameTime = 3000
 const showScoreTableTime = 5000
-const showPlayersCardsTime = 5000
+const showPlayerCardsTime = 5000
 
 let commandCardActivated = ''
 // let inCommand = false
@@ -94,7 +94,7 @@ function tempCreateCards() {
         initCard('lookAll', 10, getOwnerContainer(0), cardIndex++)
     }
 }
-
+// loadGame()
 export function loadGame() {
 
     console.log('currentPlayer =', currentPlayer)
@@ -120,10 +120,10 @@ function initGame() {
     totalPlayersScore = [0, 0, 0, 0]
     roundCounter = 0
     // startTurn = 0
-    // initPlayerTurn()
+    // initturnPlayer()
 }
 
-// function initPlayerTurn() {
+// function initturnPlayer() {
 //     if(currentPlayer == 1){
 //         startTurn = 1
 //     }
@@ -184,7 +184,7 @@ async function initRound() {
     // reOrderCards()
     
     playersScore = [0, 0, 0, 0]
-    playerTurn = 0
+    turnPlayer = 0
     // currentPlayer = 0
     turnCounter = 0
     turnsAfterSkrew = -1
@@ -209,32 +209,32 @@ function changeTurn(ms = 1500) {
     turnCounter++
 
     setTimeout(() => {
-        turnOffPlayerTurnLine()
+        turnOffturnPlayerLine()
 
-        if(playerTurn == 0){
-            playerTurn = startTurn
+        if(turnPlayer == 0){
+            turnPlayer = startTurn
         }
         else {
-            playerTurn = playerTurn % maxPlayersNum + 1
+            turnPlayer = turnPlayer % maxPlayersNum + 1
         }
         
-        // currentPlayer = playerTurn
+        // currentPlayer = turnPlayer
 
         primaryDeckClicked = 0
         secondaryDeckClicked = false
     
-        console.log(`player ${playerTurn} turn`)
-        getPlayerTurnLine(playerTurn).style.animation = 'glow 2.5s ease-in-out infinite'
+        console.log(`player ${turnPlayer} turn`)
+        getturnPlayerLine(turnPlayer).style.animation = 'glow 2.5s ease-in-out infinite'
     }, ms)
 }
 
-function turnOffPlayerTurnLine() {
+function turnOffturnPlayerLine() {
     for(let i=1; i<=maxPlayersNum; ++i){
-        getPlayerTurnLine(i).style.animation = ''
+        getturnPlayerLine(i).style.animation = ''
     }
 }
 
-function getPlayerTurnLine(playerIndex) {
+function getturnPlayerLine(playerIndex) {
     return document.getElementById(`player${playerIndex}-turn-line`)
 }
 
@@ -451,24 +451,20 @@ function showCards(parentDiv) {
     }
 }
 
-function showPlayersCards() {
-    for(let i=1; i<=maxPlayersNum; ++i) {
-        showCards(document.getElementById(`player${i}-cards-container`))
-        showCards(document.getElementById(`player${i}-cards-container2`))
-    }
-    
+function showPlayerCards() {
+    showCards(getOwnerContainer(currentPlayer, false))
+    showCards(getOwnerContainer(currentPlayer, true))
+
     setTimeout(() => {
-        for(let i=1; i<=maxPlayersNum; ++i) {
-            showCards(document.getElementById(`player${i}-cards-container`))
-            showCards(document.getElementById(`player${i}-cards-container2`))
-        }
-    }, showPlayersCardsTime)
+        showCards(getOwnerContainer(currentPlayer, false))
+        showCards(getOwnerContainer(currentPlayer, true))
+    }, showPlayerCardsTime)
 }
 
 async function endRound() {
 
     await sleep(2000)
-    await wait(showPlayersCards, showPlayersCardsTime + 100)
+    await wait(showPlayerCards, showPlayerCardsTime + 100)
     await sleep(1000)
     // playersScore = [20, 25, 1, 20]
     console.log('round scores is', playersScore)
@@ -496,11 +492,11 @@ export async function saySkrew() {
     //     return
     // }
 
-    // if(turnsAfterSkrew == -1 && playerTurn == currentPlayer && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew)
+    // if(turnsAfterSkrew == -1 && turnPlayer == currentPlayer && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew)
     {
         turnsAfterSkrew = 0
-        playerSaidSkrew = playerTurn - 1
-        console.log('player sad skrew', playerTurn)
+        playerSaidSkrew = turnPlayer - 1
+        console.log('player sad skrew', turnPlayer)
         await wait(() => {
             skrewAudio.play()
         }, 2000)
@@ -528,29 +524,19 @@ function addCardsToPrimaryDeck() {
 }
 
 async function showFirstTwoCards() {
+    const cardsContainer = getOwnerContainer(currentPlayer)
+    const firstChild = getDivChild(cardsContainer, 0)
+    const secondChild = getDivChild(cardsContainer, 1)
 
-    const cardContainers = document.querySelectorAll('.player')
     await wait( () => {
         setTimeout(() => {
-            cardContainers.forEach((container) => {
-                const firstChild = getDivChild(container, 0)
-                const secondChild = getDivChild(container, 1)
-        
-                getCardClass(firstChild).flipCard()
-                getCardClass(secondChild).flipCard()
-            })
+            getCardClass(firstChild).flipCard()
+            getCardClass(secondChild).flipCard()
         }, 800)
     },showCardsTime + 800)
 
-    // await sleep(showCardsTime + 800)
-
-    cardContainers.forEach((container) => {
-        const firstChild = getDivChild(container, 0)
-        const secondChild = getDivChild(container, 1)
-
-        getCardClass(firstChild).flipCard()
-        getCardClass(secondChild).flipCard()
-    })
+    getCardClass(firstChild).flipCard()
+    getCardClass(secondChild).flipCard()
 }
 
 function getDivChild(paretDiv, index) {
@@ -702,8 +688,8 @@ export function cardClicked(cardIndex) {
         console.log('in command')
         commandActivate(card)
     }
-    else if(card.cardOwnerContainer === getOwnerContainer(playerTurn)
-    || card.cardOwnerContainer === getOwnerContainer(playerTurn, true))
+    else if(card.cardOwnerContainer === getOwnerContainer(turnPlayer)
+    || card.cardOwnerContainer === getOwnerContainer(turnPlayer, true))
     {
         console.log('call choosCard')
         chooseCard(card)
@@ -755,28 +741,30 @@ function attatchClickEventHandler() {
     })
 }
 
-function changeCardOwner(card, owner, flip, assing = true, hide = false) {
+function changeCardOwner(card, owner, flip, assign = true, hide = false) {
     if(flip){
         card.flipCard()
     }
 
     card.setOwnerContainer(owner)
+    console.log('hide=', hide)
+    console.log(card)
     if(hide){
         const cardInnerElem = card.cardDivElem.firstChild
         cardInnerElem.style.height = '0'
         cardInnerElem.style.width = '0'
     }
 
-    if(assing){
+    if(assign){
         card.assignCardToOwner()
     }
 }
 
 function canChooseCard() {
-    // console.log('playerTurn =', playerTurn)
+    // console.log('turnPlayer =', turnPlayer)
     // console.log('currentPlayer =', currentPlayer)
     // console.log('commandCardActivated =', commandCardActivated)
-    return (turnsAfterSkrew != 0 && /*playerTurn != 0 &&*/ currentPlayer == playerTurn/* && commandCardActivated === ''*/)
+    return (turnsAfterSkrew != 0 && /*turnPlayer != 0 &&*/ currentPlayer == turnPlayer/* && commandCardActivated === ''*/)
 }
 
 function primaryDeckClick() {
@@ -786,27 +774,30 @@ function primaryDeckClick() {
     console.log('primary deck clicked')
     if(commandCardActivated === '' && primaryDeckClicked == 0 && primaryDeckcards.length > 0) {
         const card = primaryDeckcards[primaryDeckcards.length - 1]
-        card.flipCard()
+        if(currentPlayer == turnPlayer){
+            card.flipCard()
+        }
         primaryDeckClicked++
     }
 }
 
-function addCardsToSecondaryDeck(myCard, choosedCard) {
+function addCardsToSecondaryDeck(myCard, choosedCard) 
+{
+    //from primary to player and from player to secondary
+    //or 
+    //from secondary to player and from player to secondary
+
     const playerContainer = myCard.cardOwnerContainer
     const myCardIndex = Array.from(playerContainer.children).indexOf(myCard.cardDivElem)
     
-    changeCardOwner(choosedCard, playerContainer, true, false, true) 
+    const flip = (currentPlayer==turnPlayer || choosedCard.cardOwnerContainer == secondaryDeckCardContainer)
+    changeCardOwner(choosedCard, playerContainer, flip, false, true) 
     insertCardInIndex(choosedCard, playerContainer, myCardIndex)
     
     secondaryDeckcards.push(myCard)
     changeCardOwner(myCard, secondaryDeckCardContainer, true, true, false) 
-    // setTimeout(() => {
-    //     const cardInnerElem = myCard.cardDivElem.firstChild
-    //     cardInnerElem.style.width = '100%'
-    //     cardInnerElem.style.height = '100%'
-    // }, 500)
 
-    updateScore(playerTurn - 1, choosedCard.cardValue - myCard.cardValue)
+    updateScore(turnPlayer - 1, choosedCard.cardValue - myCard.cardValue)
 }
 
 function chooseCard(card) 
@@ -817,7 +808,7 @@ function chooseCard(card)
     // }
 
     if(primaryDeckClicked == 1) {
-        console.log('from primary deck to player', playerTurn)
+        console.log('from primary deck to player', turnPlayer)
         const choosedCard = primaryDeckcards.pop()
         primaryDeckClicked++
     
@@ -828,7 +819,7 @@ function chooseCard(card)
     {
         if(secondaryDeckClicked)
         {
-            console.log('from secondary deck to player', playerTurn)    
+            console.log('from secondary deck to player', turnPlayer)    
             const choosedCard = secondaryDeckcards.pop()
             secondaryDeckClicked = false
 
@@ -846,7 +837,7 @@ function chooseCard(card)
                     //succeded
                     secondaryDeckcards.push(card)
                     changeCardOwner(card, secondaryDeckCardContainer, false)
-                    updateScore(playerTurn - 1, - card.cardValue)
+                    updateScore(turnPlayer - 1, - card.cardValue)
                 }
                 else {
                     console.log('pasra failed') 
@@ -854,8 +845,8 @@ function chooseCard(card)
                     card.flipCard()
                     secondaryDeckcards.pop()
                     
-                    changeCardOwner(lastSecondaryCard, getOwnerContainer(playerTurn, true), true)
-                    updateScore(playerTurn - 1, lastSecondaryCard.cardValue)
+                    changeCardOwner(lastSecondaryCard, getOwnerContainer(turnPlayer, true), true)
+                    updateScore(turnPlayer - 1, lastSecondaryCard.cardValue)
                 }
             }, 1300)
             changeTurn(1500)
@@ -871,7 +862,7 @@ export function secondaryDeckClick() {
     if(primaryDeckClicked == 1) {
         console.log('from primary deck to secondary deck')
         const victimCard = primaryDeckcards.pop()
-        changeCardOwner(victimCard, secondaryDeckCardContainer, false)
+        changeCardOwner(victimCard, secondaryDeckCardContainer, currentPlayer!=turnPlayer)
         secondaryDeckcards.push(victimCard)
         primaryDeckClicked++
         
@@ -887,10 +878,10 @@ export function secondaryDeckClick() {
         console.log('secondary deck clicked')
         secondaryDeckClicked = true
     }
-    else {
-        console.log('secondaryDeckcards.length =', secondaryDeckcards.length)
-        console.log('commandCardActivated =', commandCardActivated)
-    }
+    // else {
+    //     console.log('secondaryDeckcards.length =', secondaryDeckcards.length)
+    //     console.log('commandCardActivated =', commandCardActivated)
+    // }
 }
 
 async function commandActivate(selectedCard) {
@@ -926,18 +917,19 @@ function finishCommand(ms) {
 }
 
 async function commandLookYours(card) {
-    if(card.cardOwnerContainer !== getOwnerContainer(playerTurn)
-        && card.cardOwnerContainer !== getOwnerContainer(playerTurn, true)){
-        return
-    }
+    // if(card.cardOwnerContainer !== getOwnerContainer(currentPlayer) 
+    //     && card.cardOwnerContainer !== getOwnerContainer(currentPlayer, true))
+    // {
+    //     return
+    // }
 
     // inCommand = true
     commandCardActivated = 'wait'
     
-    card.flipCard()
+    card.flipCard(currentPlayer == turnPlayer)
     await wait(() => {
         setTimeout(() => {
-            card.flipCard()
+            card.flipCard(currentPlayer == turnPlayer)
         }, showCardsTime)
     },showCardsTime)
 
@@ -945,9 +937,9 @@ async function commandLookYours(card) {
 }
 
 async function commandLookOthers(card) {
-    if(card.cardOwnerContainer === getOwnerContainer(playerTurn)
-        || card.cardOwnerContainer === getOwnerContainer(playerTurn, true)
-        || card.cardOwnerContainer === primaryDeckCardContainer
+    if( /*card.cardOwnerContainer === getOwnerContainer(currentPlayer)
+        || card.cardOwnerContainer === getOwnerContainer(currentPlayer, true)
+        || */card.cardOwnerContainer === primaryDeckCardContainer
         || card.cardOwnerContainer === secondaryDeckCardContainer)
     {
         return
@@ -956,10 +948,10 @@ async function commandLookOthers(card) {
     // inCommand = true
     commandCardActivated = 'wait'
 
-    card.flipCard()
+    card.flipCard(currentPlayer == turnPlayer)
     await wait(() => {
         setTimeout(() => {
-            card.flipCard()
+            card.flipCard(currentPlayer == turnPlayer)
         }, showCardsTime)
     },showCardsTime)
 
@@ -1009,7 +1001,7 @@ function exchangeTwoCards(card1, card2, flip = true) {
     insertCardInIndex(card2, card1Container, card1CurrentIndex)
 }
 
-let cardToExchange = null
+let card1 = null
 function commandExchangeCard(card) {
 
     if(card.cardOwnerContainer === primaryDeckCardContainer
@@ -1018,23 +1010,24 @@ function commandExchangeCard(card) {
         return
     }
 
-    if(cardToExchange == null)
+    if(card1 == null)
     {
-        cardToExchange = card
+        card1 = card
         return
     }
+    let card2 = card
 
-    const playerContainer1 = getOwnerContainer(playerTurn)
-    const playerContainer2 = getOwnerContainer(playerTurn, true)
-    const cardContainer = card.cardOwnerContainer
-    const cardToExchangeContainer = cardToExchange.cardOwnerContainer
+    const playerContainer1 = getOwnerContainer(turnPlayer)
+    const playerContainer2 = getOwnerContainer(turnPlayer, true)
+    const card1Container = card1.cardOwnerContainer
+    const card2Container = card2.cardOwnerContainer
 
-    const noOneOfThemIsHis = (cardContainer !== playerContainer1 
-                            && cardToExchangeContainer !== playerContainer1 
-                            && cardContainer !== playerContainer2 
-                            && cardToExchangeContainer !== playerContainer2)
+    const noOneOfThemIsHis = (card2Container !== playerContainer1 
+                            && card1Container !== playerContainer1 
+                            && card2Container !== playerContainer2 
+                            && card1Container !== playerContainer2)
 
-    if(cardContainer === cardToExchangeContainer || noOneOfThemIsHis)
+    if(card2Container === card1Container || noOneOfThemIsHis)
     {
          return
     }
@@ -1042,30 +1035,30 @@ function commandExchangeCard(card) {
     // inCommand = true
     commandCardActivated = 'wait'
 
-    const value1 = cardToExchange.cardValue - card.cardValue
-    const value2 = card.cardValue - cardToExchange.cardValue
+    const value1 = card1.cardValue - card2.cardValue
+    const value2 = card2.cardValue - card1.cardValue
 
-    if(cardContainer === playerContainer1 || cardContainer === playerContainer2) {
-        updateScore(playerTurn - 1, value1)
-        updateScore(getPlayerIndex(cardToExchangeContainer), value2)
+    if(card1Container === playerContainer1 || card1Container === playerContainer2) {
+        updateScore(turnPlayer - 1, value2)
+        updateScore(getPlayerIndex(card2Container), value1)
     }
     else {
-        updateScore(playerTurn - 1, value2)
-        updateScore(getPlayerIndex(cardContainer), value1)
+        updateScore(turnPlayer - 1, value1)
+        updateScore(getPlayerIndex(card1Container), value2)
     }
 
-    exchangeTwoCards(cardToExchange, card, false)
+    exchangeTwoCards(card1, card2, false)
 
-    // animationExchange(cardToExchange, card)
+    // animationExchange(card1, card)
 
-    cardToExchange = null
+    card1 = null
     finishCommand(500)
 }
 
 let lookedCards = []
 function commandLookAll(card) {
     const cardOwner = card.cardOwnerContainer
-    if(cardOwner === primaryDeckCardContainer
+    if( cardOwner === primaryDeckCardContainer
         || cardOwner === secondaryDeckCardContainer)
     {
         return
@@ -1074,6 +1067,7 @@ function commandLookAll(card) {
     let can = true
     lookedCards.forEach((lookedCardParent) => {
         if(lookedCardParent === cardOwner){
+            console.log('card owner is', lookedCardParent)
             console.log('cant not look here again')
             can = false
             return
@@ -1084,9 +1078,9 @@ function commandLookAll(card) {
         return
     }
     
-    card.flipCard()
+    card.flipCard(currentPlayer == turnPlayer)
     setTimeout(() => {
-        card.flipCard()
+        card.flipCard(currentPlayer == turnPlayer)
     }, showCardsTime)
     
     if(lookedCards.length == 3){
@@ -1100,16 +1094,16 @@ function commandLookAll(card) {
 }
 
 function commandPasra(card) {
-    if(card.cardOwnerContainer !== getOwnerContainer(playerTurn)
-        && card.cardOwnerContainer !== getOwnerContainer(playerTurn, true)){
+    if(card.cardOwnerContainer !== getOwnerContainer(turnPlayer)
+        && card.cardOwnerContainer !== getOwnerContainer(turnPlayer, true)){
         return
     }
 
     // inCommand = true
     commandCardActivated = 'wait'
 
-    card.flipCard()
-    changeCardOwner(card, secondaryDeckCardContainer, false)
+    // card.flipCard()
+    changeCardOwner(card, secondaryDeckCardContainer, true)
 
     finishCommand(500)
 }
