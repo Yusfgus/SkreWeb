@@ -13,11 +13,11 @@ function getImagePath(metaData) {
 }
 
 export default class Card {
-    constructor(name, value, owner, cardIndex) {
+    constructor(name, value, owner, index) {
         this.name = name
         this.value = value
         this.owner = owner
-        this.cardIndex = cardIndex
+        this.index = index
         this.isFlipped = true // back is up
 
         this.command = this.setCardCommand()
@@ -43,7 +43,7 @@ export default class Card {
         const newCardElem = createElement('div')
         addClassToElement(newCardElem, 'card')
         // addIdToElement(newCardElem, this.name)
-        addDataValueToElement(newCardElem, this.cardIndex)
+        addDataValueToElement(newCardElem, this.index)
         
         // <div class="card-inner">
         const cardInnerElem = createElement('div')
@@ -118,12 +118,13 @@ export default class Card {
     setOwnerContainer(owner) {this.owner = owner}
 
     setDataValue(value) {
-        this.cardIndex = value
-        addDataValueToElement(this.cardElem, this.cardIndex)
+        this.index = value
+        addDataValueToElement(this.cardElem, this.index)
     }
     
     get cardName() {return this.name}
     get cardValue() {return this.value}
+    get cardIndex() {return this.index}
     get cardDivElem() {return this.cardElem}
     get cardOwnerContainer() {return this.owner}
     get cardIsFlipped() {return this.isFlipped}

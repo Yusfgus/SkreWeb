@@ -1,4 +1,8 @@
 import Card from "./cards.js";
+import { fireCardClicked, fireSecondaryDeckClick, 
+        fireShuffleCards, fireSaySkrew, 
+        initFirebase 
+        } from "./firebase.js";
 
 // const cardNames = ['skrewDriver', '1', '2', '3', '4', '5','6', '7', '8', '9', '10', 'exchange', 'lookAll', 'pasra', '-1', '20', 'redSkrew']
 //                 //       0         1    2    3    4    5   6    7    8    9    10       11         12         13     14    15       16
@@ -26,18 +30,19 @@ const player4ScoreRow = document.getElementById('player4-score-row')
 
 let roundColumnIndex = 5
 
-const maxPlayersNum = 4
+export const maxPlayersNum = 4
 const maxRoundNum = 5
-const minTurnsNumBeforSkrew = 3
+const minTurnsNumBeforSkrew = 1
 
 let roomCode
-export let currentPlayer = 0
+let currentPlayer = 0
 let playerTurn = 0
 let playerSaidSkrew = 0
 let startTurn = 1
 
 let primaryDeckClicked = 0
 let secondaryDeckClicked = false
+let cardsShuffled = false
 
 // let roundStarted = false
 let roundCounter = 0
@@ -72,6 +77,9 @@ export function setter(str, value) {
     if(str === 'currentPlayer'){
         currentPlayer = value
     }
+    else if(str === 'cardsShuffled'){
+        cardsShuffled = value
+    }
 }
 
 export function getter(str){
@@ -90,6 +98,8 @@ function tempCreateCards() {
 export function loadGame() {
 
     console.log('currentPlayer =', currentPlayer)
+
+    replacePlayersContainers()
 
     initScoreTable()
 
@@ -150,7 +160,7 @@ async function startRound() {
         // showDashBoard(true, true)
     }, waitTime)
 
-    await wait(initRound, distributionsTime + showCardsTime + 2000)
+    await wait(initRound, distributionsTime + showCardsTime + 2000 + 3000)
     putFirstCard()
     // roundStarted = true
     // roundCounter++
@@ -158,8 +168,20 @@ async function startRound() {
     changeTurn(800)
 }
 
+function waitUnitShuffling(){
+    const id = setInterval(() => {
+        if(cardsShuffled){
+            clearInterval(id)
+            cardsShuffled = false
+        }
+    }, 12)
+}
+
 async function initRound() {
+    initFirebase(false)
     shuffleCards()
+    await wait(waitUnitShuffling, 3000)
+    // reOrderCards()
     
     playersScore = [0, 0, 0, 0]
     playerTurn = 0
@@ -268,6 +290,18 @@ async function showDashBoard(flag1 = false, flag2 = true) {
 // function editScoreTableCell(table, column, value) {
 //     table.rows[0].cells[column].textContent = value
 // }
+
+function replacePlayersContainers()
+{
+    const containersId = ['bottom', 'right', 'top', 'left']
+    for(let j=0, i=currentPlayer; j<4; i=(i+1)%4, ++j)
+    {
+        const index = (i ? i: 4)
+        document.getElementById(`${containersId[j]}-container`).appendChild(getOwnerContainer(index, true))
+        document.getElementById(`${containersId[j]}-container`).appendChild(getOwnerContainer(index, false))
+        document.getElementById(`${containersId[j]}-container`).appendChild(document.getElementById(`player${index}-turn-line`))
+    }
+}
 
 function initScoreTable() {
     roundColumnIndex = 5
@@ -456,11 +490,11 @@ function canSaySkrew() {
     return  canChooseCard() && turnsAfterSkrew == -1 && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew
 }
 
-async function saySkrew() {
+export async function saySkrew() {
 
-    if(!canSaySkrew()){
-        return
-    }
+    // if(!canSaySkrew()){
+    //     return
+    // }
 
     // if(turnsAfterSkrew == -1 && playerTurn == currentPlayer && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew)
     {
@@ -485,16 +519,12 @@ function removeCardsFrom(parentDiv, flip = false) {
 }
 
 function addCardsToPrimaryDeck() {
-    // let margTop = 0, margLeft = 0
     cards.forEach((card) => {
         primaryDeckcards.push(card)
         card.setOwnerContainer(primaryDeckCardContainer)
-        // card.cardDivElem.style.marginTop = `${margTop}px`
-        // card.cardDivElem.style.marginLeft = `${margLeft}px`
-        // margTop += 0.35
-        // margLeft += 0.5
         card.assignCardToOwner()
     })
+    // primaryDeckcards = cards
 }
 
 async function showFirstTwoCards() {
@@ -537,25 +567,23 @@ function putFirstCard() {
     changeCardOwner(firstCard, secondaryDeckCardContainer, true)
 }
 
-function attatchClickEventHandler() {
-    // primaryDeckCardContainer.addEventListener('click', primaryDeckClick)
-    // secondaryDeckCardContainer.addEventListener('click', secondaryDeckClick)
-    skrewButton.addEventListener('click', saySkrew)
-}
-
 function distributeCards() {
 
+    console.log('cards before distributing', cards)
     let ctr = startTurn - 1
     let maxCards = maxPlayersNum * 4
-    const id = setInterval(() => {
+    const id = setInterval(() => 
+    {
         const card = primaryDeckcards.pop()
         const playerIndex = ctr++ % maxPlayersNum
         playersScore[playerIndex] += card.cardValue
         const playerContainer = getOwnerContainer(playerIndex + 1)
+        // console.log('playerIndex + 1=',playerIndex + 1)
         changeCardOwner(card, playerContainer, false)
         // addchildElement(playerContainer, card)
         if(--maxCards == 0) {
             clearInterval(id)
+            console.log('cards after distributing', cards)
             // putFirstCard()
         }
     }, distributionsTime/(4*4 + 1))
@@ -565,29 +593,47 @@ function distributeCards() {
 function initCard(name, value, owner, cardIndex) {
     const card = new Card(name, value, owner, cardIndex)
     cards.push(card)
-    // primaryDeckcards.push(card)
     attatchClickEventHandlerToCard(card)
 }
 
-function shuffleCards() {
+export function reOrderCards(shuffledCardsStr) {
+    const cardsIndex = shuffledCardsStr.split(',').map(Number);
+    let tempCards = []
+    for(let i=0; i<cards.length; ++i) {
+        const index = cardsIndex[i]
+        tempCards.push(cards[index])
+        tempCards[i].setDataValue(i)
+    }
+    cards = tempCards
+    console.log(cards)
+}
+
+export function shuffleCards() {
     if(currentPlayer != 1){
         return
     }
-    const maxIndex = cards.length
+    console.log("shuffling")
+    let cardsIndex = []
+    for(let i=0; i<cards.length; ++i){
+        cardsIndex.push(i)
+    }
+    // console.log(cardsIndex)
+    const maxIndex = cardsIndex.length
     let ctr = 1000
     while(ctr-- > 0)
     {
         const random1 = Math.floor(Math.random() * maxIndex)
         const random2 = Math.floor(Math.random() * maxIndex)
 
-        const temp = cards[random1]
-        cards[random1] = cards[random2]
-        cards[random2] = temp
+        const temp = cardsIndex[random1]
+        cardsIndex[random1] = cardsIndex[random2]
+        cardsIndex[random2] = temp
 
-        cards[random1].setDataValue(random1)
-        cards[random2].setDataValue(random2)
+        // cardsIndex[random1].setDataValue(random1)
+        // cardsIndex[random2].setDataValue(random2)
     }
     // console.log(cards)
+    fireShuffleCards(cardsIndex)
 }
 
 function createCards() {
@@ -648,7 +694,8 @@ function getPlayerIndex(playerCardsContainer) {
     return playerCardsContainer.id[6] - 1
 }
 
-function cardClicked(card) {
+export function cardClicked(cardIndex) {
+    const card = cards[cardIndex]
     console.log('card clicked')
     const cardOwnerElem = card.cardOwnerContainer
     if(commandCardActivated !== ''){
@@ -664,9 +711,9 @@ function cardClicked(card) {
     else if(cardOwnerElem === primaryDeckCardContainer){
         primaryDeckClick()
     }
-    else if(cardOwnerElem === secondaryDeckCardContainer){
-        secondaryDeckClick()
-    }
+    // else if(cardOwnerElem === secondaryDeckCardContainer){
+    //     secondaryDeckClick()
+    // }
 }
 
 function cheating(card) {
@@ -686,7 +733,26 @@ function attatchClickEventHandlerToCard(card) {
         event.preventDefault();
         cheating(card)
     })
-    card.cardDivElem.addEventListener('click', () => { cardClicked(card) })
+    card.cardDivElem.addEventListener('click', () => { 
+        if(canChooseCard()){
+            fireCardClicked(card.cardIndex) 
+        }
+    })
+}
+
+function attatchClickEventHandler() {
+    // primaryDeckCardContainer.addEventListener('click', primaryDeckClick)
+    secondaryDeckCardContainer.addEventListener('click', () => {
+        if(canChooseCard()) {
+            fireSecondaryDeckClick()
+        }
+    })
+    skrewButton.addEventListener('click', () => {
+        fireSaySkrew()
+        if(canSaySkrew()){
+            saySkrew()
+        }
+    })
 }
 
 function changeCardOwner(card, owner, flip, assing = true, hide = false) {
@@ -710,13 +776,13 @@ function canChooseCard() {
     // console.log('playerTurn =', playerTurn)
     // console.log('currentPlayer =', currentPlayer)
     // console.log('commandCardActivated =', commandCardActivated)
-    return (turnsAfterSkrew != 0 && playerTurn != 0 && currentPlayer == playerTurn/* && commandCardActivated === ''*/)
+    return (turnsAfterSkrew != 0 && /*playerTurn != 0 &&*/ currentPlayer == playerTurn/* && commandCardActivated === ''*/)
 }
 
 function primaryDeckClick() {
-    if(!canChooseCard()){
-        return
-    }
+    // if(!canChooseCard()){
+    //     return
+    // }
     console.log('primary deck clicked')
     if(commandCardActivated === '' && primaryDeckClicked == 0 && primaryDeckcards.length > 0) {
         const card = primaryDeckcards[primaryDeckcards.length - 1]
@@ -745,10 +811,10 @@ function addCardsToSecondaryDeck(myCard, choosedCard) {
 
 function chooseCard(card) 
 {
-    if(!canChooseCard()) {
-        console.log('cant choose')
-        return
-    }
+    // if(!canChooseCard()) {
+    //     console.log('cant choose')
+    //     return
+    // }
 
     if(primaryDeckClicked == 1) {
         console.log('from primary deck to player', playerTurn)
@@ -797,10 +863,10 @@ function chooseCard(card)
     }
 }
 
-function secondaryDeckClick() {
-    if(!canChooseCard()) {
-        return
-    }
+export function secondaryDeckClick() {
+    // if(!canChooseCard()) {
+    //     return
+    // }
 
     if(primaryDeckClicked == 1) {
         console.log('from primary deck to secondary deck')
