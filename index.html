@@ -46,6 +46,7 @@
             <div id="player4-cards-container" class="cards-container player"></div>
             <div id="player4-turn-line" class="turn-line"></div>
         </div>
+        <p id="room-code">room code: </p>
         <div id="dashboard">
             <div id="round-name"></div>
             <!-- <table>
@@ -167,10 +168,10 @@
         </div>
         <div id="log-in-page">
             <div id="log-in-container">
-                <input type="text" id="player-name-txt" placeholder="Your name">
-                <!-- <div id="log-in-line"></div> -->
+                <input type="text" id="player-name-txt" placeholder=" Your name" maxlength="15" value="yousef">
+                <div id="log-in-line"></div>
                 <div id="join-room-container">
-                    <input type="text" id="room-code-txt" placeholder="Room Code">
+                    <input type="text" id="room-code-txt" placeholder=" Room Code" maxlength="4" value="1000">
                     <button id="join-room-btn">Join</button>
                 </div>
                 <button id="create-room-btn"><span>or </span>Create Room</button>
@@ -180,4 +181,5 @@
 </body>
 <script src="main.js" type="module"></script>
 <script src="firebase.js" type="module"></script>
+<script src="logIn.js" type="module"></script>
 </html>

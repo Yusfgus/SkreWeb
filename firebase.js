@@ -20,14 +20,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase()
 const auth = getAuth(app)
-const gameRef = ref(db, 'game/')
-const clickedCardIndexRef = ref(db, 'game/clickedCardIndex')
-const playersCntRef = ref(db, 'game/playersCnt')
-const shuffledCardsRef = ref(db, 'game/shuffledCards')
-const secondaryDeckClickedRef = ref(db, 'game/secondaryDeckClicked')
-const saidSrewRef = ref(db, 'game/saidSrew')
+const roomsRef = ref(db, 'Rooms/')
+let clickedCardIndexRef
+let playersCntRef
+let shuffledCardsRef
+let secondaryDeckClickedRef
+let saidSrewRef
 
 let currentPlayer;
+let roomCode;
 
 /*
 clickedCardIndex: -1,
@@ -68,7 +69,7 @@ export function initFirebase(firstTime = false) {
     if(currentPlayer == 1)
     {
         if(firstTime) {
-            set(gameRef, {
+            set(roomsRef, {
                 clickedCardIndex: -1,
                 playersCnt: 1,
                 shuffledCards: "",
@@ -77,7 +78,7 @@ export function initFirebase(firstTime = false) {
             })
         }
         else {
-            update(gameRef, { saidSrew: false })
+            update(roomsRef, { saidSrew: false })
         }
     }
 }
@@ -93,7 +94,7 @@ async function setCurrentPlayer() {
     })
     initFirebase(true)
     setter('currentPlayer', currentPlayer)
-    update(gameRef, { playersCnt: currentPlayer })
+    update(roomsRef, { playersCnt: currentPlayer })
 }
 
 // function changeGridCardContainers() {
@@ -115,23 +116,23 @@ async function setCurrentPlayer() {
 // }
 
 export function fireCardClicked(cardIndex) {
-    update(gameRef, { clickedCardIndex: cardIndex })
+    update(roomsRef, { clickedCardIndex: cardIndex })
     setTimeout(()=>{
-        update(gameRef, { clickedCardIndex: -1 })
+        update(roomsRef, { clickedCardIndex: -1 })
     }, 1000)
 }
 
 export function fireSecondaryDeckClick(){
-    update(gameRef, { secondaryDeckClicked: true })
+    update(roomsRef, { secondaryDeckClicked: true })
     setTimeout(()=>{
-        update(gameRef, { secondaryDeckClicked: false })
+        update(roomsRef, { secondaryDeckClicked: false })
     }, 1000)
 }
 
 export function fireSaySkrew(){
-    update(gameRef, { saidSrew: true })
+    update(roomsRef, { saidSrew: true })
     setTimeout(()=>{
-        update(gameRef, { saidSrew: false })
+        update(roomsRef, { saidSrew: false })
     }, 1000)
 }
 
@@ -139,9 +140,9 @@ export function fireShuffleCards(shuffledCards)
 {
     const shuffledCardsStr = shuffledCards.join(',');
     // const shuffledCardsStr = '40,14,34,42,33,54,29,32,2,51,21,43,15,37,45,52,49,4,47,0,22,41,18,12,36,27,35,38,11,48,10,30,5,16,8,55,50,39,7,3,24,20,56,13,1,46,9,17,19,53,25,26,6,31,28,44,23';
-    update(gameRef, { shuffledCards: shuffledCardsStr })
+    update(roomsRef, { shuffledCards: shuffledCardsStr })
     setTimeout(()=>{
-        update(gameRef, { shuffledCards: ""})
+        update(roomsRef, { shuffledCards: ""})
     }, 1000)
 }
 
@@ -206,4 +207,14 @@ function saidSrewListener(){
             // fireSaySkrew(false)
         }
     })
+}
+
+export async function isRoomValid(code) {
+    const roomCodeRef = ref(db, `Rooms/${code}/`)
+    let exist = false
+    await get(roomCodeRef).then((snapshot) => {
+        console.log('snapshot.exists()', snapshot.exists())
+        exist = snapshot.exists()
+    })
+    return exist
 }
