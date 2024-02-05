@@ -20,7 +20,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase()
 const auth = getAuth(app)
-const roomsRef = ref(db, 'Rooms/')
+let roomRef
 let clickedCardIndexRef
 let playersCntRef
 let shuffledCardsRef
@@ -83,19 +83,19 @@ export function initFirebase(firstTime = false) {
     }
 }
 
-async function setCurrentPlayer() {
-    await get(playersCntRef).then((snapshot) => {
-        if (snapshot.exists() && snapshot.val() < 4) {
-            currentPlayer = snapshot.val() + 1
-        }
-        else {
-            currentPlayer = 1 
-        }
-    })
-    initFirebase(true)
-    setter('currentPlayer', currentPlayer)
-    update(roomsRef, { playersCnt: currentPlayer })
-}
+// async function setCurrentPlayer() {
+//     await get(playersCntRef).then((snapshot) => {
+//         if (snapshot.exists() && snapshot.val() < 4) {
+//             currentPlayer = snapshot.val() + 1
+//         }
+//         else {
+//             currentPlayer = 1 
+//         }
+//     })
+//     initFirebase(true)
+//     setter('currentPlayer', currentPlayer)
+//     update(roomsRef, { playersCnt: currentPlayer })
+// }
 
 // function changeGridCardContainers() {
 //     const mainDiv = document.getElementById('main-area')
@@ -144,6 +144,10 @@ export function fireShuffleCards(shuffledCards)
     setTimeout(()=>{
         update(roomsRef, { shuffledCards: ""})
     }, 1000)
+}
+
+function firePlayersCnt(){
+    update(roomsRef, { playersCnt: currentPlayer })
 }
 
 function addEventListeners() {
@@ -211,10 +215,28 @@ function saidSrewListener(){
 
 export async function isRoomValid(code) {
     const roomCodeRef = ref(db, `Rooms/${code}/`)
-    let exist = false
+    let valid = false
     await get(roomCodeRef).then((snapshot) => {
-        console.log('snapshot.exists()', snapshot.exists())
-        exist = snapshot.exists()
+        const exists = snapshot.exists()
+        console.log('snapshot.exists()=', exists)
+        if(snapshot.exists()){
+            const playersCnt = snapshot.val().players.playersCnt
+            console.log('playersCnt=', playersCnt)
+            if(playersCnt < 4){
+                currentPlayer = playersCnt + 1
+                setRefrences(code)
+                valid = true
+            }
+        }
     })
-    return exist
+    return valid
+}
+
+function setRefrences(roomCode) {
+    roomRef = ref(db, `Rooms/${roomCode}/`)
+    clickedCardIndexRef = ref(db, `Rooms/${roomCode}/`)
+    playersCntRef = ref(db, `Rooms/${roomCode}/`)
+    shuffledCardsRef = ref(db, `Rooms/${roomCode}/`)
+    secondaryDeckClickedRef = ref(db, `Rooms/${roomCode}/`)
+    saidSrewRef = ref(db, `Rooms/${roomCode}/`)
 }
