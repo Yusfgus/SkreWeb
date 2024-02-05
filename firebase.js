@@ -46,11 +46,11 @@ import {loadGame, setter, getter,
 
 document.addEventListener('DOMContentLoaded', () => {
     // initPlayer()
-    signIn()
+    // signIn()
 })
 
 async function initPlayer() {
-
+    
     initFirebase()
     await setCurrentPlayer()
     addEventListeners()
@@ -116,23 +116,33 @@ async function setCurrentPlayer() {
 
 export function fireCardClicked(cardIndex) {
     update(gameRef, { clickedCardIndex: cardIndex })
+    setTimeout(()=>{
+        update(gameRef, { clickedCardIndex: -1 })
+    }, 1000)
 }
 
-export function fireSecondaryDeckClick(value = true){
-    update(gameRef, { secondaryDeckClicked: value })
+export function fireSecondaryDeckClick(){
+    update(gameRef, { secondaryDeckClicked: true })
+    setTimeout(()=>{
+        update(gameRef, { secondaryDeckClicked: false })
+    }, 1000)
 }
 
 export function fireSaySkrew(){
     update(gameRef, { saidSrew: true })
+    setTimeout(()=>{
+        update(gameRef, { saidSrew: false })
+    }, 1000)
 }
 
 export function fireShuffleCards(shuffledCards)
 {
     const shuffledCardsStr = shuffledCards.join(',');
     // const shuffledCardsStr = '40,14,34,42,33,54,29,32,2,51,21,43,15,37,45,52,49,4,47,0,22,41,18,12,36,27,35,38,11,48,10,30,5,16,8,55,50,39,7,3,24,20,56,13,1,46,9,17,19,53,25,26,6,31,28,44,23';
-    update(gameRef, {
-        shuffledCards: shuffledCardsStr
-    })
+    update(gameRef, { shuffledCards: shuffledCardsStr })
+    setTimeout(()=>{
+        update(gameRef, { shuffledCards: ""})
+    }, 1000)
 }
 
 function addEventListeners() {
@@ -150,7 +160,7 @@ function cardClickedIndexListener() {
         console.log('cardClickedIndex =', cardIndex)
         if(cardIndex >= 0){
             cardClicked(cardIndex)
-            fireCardClicked(-1)
+            // fireCardClicked(-1)
         }
     })  
 }
@@ -173,7 +183,7 @@ function shuffledCardsListener() {
         if(shuffledCards !== ""){
             setter('cardsShuffled', true)
             reOrderCards(shuffledCards)
-            fireShuffleCards([])
+            // fireShuffleCards([])
         }
     })
 }
@@ -183,7 +193,7 @@ function secondaryDeckClickedListener(){
         //secondaryDeckClickedRef
         if(snapshot.val() != false){
             secondaryDeckClick()
-            fireSecondaryDeckClick(false)
+            // fireSecondaryDeckClick(false)
         }
     })
 }
@@ -193,6 +203,7 @@ function saidSrewListener(){
         //saidSrewRef
         if(snapshot.val() == true){
             saySkrew()
+            // fireSaySkrew(false)
         }
     })
 }

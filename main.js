@@ -32,7 +32,7 @@ let roundColumnIndex = 5
 
 export const maxPlayersNum = 4
 const maxRoundNum = 5
-const minTurnsNumBeforSkrew = 0
+const minTurnsNumBeforSkrew = 1
 
 let roomCode
 let currentPlayer = 0
@@ -404,7 +404,7 @@ function updateScoreTable() {
 }
 
 function winOrPunish() {
-    playersScore = [5, 7, 1, 0]
+    // playersScore = [5, 7, 1, 0]
     let minScore = getScore(playersScore, true)
     console.log('min score is', minScore)
 
@@ -489,7 +489,7 @@ async function endRound()
 }
 
 function canSaySkrew() {
-    return  canChooseCard() && turnsAfterSkrew == -1 && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew
+    return  turnPlayer == currentPlayer && turnsAfterSkrew == -1 && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew
 }
 
 export async function saySkrew() {
@@ -736,13 +736,13 @@ function attatchClickEventHandler() {
     // primaryDeckCardContainer.addEventListener('click', primaryDeckClick)
     secondaryDeckCardContainer.addEventListener('click', () => {
         if(canChooseCard()) {
-            fireSecondaryDeckClick(true)
+            fireSecondaryDeckClick()
         }
     })
     skrewButton.addEventListener('click', () => {
-        fireSaySkrew()
         if(canSaySkrew()){
-            saySkrew()
+            fireSaySkrew()
+            // saySkrew()
         }
     })
 }
