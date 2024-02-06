@@ -1,6 +1,4 @@
-import { isRoomValid, initPlayer } from "./firebase.js"
-
-const createRoomButton = document.getElementById('create-room-btn')
+import { isRoomValid, initPlayer, initRoom } from "./firebase.js"
 
 let playerName
 
@@ -12,6 +10,20 @@ function logIn() {
 
 function addEventHandlers() {
     document.getElementById('join-room-btn').addEventListener('click', joinRoom)
+    document.getElementById('create-room-btn').addEventListener('click', createRoom)
+}
+
+async function createRoom() {
+    const playerName = getPlayerName()
+    console.log('name is', playerName)
+    if(playerName == ""){
+        alert('name can not be empty')
+        return false
+    }
+    const code = await initRoom(playerName)
+    console.log('room created')
+    initPlayer(playerName, code)
+    goToWaitingRoom(code)
 }
 
 async function canJoinRoom(name, code) {

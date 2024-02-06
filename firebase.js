@@ -20,6 +20,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase()
 const auth = getAuth(app)
+
+let newRoomCodeRef = ref(db, 'Rooms/newRoomCode')
 let roomRef
 
 let gameInfoRef
@@ -157,10 +159,6 @@ export function fireShuffleCards(shuffledCards)
     }, 1000)
 }
 
-function firePlayersCnt(){
-    update(playersRef, { playersCnt: currentPlayer })
-}
-
 function firePlayerName(){
     if(currentPlayer == 1){
         update(playersRef, { player1Name: playerName })
@@ -174,6 +172,47 @@ function firePlayerName(){
     else if(currentPlayer == 4){
         update(playersRef, { player4Name: playerName })
     }
+}
+
+
+function firePlayersCnt(){
+    update(playersRef, { playersCnt: currentPlayer })
+}
+
+async function incrementNewRoomCode(){
+    let newRoomCode
+    await get(newRoomCodeRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            newRoomCode = snapshot.val()
+            console.log(newRoomCode)
+            update(ref(db, 'Rooms/'), { newRoomCode: newRoomCode+1 })
+        }
+    })
+    return newRoomCode
+}
+
+export async function initRoom(name) {
+    currentPlayer = 1
+    const newRoomCode = await incrementNewRoomCode()
+    console.log(newRoomCode)
+    const newRoom = {
+        players: {
+            playersCnt: 1,
+            player1Name: name,
+            player2Name: "",
+            player3Name: "",
+            player4Name: "",
+        },
+        gameInfo: {
+            clickedCardIndex: -1,
+            secondaryDeckClicked: false,
+            saidSrew: false,
+            shuffledCards: "",
+        }
+    };
+    console.log(newRoom)
+    update(ref(db, 'Rooms/'), { [newRoomCode]: newRoom })
+    return newRoomCode
 }
 
 function addEventListeners() {

@@ -496,7 +496,7 @@ td {
 #create-room-btn {
     border-radius: 50px;
     font-weight: 900;
-    font-size: 25px;
+    font-size: 1em;
     font-family:serif;
     color: white;
     border: none;
@@ -522,4 +522,9 @@ td {
     position: absolute;
     left: 2%;
     top: 3%;
+
+}
+
+.hide-room-code {
+    visibility: hidden;
 }

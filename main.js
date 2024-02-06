@@ -98,7 +98,6 @@ function tempCreateCards() {
 export function loadGame() {
 
     console.log('currentPlayer =', currentPlayer)
-    document.getElementById('room-code').style.visibility = 'hidden;'
 
     replacePlayersContainers()
 
@@ -118,6 +117,7 @@ function startGame() {
 }
 
 function initGame() {
+    document.getElementById('room-code').classList.add('hide-room-code')
     totalPlayersScore = [0, 0, 0, 0]
     roundCounter = 0
     // startTurn = 0
