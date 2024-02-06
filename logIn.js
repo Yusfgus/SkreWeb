@@ -1,9 +1,5 @@
-import { isRoomValid } from "./firebase.js"
+import { isRoomValid, initPlayer } from "./firebase.js"
 
-
-const playerNameTextBox = document.getElementById('player-name-txt')
-const joinButton = document.getElementById('join-room-btn')
-const roomCodeTextBox = document.getElementById('room-code-txt')
 const createRoomButton = document.getElementById('create-room-btn')
 
 let playerName
@@ -15,23 +11,20 @@ function logIn() {
 }
 
 function addEventHandlers() {
-    joinButton.addEventListener('click', joinRoom)
+    document.getElementById('join-room-btn').addEventListener('click', joinRoom)
 }
 
-async function canJoinRoom() {
-    const name = playerNameTextBox.value
+async function canJoinRoom(name, code) {
     console.log('name is', name)
     if(name == ""){
-        console.log('name can not be empty')
+        alert('name can not be empty')
         return false
     }
     
-    const code = roomCodeTextBox.value
     console.log('code is', code)
     const exist  = await isRoomValid(code)
-    console.log('exists=', exist)
     if(!exist){
-        console.log('here')
+        alert('Room does\'t exist')
         return false
     }
 
@@ -39,11 +32,27 @@ async function canJoinRoom() {
 }
 
 async function joinRoom() {
-    const canJoin = await canJoinRoom()
+    const playerName = getPlayerName()
+    const code = getRoomCode()
+
+    const canJoin = await canJoinRoom(playerName, code)
     if(!canJoin){
-        console.log('cant join room')
+        return
     }
-    else {
-        console.log('can join room')
-    }
+    console.log('can join room')
+    initPlayer(playerName, code)
+    goToWaitingRoom(code)
+}
+
+function getPlayerName(){
+    return document.getElementById('player-name-txt').value
+}
+
+function getRoomCode(){
+    return document.getElementById('room-code-txt').value
+}
+
+function goToWaitingRoom(code){
+    document.getElementById('log-in-page').style.top = '-100%'
+    document.getElementById('room-code').innerHTML += code
 }

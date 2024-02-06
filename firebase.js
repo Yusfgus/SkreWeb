@@ -21,14 +21,23 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase()
 const auth = getAuth(app)
 let roomRef
+
+let gameInfoRef
 let clickedCardIndexRef
-let playersCntRef
 let shuffledCardsRef
 let secondaryDeckClickedRef
 let saidSrewRef
 
-let currentPlayer;
-let roomCode;
+let playersRef
+let playersCntRef
+let player1NameRef
+let player2NameRef
+let player3NameRef
+let player4NameRef
+
+let currentPlayer
+let playerName
+let roomCode
 
 /*
 clickedCardIndex: -1,
@@ -45,43 +54,45 @@ import {loadGame, setter, getter,
         secondaryDeckClick, saySkrew,
         } from './main.js'
 
-document.addEventListener('DOMContentLoaded', () => {
-    // initPlayer()
-    // signIn()
-})
+// document.addEventListener('DOMContentLoaded', () => {
+//     // initPlayer()
+//     // signIn()
+// })
 
-async function initPlayer() {
-    
-    initFirebase()
-    await setCurrentPlayer()
+export function initPlayer(name, code) {
+    setRefrences(code)
+    playerName = name
     addEventListeners()
+    firePlayersCnt()
+    firePlayerName()
+    setter('currentPlayer', currentPlayer)
 }
 
-function signIn() {
-    signInAnonymously(auth).then(() => {
-        initPlayer()
-    }).catch((error) => {
-        console.log(error.code, error.message)
-    })
-}
+// function signIn() {
+//     signInAnonymously(auth).then(() => {
+//         initPlayer()
+//     }).catch((error) => {
+//         console.log(error.code, error.message)
+//     })
+// }
 
-export function initFirebase(firstTime = false) {
-    if(currentPlayer == 1)
-    {
-        if(firstTime) {
-            set(roomsRef, {
-                clickedCardIndex: -1,
-                playersCnt: 1,
-                shuffledCards: "",
-                secondaryDeckClicked: 0,
-                saidSrew: false,
-            })
-        }
-        else {
-            update(roomsRef, { saidSrew: false })
-        }
-    }
-}
+// export function initFirebase(firstTime = false) {
+//     if(currentPlayer == 1)
+//     {
+//         if(firstTime) {
+//             set(roomsRef, {
+//                 clickedCardIndex: -1,
+//                 playersCnt: 1,
+//                 shuffledCards: "",
+//                 secondaryDeckClicked: 0,
+//                 saidSrew: false,
+//             })
+//         }
+//         else {
+//             update(roomsRef, { saidSrew: false })
+//         }
+//     }
+// }
 
 // async function setCurrentPlayer() {
 //     await get(playersCntRef).then((snapshot) => {
@@ -116,23 +127,23 @@ export function initFirebase(firstTime = false) {
 // }
 
 export function fireCardClicked(cardIndex) {
-    update(roomsRef, { clickedCardIndex: cardIndex })
+    update(gameInfoRef, { clickedCardIndex: cardIndex })
     setTimeout(()=>{
-        update(roomsRef, { clickedCardIndex: -1 })
+        update(gameInfoRef, { clickedCardIndex: -1 })
     }, 1000)
 }
 
 export function fireSecondaryDeckClick(){
-    update(roomsRef, { secondaryDeckClicked: true })
+    update(gameInfoRef, { secondaryDeckClicked: true })
     setTimeout(()=>{
-        update(roomsRef, { secondaryDeckClicked: false })
+        update(gameInfoRef, { secondaryDeckClicked: false })
     }, 1000)
 }
 
 export function fireSaySkrew(){
-    update(roomsRef, { saidSrew: true })
+    update(gameInfoRef, { saidSrew: true })
     setTimeout(()=>{
-        update(roomsRef, { saidSrew: false })
+        update(gameInfoRef, { saidSrew: false })
     }, 1000)
 }
 
@@ -140,14 +151,29 @@ export function fireShuffleCards(shuffledCards)
 {
     const shuffledCardsStr = shuffledCards.join(',');
     // const shuffledCardsStr = '40,14,34,42,33,54,29,32,2,51,21,43,15,37,45,52,49,4,47,0,22,41,18,12,36,27,35,38,11,48,10,30,5,16,8,55,50,39,7,3,24,20,56,13,1,46,9,17,19,53,25,26,6,31,28,44,23';
-    update(roomsRef, { shuffledCards: shuffledCardsStr })
+    update(gameInfoRef, { shuffledCards: shuffledCardsStr })
     setTimeout(()=>{
-        update(roomsRef, { shuffledCards: ""})
+        update(gameInfoRef, { shuffledCards: ""})
     }, 1000)
 }
 
 function firePlayersCnt(){
-    update(roomsRef, { playersCnt: currentPlayer })
+    update(playersRef, { playersCnt: currentPlayer })
+}
+
+function firePlayerName(){
+    if(currentPlayer == 1){
+        update(playersRef, { player1Name: playerName })
+    }
+    else if(currentPlayer == 2){
+        update(playersRef, { player2Name: playerName })
+    }
+    else if(currentPlayer == 3){
+        update(playersRef, { player3Name: playerName })
+    }
+    else if(currentPlayer == 4){
+        update(playersRef, { player4Name: playerName })
+    }
 }
 
 function addEventListeners() {
@@ -224,7 +250,6 @@ export async function isRoomValid(code) {
             console.log('playersCnt=', playersCnt)
             if(playersCnt < 4){
                 currentPlayer = playersCnt + 1
-                setRefrences(code)
                 valid = true
             }
         }
@@ -232,11 +257,20 @@ export async function isRoomValid(code) {
     return valid
 }
 
-function setRefrences(roomCode) {
-    roomRef = ref(db, `Rooms/${roomCode}/`)
-    clickedCardIndexRef = ref(db, `Rooms/${roomCode}/`)
-    playersCntRef = ref(db, `Rooms/${roomCode}/`)
-    shuffledCardsRef = ref(db, `Rooms/${roomCode}/`)
-    secondaryDeckClickedRef = ref(db, `Rooms/${roomCode}/`)
-    saidSrewRef = ref(db, `Rooms/${roomCode}/`)
+function setRefrences(code) {
+    roomCode = code
+    roomRef = ref(db, `Rooms/${code}/`)
+
+    gameInfoRef = ref(db, `Rooms/${code}/gameInfo/`)
+    clickedCardIndexRef = ref(db, `Rooms/${code}/gameInfo/clickedCardIndex`)
+    shuffledCardsRef = ref(db, `Rooms/${code}/gameInfo/shuffledCards`)
+    secondaryDeckClickedRef = ref(db, `Rooms/${code}/gameInfo/secondaryDeckClicked`)
+    saidSrewRef = ref(db, `Rooms/${code}/gameInfo/saidSrew`)
+
+    playersRef = ref(db, `Rooms/${code}/players/`)
+    playersCntRef = ref(db, `Rooms/${code}/players/playersCnt`)
+    player1NameRef = ref(db, `Rooms/${code}/players/player1Name`)
+    player2NameRef = ref(db, `Rooms/${code}/players/player2Name`)
+    player3NameRef = ref(db, `Rooms/${code}/players/player3Name`)
+    player4NameRef = ref(db, `Rooms/${code}/players/player4Name`)
 }

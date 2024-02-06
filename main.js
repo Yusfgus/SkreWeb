@@ -1,7 +1,7 @@
 import Card from "./cards.js";
 import { fireCardClicked, fireSecondaryDeckClick, 
         fireShuffleCards, fireSaySkrew, 
-        initFirebase 
+        // initFirebase 
         } from "./firebase.js";
 
 // const cardNames = ['skrewDriver', '1', '2', '3', '4', '5','6', '7', '8', '9', '10', 'exchange', 'lookAll', 'pasra', '-1', '20', 'redSkrew']
@@ -178,7 +178,7 @@ function waitUnitShuffling(){
 }
 
 async function initRound() {
-    initFirebase(false)
+    // initFirebase(false)
     shuffleCards()
     await wait(waitUnitShuffling, 3000)
     // reOrderCards()
