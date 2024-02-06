@@ -36,7 +36,7 @@ async function canJoinRoom(name, code) {
     console.log('code is', code)
     const exist  = await isRoomValid(code)
     if(!exist){
-        alert('Room does\'t exist')
+        alert('Room is full or does\'t exist')
         return false
     }
 

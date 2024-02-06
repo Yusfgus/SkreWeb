@@ -51,7 +51,7 @@ secondaryDeckClicked: 0,
 //==================================================================================
 
 import {loadGame, setter, getter,
-        cardClicked, 
+        cardClicked, playersName,
         maxPlayersNum, reOrderCards, 
         secondaryDeckClick, saySkrew,
         } from './main.js'
@@ -60,6 +60,15 @@ import {loadGame, setter, getter,
 //     // initPlayer()
 //     // signIn()
 // })
+
+window.addEventListener('beforeunload', playerLeaves)
+
+function playerLeaves(){
+    if(roomRef !== undefined){
+        firePlayersCnt(-1)
+        remove(roomRef)
+    }
+}
 
 export function initPlayer(name, code) {
     setRefrences(code)
@@ -174,9 +183,8 @@ function firePlayerName(){
     }
 }
 
-
-function firePlayersCnt(){
-    update(playersRef, { playersCnt: currentPlayer })
+function firePlayersCnt(value = currentPlayer){
+    update(playersRef, { playersCnt: value })
 }
 
 async function incrementNewRoomCode(){
@@ -216,8 +224,9 @@ export async function initRoom(name) {
 }
 
 function addEventListeners() {
-    cardClickedIndexListener()
     playersCntListener()
+    // playersNamesListerner()
+    cardClickedIndexListener()
     shuffledCardsListener()
     secondaryDeckClickedListener()
     saidSrewListener()
@@ -236,15 +245,48 @@ function cardClickedIndexListener() {
 }
 
 function playersCntListener() {
-    onValue(playersCntRef, (snapshot) => {
+    onValue(playersCntRef, async (snapshot) => {
         //playerCnt
         const playersCnt = snapshot.val()
         if(playersCnt == maxPlayersNum){
             console.log('load game')
+            await getPlayesName()
             loadGame()
+        }
+        else if(playersCnt == -1){
+            alert('someone lift the room')
+            location.reload()
         }
     })
 }
+
+async function getPlayesName() {
+    await get(playersRef).then((snapshot) => {
+        playersName[0] = snapshot.val().player1Name
+        playersName[1] = snapshot.val().player2Name
+        playersName[2] = snapshot.val().player3Name
+        playersName[3] = snapshot.val().player4Name
+    })
+}
+
+// function playersNamesListerner() {
+//     onValue(player1NameRef, (snapshot) => {
+//         const name = snapshot.val()
+//         playersName[0] = name
+//     }) 
+//     onValue(player2NameRef, (snapshot) => {
+//         const name = snapshot.val()
+//         playersName[1] = name
+//     }) 
+//     onValue(player3NameRef, (snapshot) => {
+//         const name = snapshot.val()
+//         playersName[2] = name
+//     }) 
+//     onValue(player4NameRef, (snapshot) => {
+//         const name = snapshot.val()
+//         playersName[3] = name
+//     }) 
+// }
 
 function shuffledCardsListener() {
     onValue(shuffledCardsRef, (snapshot) => {

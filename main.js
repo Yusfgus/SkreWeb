@@ -13,6 +13,7 @@ let secondaryDeckcards = []
 
 let totalPlayersScore = []
 let playersScore = []
+export let playersName = []
 
 const primaryDeckCardContainer = document.getElementById('primaryDeck')
 const secondaryDeckCardContainer = document.getElementById('secondaryDeck')
@@ -308,10 +309,10 @@ function replacePlayersContainers()
 
 function initScoreTable() {
     roundColumnIndex = 5
-    player1ScoreRow.rows[0].cells[6].textContent = 'Player1'
-    player2ScoreRow.rows[0].cells[6].textContent = 'Player2'
-    player3ScoreRow.rows[0].cells[6].textContent = 'Player3'
-    player4ScoreRow.rows[0].cells[6].textContent = 'Player4'
+    player1ScoreRow.rows[0].cells[6].textContent = playersName[0]
+    player2ScoreRow.rows[0].cells[6].textContent = playersName[1]
+    player3ScoreRow.rows[0].cells[6].textContent = playersName[2]
+    player4ScoreRow.rows[0].cells[6].textContent = playersName[3]
 }
 
 function getScore(arr, min) {
