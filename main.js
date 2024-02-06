@@ -98,6 +98,7 @@ function tempCreateCards() {
 export function loadGame() {
 
     console.log('currentPlayer =', currentPlayer)
+    document.getElementById('room-code').style.visibility = 'hidden;'
 
     replacePlayersContainers()
 
