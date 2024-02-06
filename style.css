@@ -17,20 +17,20 @@
 body {
     margin: 0;
     height: 100vh;
-    width: 100hh;
+    width: 100vw;
 
     user-select: none;
     overflow: hidden;
 }
 
-@media only screen and (max-width: 600px) {
-    /* Styles for small screens (e.g., mobile devices) */
+/* @media only screen and (max-width: 600px) {
     body {
-      overflow: hidden;
+        overflow: hidden;
     }
-}
+} */
 
 main {
+    overflow: hidden;
     position: relative;
     height: 100%;
     width: 100%;
@@ -409,13 +409,13 @@ td {
 }
 
 .row-to-right {
-    position: absolute;
+    position: relative;
     right: -150%;
     /* right: 0; */
 }
 
 .row-to-left {
-    position: absolute;
+    position: relative;
     left: -150%;
     /* left: 0; */
 }
