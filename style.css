@@ -212,24 +212,34 @@ main {
     justify-content: center;
 }
 
-/* .deck .card,
-#bottom-container .card {
-    cursor: pointer;
-} */
-
 .card:active {
     transform: scale(0.9);
     transition: transform 0.2s ease;
 }
 
-/* #bottom-container .cards-container,
-#bottom-container .cards-container2,
-#bottom-container .card {
-    height: var(--card-height-p1);
+@media (max-width: 950px) or (max-height: 700px){
+    :root {
+        --card-width: 56px;
+        --card-height: 85px;
+        --negMargin: -10px
+    }
 }
-#bottom-container .card {
-    width: var(--card-width-p1);
-} */
+
+@media (max-width: 600px) or (max-height: 600px){
+    :root {
+        --card-width: 53px;
+        --card-height: 80px;
+        --negMargin: -9px
+    }
+}
+
+@media (max-width: 500px) or (max-height: 490px){
+    :root {
+        --card-width: 46px;
+        --card-height: 70px;
+        --negMargin: -8px
+    }
+}
 
 .card-inner {
     border-radius: 20px;
@@ -260,12 +270,7 @@ main {
     transform: rotateY(180deg);
 }
 
-.card-back {
-    /* background-color: aqua; */
-    /* transform: rotateY(180deg); */
-}
-
-/* .card:hover .card-inner {
+/* .card-back {
     transform: rotateY(180deg);
 } */
 
@@ -502,6 +507,12 @@ td {
     border: none;
     background-image: linear-gradient(to right, #C5881B, #C02F6E);
 }
+
+/* #join-room-btn,
+#create-room-btn {
+    transform: scale(0.9);
+    transition: transform 0.2s ease;
+} */
 
 #join-room-btn {
     height: 100%;
