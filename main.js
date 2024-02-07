@@ -33,7 +33,7 @@ let roundColumnIndex = 5
 
 export const maxPlayersNum = 4
 const maxRoundNum = 5
-const minTurnsNumBeforSkrew = 1
+const minTurnsNumBeforSkrew = 3
 
 let roomCode
 let currentPlayer = 0
@@ -480,6 +480,7 @@ async function endRound()
 
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
+    primaryDeckcards = secondaryDeckcards = []
     for(let i=1; i<=maxPlayersNum; ++i) {
         removeCardsFrom(document.getElementById(`player${i}-cards-container`))
         removeCardsFrom(document.getElementById(`player${i}-cards-container2`))
