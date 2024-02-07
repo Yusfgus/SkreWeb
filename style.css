@@ -266,14 +266,13 @@ main {
     height: 100%;
 }
 
-.card-front {
-    /* background-color: bisque; */
-    transform: rotateY(180deg);
-}
-
-/* .card-back {
+/* .card-front {
     transform: rotateY(180deg);
 } */
+
+.card-back {
+    transform: rotateY(180deg);
+}
 
 .deck .card {
     position: absolute;

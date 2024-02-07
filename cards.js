@@ -101,6 +101,7 @@ export default class Card {
 
     flipCard(flip = true) 
     {
+        return 
         const innerCardElem = this.cardElem.firstChild
 
         if(this.isFlipped) {
