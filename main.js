@@ -106,8 +106,8 @@ export function loadGame() {
 
     attatchClickEventHandler()
     
-    // createCards()
-    tempCreateCards()
+    createCards()
+    // tempCreateCards()
     
     startGame()
 }
