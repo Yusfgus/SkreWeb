@@ -92,7 +92,8 @@ export function getter(str){
 function tempCreateCards() {
     let cardIndex = 0
     for(let i=0; i<=50; ++i){
-        initCard('10', 10, getOwnerContainer(0), cardIndex++)
+        initCard('9', 9, getOwnerContainer(0), cardIndex++)
+        initCard('8', 8, getOwnerContainer(0), cardIndex++)
     }
 }
 // loadGame()
@@ -957,11 +958,11 @@ function finishCommand(ms) {
 }
 
 async function commandLookYours(card) {
-    // if(card.cardOwnerContainer !== getOwnerContainer(currentPlayer) 
-    //     && card.cardOwnerContainer !== getOwnerContainer(currentPlayer, true))
-    // {
-    //     return
-    // }
+    if(card.cardOwnerContainer !== getOwnerContainer(turnPlayer) 
+        && card.cardOwnerContainer !== getOwnerContainer(turnPlayer, true))
+    {
+        return
+    }
 
     // inCommand = true
     commandCardActivated = 'wait'

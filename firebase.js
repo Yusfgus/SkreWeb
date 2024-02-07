@@ -75,9 +75,9 @@ function playerLeaves(){
 export function initPlayer(name, code) {
     setRefrences(code)
     playerName = name
+    firePlayerName()
     addEventListeners()
     firePlayersCnt()
-    firePlayerName()
     setter('currentPlayer', currentPlayer)
 }
 
@@ -167,7 +167,7 @@ export function fireShuffleCards(shuffledCards)
     update(gameInfoRef, { shuffledCards: shuffledCardsStr })
     setTimeout(()=>{
         update(gameInfoRef, { shuffledCards: ""})
-    }, 10000)
+    }, fireSafeTime)
 }
 
 function firePlayerName(){
