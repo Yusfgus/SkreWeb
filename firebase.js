@@ -155,9 +155,9 @@ export function fireSecondaryDeckClick(){
 
 export function fireSaySkrew(){
     update(gameInfoRef, { saidSrew: true })
-    // setTimeout(()=>{
-    //     update(gameInfoRef, { saidSrew: false })
-    // }, fireSafeTime)
+    setTimeout(()=>{
+        update(gameInfoRef, { saidSrew: false })
+    }, fireSafeTime)
 }
 
 export function fireShuffleCards(shuffledCards)
