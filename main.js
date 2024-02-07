@@ -473,7 +473,7 @@ function showPlayersCards() {
 
 async function endRound() 
 {
-    await sleep(2000)
+    await sleep(showCardsTime)
     await wait(showPlayersCards, showPlayersCardsTime + 100)
     await sleep(1000)
     // playersScore = [20, 25, 1, 20]
@@ -1145,6 +1145,7 @@ function commandPasra(card) {
 
     // card.flipCard()
     changeCardOwner(card, secondaryDeckCardContainer, true)
+    updateScore(turnPlayer - 1, - card.cardValue)
 
     finishCommand(500)
 }
