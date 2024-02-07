@@ -161,7 +161,8 @@ async function startRound() {
         showDashBoard(roundCounter > 1, true)
         // showDashBoard(true, true)
     }, waitTime)
-
+    
+    
     await wait(initRound, distributionsTime + showCardsTime + 2000 + 3000)
     putFirstCard()
     // roundStarted = true
@@ -197,7 +198,7 @@ async function initRound() {
     console.log('distribute')
     await wait(distributeCards, distributionsTime)
     console.log('initial players scores =', playersScore)
-
+    
     await wait(showFirstTwoCards, showCardsTime + 1000)
 }
 
@@ -480,7 +481,8 @@ async function endRound()
 
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
-    primaryDeckcards = secondaryDeckcards = []
+    primaryDeckcards = [] 
+    secondaryDeckcards = []
     for(let i=1; i<=maxPlayersNum; ++i) {
         removeCardsFrom(document.getElementById(`player${i}-cards-container`))
         removeCardsFrom(document.getElementById(`player${i}-cards-container2`))
@@ -582,7 +584,6 @@ function distributeCards() {
             // putFirstCard()
         }
     }, distributionsTime/(4*4))
-
 }
 
 function initCard(name, value, owner, cardIndex) {
@@ -827,9 +828,10 @@ function chooseCard(card)
     }
     else if (secondaryDeckcards.length > 0)
     {
+        console.log('secondary size =', secondaryDeckcards.length)
+        console.log('secondaryDeckClicked =', secondaryDeckClicked)    
         if(secondaryDeckClicked)
         {
-            console.log('from secondary deck to player', turnPlayer)    
             const choosedCard = secondaryDeckcards.pop()
             secondaryDeckClicked = false
 
@@ -883,6 +885,8 @@ export function secondaryDeckClick() {
         if(commandCardActivated === ''){
             console.log('not command then change turn')
             changeTurn(300)
+        }else {
+            setHintMsg(commandCardActivated)
         }
     }
     else if(secondaryDeckcards.length > 0 && commandCardActivated === '')
@@ -896,9 +900,30 @@ export function secondaryDeckClick() {
     // }
 }
 
+let displayHint = true
+const hintMsgElem = document.getElementById('hint-msg')
+
+function setHintMsg(commandCardActivated){
+    if(commandCardActivated === 'lookYours'){
+        hintMsgElem.style.display = 'flex'
+        hintMsgElem.innerHTML = 'بص في ورقتك'
+    }
+    else if(commandCardActivated === 'lookOthers'){ 
+        hintMsgElem.display = 'flex'
+        hintMsgElem.innerHTML = 'بص في ورقة غيرك'
+    }
+
+    setTimeout(() => {
+        hintMsgElem.style.display = 'none'
+    }, 2000)
+}
+
 async function commandActivate(selectedCard) {
     console.log('command is', commandCardActivated)
-
+    // if(displayHint) {
+    //     setHintMsg(commandCardActivated)
+    //     displayHint = false
+    // }
     await wait(() => 
     {
         if(commandCardActivated === 'lookYours') {
@@ -923,6 +948,7 @@ function finishCommand(ms) {
     console.log('command finished')
     setTimeout(() => {
         commandCardActivated = ''
+        displayHint = true
         // inCommand = false
         changeTurn(0)
     }, ms)

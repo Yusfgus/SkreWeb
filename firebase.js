@@ -41,6 +41,8 @@ let currentPlayer
 let playerName
 let roomCode
 
+const fireSafeTime = 2000
+
 /*
 clickedCardIndex: -1,
 playersCnt: 0,
@@ -141,21 +143,21 @@ export function fireCardClicked(cardIndex) {
     update(gameInfoRef, { clickedCardIndex: cardIndex })
     setTimeout(()=>{
         update(gameInfoRef, { clickedCardIndex: -1 })
-    }, 1000)
+    }, fireSafeTime)
 }
 
 export function fireSecondaryDeckClick(){
     update(gameInfoRef, { secondaryDeckClicked: true })
     setTimeout(()=>{
         update(gameInfoRef, { secondaryDeckClicked: false })
-    }, 1000)
+    }, fireSafeTime)
 }
 
 export function fireSaySkrew(){
     update(gameInfoRef, { saidSrew: true })
-    setTimeout(()=>{
-        update(gameInfoRef, { saidSrew: false })
-    }, 1000)
+    // setTimeout(()=>{
+    //     update(gameInfoRef, { saidSrew: false })
+    // }, fireSafeTime)
 }
 
 export function fireShuffleCards(shuffledCards)
@@ -165,7 +167,7 @@ export function fireShuffleCards(shuffledCards)
     update(gameInfoRef, { shuffledCards: shuffledCardsStr })
     setTimeout(()=>{
         update(gameInfoRef, { shuffledCards: ""})
-    }, 1000)
+    }, 10000)
 }
 
 function firePlayerName(){

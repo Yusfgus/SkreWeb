@@ -540,3 +540,22 @@ td {
 .hide-room-code {
     visibility: hidden;
 }
+
+#hint-msg {
+    position: absolute;
+    background-color: transparent;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -80px;
+    /* background-size: cover;
+    background-position: center; */
+    font-size:40px;
+    /* color: rgba(2, 90, 97, 1); */
+    color: white;
+    font-weight: 600;
+    /* text-shadow: 0 0 2px white; */
+    transition: display 0.8s;
+}
