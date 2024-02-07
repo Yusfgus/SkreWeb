@@ -51,7 +51,7 @@ let turnCounter = 0
 let turnsAfterSkrew = -1
 
 const distributionsTime = 5000
-const showCardsTime = 2000
+const showCardsTime = 3000
 const insertCardTime = 50
 const dashBoardDelayTime = 600
 const showRoundNameTime = 3000
@@ -92,7 +92,7 @@ export function getter(str){
 function tempCreateCards() {
     let cardIndex = 0
     for(let i=0; i<=50; ++i){
-        initCard('lookAll', 10, getOwnerContainer(0), cardIndex++)
+        initCard('10', 10, getOwnerContainer(0), cardIndex++)
     }
 }
 // loadGame()
@@ -106,8 +106,8 @@ export function loadGame() {
 
     attatchClickEventHandler()
     
-    createCards()
-    // tempCreateCards()
+    // createCards()
+    tempCreateCards()
     
     startGame()
 }
@@ -905,12 +905,14 @@ const hintMsgElem = document.getElementById('hint-msg')
 
 function setHintMsg(commandCardActivated){
     if(commandCardActivated === 'lookYours'){
-        hintMsgElem.style.display = 'flex'
         hintMsgElem.innerHTML = 'بص في ورقتك'
+        hintMsgElem.style.display = 'flex'
+        displayHint = false
     }
     else if(commandCardActivated === 'lookOthers'){ 
-        hintMsgElem.display = 'flex'
         hintMsgElem.innerHTML = 'بص في ورقة غيرك'
+        hintMsgElem.display = 'flex'
+        displayHint = false
     }
 
     setTimeout(() => {
@@ -975,9 +977,9 @@ async function commandLookYours(card) {
 }
 
 async function commandLookOthers(card) {
-    if( /*card.cardOwnerContainer === getOwnerContainer(currentPlayer)
-        || card.cardOwnerContainer === getOwnerContainer(currentPlayer, true)
-        || */card.cardOwnerContainer === primaryDeckCardContainer
+    if( card.cardOwnerContainer === getOwnerContainer(turnPlayer)
+        || card.cardOwnerContainer === getOwnerContainer(turnPlayer, true)
+        || card.cardOwnerContainer === primaryDeckCardContainer
         || card.cardOwnerContainer === secondaryDeckCardContainer)
     {
         return
