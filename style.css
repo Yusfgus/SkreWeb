@@ -17,6 +17,7 @@
 body {
     margin: 0;
     height: 100vh;
+    min-height: 100svh;
     /* min-height: -webkit-fill-available; */
     width: 100vw;
 
@@ -39,7 +40,7 @@ main {
     /* grid-template-columns: 0.2fr 0.6fr 0.2fr;
     grid-template-rows: 0.35fr 0.3fr 0.35fr; */
     grid-template-columns: 20% 60% 20%;
-    grid-template-rows: 35% 30% 35%;
+    grid-template-rows: 37% 26% 37%;
     grid-template-areas: "p4 p3 p2"
                          "p4 d p2"
                          "p4 p1 p2";
@@ -281,6 +282,7 @@ main {
 .turn-line {
     border-radius: 10px;
     /* animation: glow 1.5s ease-in-out infinite; */
+    z-index: 1;
 }
 
 #bottom-container .turn-line,
@@ -501,7 +503,7 @@ td {
 #create-room-btn {
     border-radius: 50px;
     font-weight: 900;
-    font-size: 1em;
+    font-size: 1.4em;
     font-family:serif;
     color: white;
     border: none;
@@ -549,12 +551,64 @@ td {
     justify-content: center;
     align-items: center;
     top: -80px;
-    /* background-size: cover;
-    background-position: center; */
     font-size:40px;
     /* color: rgba(2, 90, 97, 1); */
     color: white;
     font-weight: 600;
     /* text-shadow: 0 0 2px white; */
     transition: display 0.8s;
+}
+
+/*-------------------------------------------------------------*/
+
+.player-name-container{
+    color: white;
+    font-size: 2em;
+    /* text-align: center; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 3px solid #C5881B;
+    background-color: rgba(40, 32, 93, 0.8);
+    /* z-index: 0; */
+}
+
+#bottom-container .player-name-container,
+#top-container .player-name-container {
+    width: 40%;
+    max-height: 15%;
+}
+#bottom-container .player-name-container {
+    border-radius: 15px 15px 0px 0px;
+    border-bottom: none;
+    margin-bottom: -10px;
+}
+#top-container .player-name-container {
+    border-radius: 0px 0px 15px 15px;
+    border-top: none;
+    margin-top: -10px;
+}
+
+#right-container .player-name-container,
+#left-container .player-name-container {
+    height: 40%;
+    max-width: 15%;
+}
+#right-container .player-name-container {
+    border-radius: 15px 0px 0px 15px;
+    border-right: none;
+    margin-right: -10px;
+}
+#left-container .player-name-container {
+    border-radius: 0px 15px 15px 0px;
+    border-left: none;
+    margin-left: -10px;
+}
+#right-container .player-name-container span{
+    display: inline-block;
+    transform: rotate(-90deg);
+}
+#left-container .player-name-container span{
+    display: inline-block;
+    transform: rotate(90deg);
 }
