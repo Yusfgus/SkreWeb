@@ -103,8 +103,6 @@ export function loadGame() {
 
     replacePlayersContainers()
 
-    initScoreTable()
-
     attatchClickEventHandler()
     
     createCards()
@@ -118,7 +116,10 @@ function startGame() {
     startRound()
 }
 
-function initGame() {
+function initGame() 
+{
+    initPlayerNameContainer()
+    initScoreTable()
     document.getElementById('room-code').classList.add('hide-room-code')
     totalPlayersScore = [0, 0, 0, 0]
     roundCounter = 0
@@ -305,7 +306,15 @@ function replacePlayersContainers()
         const index = (i ? i: 4)
         document.getElementById(`${containersId[j]}-container`).appendChild(getOwnerContainer(index, true))
         document.getElementById(`${containersId[j]}-container`).appendChild(getOwnerContainer(index, false))
+        console.log(`player${index}-name-container`)
+        document.getElementById(`${containersId[j]}-container`).appendChild(document.getElementById(`player${index}-name-container`))
         document.getElementById(`${containersId[j]}-container`).appendChild(document.getElementById(`player${index}-turn-line`))
+    }
+}
+
+function initPlayerNameContainer() {
+    for(let i=1; i<=maxPlayersNum; ++i){
+        document.getElementById(`player${i}-name-container`).firstChild.innerHTML = playersName[i-1]
     }
 }
 
