@@ -2,7 +2,7 @@
     --card-width: 4.5vw;
     --card-height: 7vw;
 
-    --negMargin: -12px;
+    --negMargin: -1.3vh;
 
     /* --turn-line-color: rgb(197, 133, 54); */
     --turn-line-color: orangered;
@@ -422,12 +422,12 @@ td {
 
 .row-to-right {
     position: relative;
-    /* right: -150%; */
+    right: -150%;
 }
 
 .row-to-left {
     position: relative;
-    /* left: -150%; */
+    left: -150%;
 }
 
 /*--------------------------------------------------------------*/
@@ -591,6 +591,7 @@ td {
     align-items: center;
     /* border: 3px solid #C5881B; */
     background-color: rgba(40, 32, 93, 0.8);
+    padding: 2px;
     /* z-index: 0; */
 }
 

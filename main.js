@@ -249,8 +249,8 @@ function showRoundName() {
     const imgPath = `url('images/round${roundCounter}-background.png')`
     // console.log(imgPath)
     roundName.style.backgroundImage = (imgPath)
-    roundName.style.height = '30rem'
-    roundName.style.width = '30rem'
+    roundName.style.height = '40vw'
+    roundName.style.width = '40vw'
 
     setTimeout(() => {
         roundName.style.height = '0'
