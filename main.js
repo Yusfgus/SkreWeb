@@ -55,7 +55,7 @@ const showCardsTime = 3000
 const insertCardTime = 50
 const dashBoardDelayTime = 600
 const showRoundNameTime = 3000
-const showScoreTableTime = 5000
+const showScoreTableTime = 15000
 const showPlayersCardsTime = 5000
 
 let commandCardActivated = ''
