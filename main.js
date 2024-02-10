@@ -118,7 +118,7 @@ function startGame() {
 
 function initGame() 
 {
-    initPlayerNameContainer()
+    // initPlayerNameContainer()
     initScoreTable()
     document.getElementById('room-code').classList.add('hide-room-code')
     totalPlayersScore = [0, 0, 0, 0]
@@ -205,6 +205,9 @@ async function initRound() {
 }
 
 function changeTurn(ms = 1500) {
+
+    fireSecondaryDeckClick(false)
+    fireCardClicked(-1)
 
     if(turnsAfterSkrew != -1 && turnsAfterSkrew++ == maxPlayersNum-1){
         turnOffturnPlayerLine()
@@ -312,7 +315,7 @@ function replacePlayersContainers()
     }
 }
 
-function initPlayerNameContainer() {
+export function initPlayerNameContainer() {
     for(let i=1; i<=maxPlayersNum; ++i){
         document.getElementById(`player${i}-name-container`).firstChild.innerHTML = playersName[i-1]
     }
@@ -499,6 +502,9 @@ async function endRound()
     }
     // await wait(showDashBoard, 6000)  // show score table
 
+    fireSaySkrew(false)
+    fireShuffleCards([])
+
     startRound()
     // console.log("primary deck lenght", primaryDeckCardContainer.children.length)
 }
@@ -536,8 +542,8 @@ function removeCardsFrom(parentDiv, flip = false) {
 }
 
 function addCardsToPrimaryDeck() {
-    cards.forEach((card) => {
-        primaryDeckcards.push(card)
+    primaryDeckcards.forEach((card) => {
+        // primaryDeckcards.push(card)
         card.setOwnerContainer(primaryDeckCardContainer)
         card.assignCardToOwner()
     })
@@ -602,15 +608,15 @@ function initCard(name, value, owner, cardIndex) {
     attatchClickEventHandlerToCard(card)
 }
 
-export function reOrderCards(shuffledCardsStr) {
-    const cardsIndex = shuffledCardsStr.split(',').map(Number);
-    let tempCards = []
+export function reOrderCards(cardsIndex) {
+    // let tempCards = []
     for(let i=0; i<cards.length; ++i) {
         const index = cardsIndex[i]
-        tempCards.push(cards[index])
-        tempCards[i].setDataValue(i)
+        // tempCards.push(cards[index])
+        // tempCards[i].setDataValue(i)
+        primaryDeckcards.push(cards[index])
     }
-    cards = tempCards
+    // cards = tempCards
     console.log(cards)
 }
 
@@ -853,7 +859,7 @@ function chooseCard(card)
             const lastSecondaryCard = secondaryDeckcards[secondaryDeckcards.length - 1]
             card.flipCard()
             setTimeout(() => {
-                if(card.cardName === lastSecondaryCard.cardName)
+                if(pasraSucceded())
                 {
                     console.log('pasra succeded') 
                     //succeded
@@ -872,6 +878,11 @@ function chooseCard(card)
                 }
             }, 1300)
             changeTurn(1500)
+
+            function pasraSucceded(){
+                return card.cardName === lastSecondaryCard.cardName
+                        || card.cardName === ' redSkrew' && lastSecondaryCard.cardName === 'skrewDriver'
+            }
         }
     }
 }

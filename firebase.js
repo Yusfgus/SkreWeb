@@ -1,11 +1,14 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, child, get, set, update, remove, onDisconnect, onChildRemoved, onChildChanged, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+import { getDatabase, ref, get, update, remove, onValue,
+        // set, child, onDisconnect, onChildRemoved, onChildChanged
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+// import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
+// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBwDL3yypzhVQ8ibWewlY4AnGK7nuvvKzE",
     authDomain: "skreweb.firebaseapp.com",
@@ -19,7 +22,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase()
-const auth = getAuth(app)
+// const auth = getAuth(app)
 
 let newRoomCodeRef = ref(db, 'Rooms/newRoomCode')
 let roomRef
@@ -56,12 +59,22 @@ import {loadGame, setter, getter,
         cardClicked, playersName,
         maxPlayersNum, reOrderCards, 
         secondaryDeckClick, saySkrew,
+        initPlayerNameContainer,
         } from './main.js'
 
 // document.addEventListener('DOMContentLoaded', () => {
-//     // initPlayer()
-//     // signIn()
+//     testListener()
 // })
+
+// function testListener() {
+//     onValue(ref(db, 'test'), (snapshot) => {
+//         console.log(snapshot.val())
+//     })
+// }
+
+// export function fireTest(){
+//     update(ref(db), {test: true})
+// }
 
 window.addEventListener('beforeunload', playerLeaves)
 
@@ -72,10 +85,10 @@ function playerLeaves(){
     }
 }
 
-export function initPlayer(name, code) {
+export async function initPlayer(name, code) {
     setRefrences(code)
     playerName = name
-    firePlayerName()
+    await firePlayerName()
     addEventListeners()
     firePlayersCnt()
     setter('currentPlayer', currentPlayer)
@@ -141,48 +154,30 @@ export function initPlayer(name, code) {
 
 export function fireCardClicked(cardIndex) {
     update(gameInfoRef, { clickedCardIndex: cardIndex })
-    setTimeout(()=>{
-        update(gameInfoRef, { clickedCardIndex: -1 })
-    }, fireSafeTime)
 }
 
-export function fireSecondaryDeckClick(){
-    update(gameInfoRef, { secondaryDeckClicked: true })
-    setTimeout(()=>{
-        update(gameInfoRef, { secondaryDeckClicked: false })
-    }, fireSafeTime)
+export function fireSecondaryDeckClick(value = true){
+    update(gameInfoRef, { secondaryDeckClicked: value })
 }
 
-export function fireSaySkrew(){
-    update(gameInfoRef, { saidSrew: true })
-    setTimeout(()=>{
-        update(gameInfoRef, { saidSrew: false })
-    }, fireSafeTime)
+export function fireSaySkrew(value = true){
+    update(gameInfoRef, { saidSrew: value })
 }
 
 export function fireShuffleCards(shuffledCards)
 {
-    const shuffledCardsStr = shuffledCards.join(',');
-    // const shuffledCardsStr = '40,14,34,42,33,54,29,32,2,51,21,43,15,37,45,52,49,4,47,0,22,41,18,12,36,27,35,38,11,48,10,30,5,16,8,55,50,39,7,3,24,20,56,13,1,46,9,17,19,53,25,26,6,31,28,44,23';
-    update(gameInfoRef, { shuffledCards: shuffledCardsStr })
-    setTimeout(()=>{
-        update(gameInfoRef, { shuffledCards: ""})
-    }, fireSafeTime)
+    update(gameInfoRef, { shuffledCards: shuffledCards })
 }
 
-function firePlayerName(){
-    if(currentPlayer == 1){
-        update(playersRef, { player1Name: playerName })
-    }
-    else if(currentPlayer == 2){
-        update(playersRef, { player2Name: playerName })
-    }
-    else if(currentPlayer == 3){
-        update(playersRef, { player3Name: playerName })
-    }
-    else if(currentPlayer == 4){
-        update(playersRef, { player4Name: playerName })
-    }
+async function firePlayerName(){
+    let names
+    await get(playersRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            names = snapshot.val().playersName
+        }
+    })
+    names[currentPlayer-1] = playerName
+    update(playersRef, { playersName: names })
 }
 
 function firePlayersCnt(value = currentPlayer){
@@ -208,17 +203,14 @@ export async function initRoom(name) {
     const newRoom = {
         players: {
             playersCnt: 1,
-            player1Name: name,
-            player2Name: "",
-            player3Name: "",
-            player4Name: "",
+            playersName: [name,'','',''],
         },
         gameInfo: {
             clickedCardIndex: -1,
             secondaryDeckClicked: false,
             saidSrew: false,
-            shuffledCards: "",
-        }
+            shuffledCards: [],
+        },
     };
     console.log(newRoom)
     update(ref(db, 'Rooms/'), { [newRoomCode]: newRoom })
@@ -226,8 +218,8 @@ export async function initRoom(name) {
 }
 
 function addEventListeners() {
+    playersNamesListerner()
     playersCntListener()
-    // playersNamesListerner()
     cardClickedIndexListener()
     shuffledCardsListener()
     secondaryDeckClickedListener()
@@ -241,7 +233,6 @@ function cardClickedIndexListener() {
         console.log('cardClickedIndex =', cardIndex)
         if(cardIndex >= 0){
             cardClicked(cardIndex)
-            // fireCardClicked(-1)
         }
     })  
 }
@@ -252,7 +243,7 @@ function playersCntListener() {
         const playersCnt = snapshot.val()
         if(playersCnt == maxPlayersNum){
             console.log('load game')
-            await getPlayesName()
+            // await getPlayesName()
             loadGame()
         }
         else if(playersCnt == -1){
@@ -262,33 +253,26 @@ function playersCntListener() {
     })
 }
 
-async function getPlayesName() {
-    await get(playersRef).then((snapshot) => {
-        playersName[0] = snapshot.val().player1Name
-        playersName[1] = snapshot.val().player2Name
-        playersName[2] = snapshot.val().player3Name
-        playersName[3] = snapshot.val().player4Name
-    })
-}
-
-// function playersNamesListerner() {
-//     onValue(player1NameRef, (snapshot) => {
-//         const name = snapshot.val()
-//         playersName[0] = name
-//     }) 
-//     onValue(player2NameRef, (snapshot) => {
-//         const name = snapshot.val()
-//         playersName[1] = name
-//     }) 
-//     onValue(player3NameRef, (snapshot) => {
-//         const name = snapshot.val()
-//         playersName[2] = name
-//     }) 
-//     onValue(player4NameRef, (snapshot) => {
-//         const name = snapshot.val()
-//         playersName[3] = name
-//     }) 
+// async function getPlayesName() {
+//     let names
+//     await get(playersRef).then((snapshot) => {
+//         names = snapshot.val().playersName
+//     })
+//     for(let i=0; i<maxPlayersNum; ++i){
+//         playersName[i] = names[i]
+//     }
 // }
+
+function playersNamesListerner() {
+    onValue(playersRef, (snapshot) => {
+        let names
+        names = snapshot.val().playersName
+        for(let i=0; i<maxPlayersNum; ++i){
+            playersName[i] = names[i]
+        }
+        initPlayerNameContainer()
+    }) 
+}
 
 function shuffledCardsListener() {
     onValue(shuffledCardsRef, (snapshot) => {
@@ -297,7 +281,6 @@ function shuffledCardsListener() {
         if(shuffledCards !== ""){
             setter('cardsShuffled', true)
             reOrderCards(shuffledCards)
-            // fireShuffleCards([])
         }
     })
 }
@@ -307,7 +290,6 @@ function secondaryDeckClickedListener(){
         //secondaryDeckClickedRef
         if(snapshot.val() != false){
             secondaryDeckClick()
-            // fireSecondaryDeckClick(false)
         }
     })
 }
@@ -317,7 +299,6 @@ function saidSrewListener(){
         //saidSrewRef
         if(snapshot.val() == true){
             saySkrew()
-            // fireSaySkrew(false)
         }
     })
 }
