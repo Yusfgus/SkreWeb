@@ -69,7 +69,7 @@ import {loadGame, setter, getter,
 
 // function testListener() {
 //     onValue(ref(db, 'test'), (snapshot) => {
-//         console.log(snapshot.val())
+//         //console.log(snapshot.val())
 //     })
 // }
 
@@ -100,7 +100,7 @@ export async function initPlayer(name, code) {
 //     signInAnonymously(auth).then(() => {
 //         initPlayer()
 //     }).catch((error) => {
-//         console.log(error.code, error.message)
+//         //console.log(error.code, error.message)
 //     })
 // }
 
@@ -191,7 +191,7 @@ async function incrementNewRoomCode(){
     await get(newRoomCodeRef).then((snapshot) => {
         if (snapshot.exists()) {
             newRoomCode = snapshot.val()
-            console.log(newRoomCode)
+            //console.log(newRoomCode)
             update(ref(db, 'Rooms/'), { newRoomCode: newRoomCode+1 })
         }
     })
@@ -201,7 +201,7 @@ async function incrementNewRoomCode(){
 export async function initRoom(name) {
     currentPlayer = 1
     const newRoomCode = await incrementNewRoomCode()
-    console.log(newRoomCode)
+    //console.log(newRoomCode)
     const newRoom = {
         players: {
             playersCnt: 1,
@@ -214,7 +214,7 @@ export async function initRoom(name) {
             shuffledCards: [],
         },
     };
-    console.log(newRoom)
+    //console.log(newRoom)
     update(ref(db, 'Rooms/'), { [newRoomCode]: newRoom })
     return newRoomCode
 }
@@ -232,7 +232,7 @@ function cardClickedIndexListener() {
     onValue(clickedCardIndexRef, (snapshot) => {
         // cardClickIndex
         const cardIndex = snapshot.val()
-        console.log('cardClickedIndex =', cardIndex)
+        //console.log('cardClickedIndex =', cardIndex)
         if(cardIndex >= 0){
             cardClicked(cardIndex)
         }
@@ -244,11 +244,11 @@ function playersCntListener() {
         //playerCnt
         const playersCnt = snapshot.val()
         if(playersCnt == maxPlayersNum){
-            console.log('load game')
+            //console.log('load game')
             // await getPlayesName()
             setTimeout(()=>{
                 loadGame()
-            },2000)
+            },4000)
         }
         else if(playersCnt == -1){
             alert('someone lift the room')
@@ -312,10 +312,10 @@ export async function isRoomValid(code) {
     let valid = false
     await get(roomCodeRef).then((snapshot) => {
         const exists = snapshot.exists()
-        console.log('snapshot.exists()=', exists)
+        //console.log('snapshot.exists()=', exists)
         if(snapshot.exists()){
             const playersCnt = snapshot.val().players.playersCnt
-            console.log('playersCnt=', playersCnt)
+            //console.log('playersCnt=', playersCnt)
             if(playersCnt < 4){
                 currentPlayer = playersCnt + 1
                 valid = true
