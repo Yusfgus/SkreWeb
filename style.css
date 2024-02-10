@@ -591,20 +591,20 @@ td {
 
 .player-name-container{
     color: rgb(207, 204, 204);
-    font-size: 2.5vw;
+    font-size: 2vw;
     /* text-align: center; */
     display: flex;
     justify-content: center;
     align-items: center;
     /* border: 3px solid #C5881B; */
     background-color: rgba(40, 32, 93, 0.8);
-    padding: 2px;
+    padding: 5px;
     /* z-index: 0; */
 }
 
 #bottom-container .player-name-container,
 #top-container .player-name-container {
-    width: 35%;
+    width: 40%;
     max-height: 10%;
 }
 #bottom-container .player-name-container {
@@ -620,7 +620,7 @@ td {
 
 #right-container .player-name-container,
 #left-container .player-name-container {
-    height: 35%;
+    height: 40%;
     max-width: 10%;
 }
 #right-container .player-name-container {
@@ -640,4 +640,8 @@ td {
 #left-container .player-name-container span{
     display: inline-block;
     transform: rotate(90deg);
+}
+
+.player-name-container span{
+    /* width: 200px; */
 }

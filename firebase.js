@@ -60,6 +60,7 @@ import {loadGame, setter, getter,
         maxPlayersNum, reOrderCards, 
         secondaryDeckClick, saySkrew,
         initPlayerNameContainer,
+        replacePlayersContainers,
         } from './main.js'
 
 // document.addEventListener('DOMContentLoaded', () => {
@@ -87,11 +88,12 @@ function playerLeaves(){
 
 export async function initPlayer(name, code) {
     setRefrences(code)
+    setter('currentPlayer', currentPlayer)
+    replacePlayersContainers()
     playerName = name
     await firePlayerName()
     addEventListeners()
     firePlayersCnt()
-    setter('currentPlayer', currentPlayer)
 }
 
 // function signIn() {

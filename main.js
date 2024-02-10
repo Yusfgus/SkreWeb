@@ -55,7 +55,7 @@ const showCardsTime = 3000
 const insertCardTime = 50
 const dashBoardDelayTime = 600
 const showRoundNameTime = 3000
-const showScoreTableTime = 15000
+const showScoreTableTime = 10000
 const showPlayersCardsTime = 5000
 
 let commandCardActivated = ''
@@ -100,8 +100,6 @@ function tempCreateCards() {
 export function loadGame() {
 
     console.log('currentPlayer =', currentPlayer)
-
-    replacePlayersContainers()
 
     attatchClickEventHandler()
     
@@ -301,7 +299,7 @@ async function showDashBoard(flag1 = false, flag2 = true) {
 //     table.rows[0].cells[column].textContent = value
 // }
 
-function replacePlayersContainers()
+export function replacePlayersContainers()
 {
     const containersId = ['bottom', 'right', 'top', 'left']
     for(let j=0, i=currentPlayer; j<4; i=(i+1)%4, ++j)
@@ -317,7 +315,7 @@ function replacePlayersContainers()
 
 export function initPlayerNameContainer() {
     for(let i=1; i<=maxPlayersNum; ++i){
-        document.getElementById(`player${i}-name-container`).firstChild.innerHTML = playersName[i-1]
+        document.getElementById(`player${i}-name-container`).firstChild.innerHTML = playersName[i-1].replace(/\s/g, '&nbsp;');
     }
 }
 
