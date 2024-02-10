@@ -35,10 +35,8 @@ let saidSrewRef
 
 let playersRef
 let playersCntRef
-let player1NameRef
-let player2NameRef
-let player3NameRef
-let player4NameRef
+let maxPlayersNumRef
+let playersNameRef
 
 let currentPlayer
 let playerName
@@ -83,6 +81,17 @@ function playerLeaves(){
     if(roomRef !== undefined){
         firePlayersCnt(-1)
         remove(roomRef)
+    }
+}
+
+function setMaxPlayersNum(){
+    let radioButtons = document.getElementsByName('players-num');
+    for (let i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked) {
+            console.log('Checked option:', radioButtons[i].value);
+            setter('maxPlayersNum', Number(radioButtons[i].value))
+            break; 
+        }
     }
 }
 
@@ -173,9 +182,9 @@ export function fireShuffleCards(shuffledCards)
 
 async function firePlayerName(){
     let names
-    await get(playersRef).then((snapshot) => {
+    await get(playersNameRef).then((snapshot) => {
         if (snapshot.exists()) {
-            names = snapshot.val().playersName
+            names = snapshot.val()
         }
     })
     names[currentPlayer-1] = playerName
@@ -200,11 +209,13 @@ async function incrementNewRoomCode(){
 
 export async function initRoom(name) {
     currentPlayer = 1
+    setMaxPlayersNum()
     const newRoomCode = await incrementNewRoomCode()
     //console.log(newRoomCode)
     const newRoom = {
         players: {
             playersCnt: 1,
+            maxPlayersNum: maxPlayersNum,
             playersName: [name,'','',''],
         },
         gameInfo: {
@@ -220,8 +231,12 @@ export async function initRoom(name) {
 }
 
 function addEventListeners() {
-    playersNamesListerner()
-    playersCntListener()
+    maxPlayersNumListener()
+    setTimeout(() =>{
+        playersNamesListerner()
+        playersCntListener()
+    }, 1000)
+
     cardClickedIndexListener()
     shuffledCardsListener()
     secondaryDeckClickedListener()
@@ -257,6 +272,12 @@ function playersCntListener() {
     })
 }
 
+function maxPlayersNumListener() {
+    onValue(maxPlayersNumRef, async (snapshot) => {
+        setter('maxPlayersNum', snapshot.val())
+    })
+}
+
 // async function getPlayesName() {
 //     let names
 //     await get(playersRef).then((snapshot) => {
@@ -268,9 +289,9 @@ function playersCntListener() {
 // }
 
 function playersNamesListerner() {
-    onValue(playersRef, (snapshot) => {
+    onValue(playersNameRef, (snapshot) => {
         let names
-        names = snapshot.val().playersName
+        names = snapshot.val()
         for(let i=0; i<maxPlayersNum; ++i){
             playersName[i] = names[i]
         }
@@ -337,8 +358,6 @@ function setRefrences(code) {
 
     playersRef = ref(db, `Rooms/${code}/players/`)
     playersCntRef = ref(db, `Rooms/${code}/players/playersCnt`)
-    player1NameRef = ref(db, `Rooms/${code}/players/player1Name`)
-    player2NameRef = ref(db, `Rooms/${code}/players/player2Name`)
-    player3NameRef = ref(db, `Rooms/${code}/players/player3Name`)
-    player4NameRef = ref(db, `Rooms/${code}/players/player4Name`)
+    maxPlayersNumRef = ref(db, `Rooms/${code}/players/maxPlayersNum`)
+    playersNameRef = ref(db, `Rooms/${code}/players/playersName`)
 }

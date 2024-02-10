@@ -31,7 +31,7 @@ const player4ScoreRow = document.getElementById('player4-score-row')
 
 let roundColumnIndex = 5
 
-export const maxPlayersNum = 4
+export let maxPlayersNum = 4
 const maxRoundNum = 5
 const minTurnsNumBeforSkrew = 3
 
@@ -81,6 +81,10 @@ export function setter(str, value) {
     else if(str === 'cardsShuffled'){
         cardsShuffled = value
     }
+    else if('maxPlayersNum'){
+        maxPlayersNum = value
+    }
+
 }
 
 export function getter(str){
@@ -99,7 +103,7 @@ function tempCreateCards() {
 // loadGame()
 export function loadGame() {
 
-    //console.log('currentPlayer =', currentPlayer)
+    console.log('currentPlayer =', currentPlayer)
 
     attatchClickEventHandler()
     
@@ -302,9 +306,9 @@ async function showDashBoard(flag1 = false, flag2 = true) {
 export function replacePlayersContainers()
 {
     const containersId = ['bottom', 'right', 'top', 'left']
-    for(let j=0, i=currentPlayer; j<4; i=(i+1)%4, ++j)
+    for(let j=0, i=currentPlayer; j<maxPlayersNum; i=(i+1)%maxPlayersNum, ++j)
     {
-        const index = (i ? i: 4)
+        const index = (i ? i: maxPlayersNum)
         document.getElementById(`${containersId[j]}-container`).appendChild(getOwnerContainer(index, true))
         document.getElementById(`${containersId[j]}-container`).appendChild(getOwnerContainer(index, false))
         //console.log(`player${index}-name-container`)
