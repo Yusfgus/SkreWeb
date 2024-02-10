@@ -1150,7 +1150,7 @@ function commandLookAll(card) {
         card.flipCard(currentPlayer == turnPlayer)
     }, showCardsTime)
     
-    if(lookedCards.length == 3){
+    if(lookedCards.length == maxPlayersNum-1){
         // inCommand = true
         commandCardActivated = 'wait'
         lookedCards = []
