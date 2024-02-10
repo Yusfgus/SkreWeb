@@ -2,6 +2,7 @@
     --card-width: 4.5vw;
     --card-height: 7vw;
 
+    --posMargin: 0.5vw;
     --negMargin: -1.3vh;
 
     /* --turn-line-color: rgb(197, 133, 54); */
@@ -79,9 +80,18 @@ main {
 #top-container,
 #left-container {
     display: flex;
-    /* border: 1px solid white; */
+    border: 1px solid white;
     padding: 10px;
-    gap: 10px;
+}
+
+#bottom-container,
+#top-container {
+    gap: 1.5vh;
+}
+
+#right-container,
+#left-container {
+    gap: 0.5vw;
 }
 
 #main-container {
@@ -120,22 +130,23 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* border: 1px solid white; */
+    border: 1px solid white;
 }
 
 .deck {
     position: relative;
-    height: calc(var(--card-height) + 10px);
-    width: calc(var(--card-width) + 10px);
+    height: var(--card-height);
+    width: var(--card-width);
     border: 3px dashed white;
     border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 0.3vw;
 }
 
 #deck-cards-container{
-    gap: 5vw;
+    gap: 3vw;
 }
 
 #bottom-container .cards-container2,
@@ -192,8 +203,8 @@ main {
 #top-container .cards-container2 .card,
 #bottom-container .cards-container .card,
 #top-container .cards-container .card{
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: var(--posMargin);
+    margin-right: var(--posMargin);
 }
 
 #right-container .cards-container2 .card,
@@ -344,7 +355,7 @@ main {
     height: 100%;
     background-image: url('images/round-background.png');
     bottom: -100%;
-    transition: top 0.8s ease, bottom 1s ease;
+    transition: bottom 1s ease;
     background-size: cover;
     background-position: center;
 
@@ -439,8 +450,8 @@ td {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* top: -100%; */
-    transition: top 0.8s ease, bottom 1s ease;
+    top: 0;
+    transition: top 1s ease;
 
     background-image: url('images/background1.png');
     background-size: cover;
@@ -522,6 +533,11 @@ td {
     color: white;
     border: none;
     background-image: linear-gradient(to right, #C5881B, #C02F6E);
+}
+
+#join-room-btn:active,
+#create-room-btn:active {
+    transform: scale(0.95);
 }
 
 @media (max-width: 1000px)
@@ -642,6 +658,32 @@ td {
     transform: rotate(90deg);
 }
 
-.player-name-container span{
-    /* width: 200px; */
+/* Apply styles when height is greater than width */
+@media (orientation: portrait){
+    /* Styles for portrait orientation */
+    :root {
+        --card-width: 15vw;
+        --card-height: 7vh;
+    
+        --negMargin: -0.4vh;
+        --posMargin: -2.4vw;
+    }
+    main{
+        grid-template-columns: 40% 20% 40%;
+        grid-template-rows: 23% 54% 23%;
+        grid-template-areas: "p3 p3 p3"
+                            "p4 d p2"
+                            "p1 p1 p1";
+    }
+    #deck-cards-container{
+        gap: 1vw;
+        flex-direction: column-reverse;
+    }
+    #hint-msg {
+        top: 4vh;
+        width: 250%;
+    }
+    .player-name-container{
+        font-size: 4.5vw;
+    }
 }

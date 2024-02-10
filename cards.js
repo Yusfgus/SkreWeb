@@ -108,9 +108,10 @@ export default class Card {
                 const imagePath = getImagePath(this.name)
                 addSrcToImageElem(this.cardFrontImg, imagePath)
                 
-                setTimeout(() => {
-                    innerCardElem.style.transform = 'rotateY(180deg)'
-                }, 500)
+                // setTimeout(() => {
+                //     innerCardElem.style.transform = 'rotateY(180deg)'
+                // }, 500)
+                innerCardElem.style.transform = 'rotateY(180deg)'
             }
             else {
                 //put eye

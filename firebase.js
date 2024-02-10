@@ -246,7 +246,9 @@ function playersCntListener() {
         if(playersCnt == maxPlayersNum){
             console.log('load game')
             // await getPlayesName()
-            loadGame()
+            setTimeout(()=>{
+                loadGame()
+            },2000)
         }
         else if(playersCnt == -1){
             alert('someone lift the room')

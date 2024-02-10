@@ -92,8 +92,8 @@ export function getter(str){
 function tempCreateCards() {
     let cardIndex = 0
     for(let i=0; i<=50; ++i){
-        initCard('9', 9, getOwnerContainer(0), cardIndex++)
-        initCard('8', 8, getOwnerContainer(0), cardIndex++)
+        initCard('redSkrew', 25, getOwnerContainer(0), cardIndex++)
+        initCard('skrewDriver', 0, getOwnerContainer(0), cardIndex++)
     }
 }
 // loadGame()
@@ -163,7 +163,7 @@ async function startRound() {
     }, waitTime)
     
     
-    await wait(initRound, distributionsTime + showCardsTime + 2000 + 3000)
+    await wait(initRound, distributionsTime + showPlayersCardsTime + 2000 + 3000)
     putFirstCard()
     // roundStarted = true
     // roundCounter++
@@ -199,7 +199,7 @@ async function initRound() {
     await wait(distributeCards, distributionsTime)
     console.log('initial players scores =', playersScore)
     
-    await wait(showFirstTwoCards, showCardsTime + 1000)
+    await wait(showFirstTwoCards, showPlayersCardsTime + 1000)
 }
 
 function changeTurn(ms = 1500) {
@@ -315,7 +315,7 @@ export function replacePlayersContainers()
 
 export function initPlayerNameContainer() {
     for(let i=1; i<=maxPlayersNum; ++i){
-        document.getElementById(`player${i}-name-container`).firstChild.innerHTML = playersName[i-1].replace(/\s/g, '&nbsp;');
+        document.getElementById(`player${i}-name-container`).firstChild.innerHTML = playersName[i-1].replace(/\s/g, '&nbsp;&nbsp;');
     }
 }
 
@@ -558,7 +558,7 @@ async function showFirstTwoCards() {
             getCardClass(firstChild).flipCard()
             getCardClass(secondChild).flipCard()
         }, 800)
-    },showCardsTime + 800)
+    },showPlayersCardsTime + 800)
 
     getCardClass(firstChild).flipCard()
     getCardClass(secondChild).flipCard()
@@ -878,8 +878,12 @@ function chooseCard(card)
             changeTurn(1500)
 
             function pasraSucceded(){
+                console.log(card.cardName)
+                console.log(card.cardName === ' redSkrew')
+                console.log(lastSecondaryCard.cardName)
+                console.log(lastSecondaryCard.cardName === 'skrewDriver')
                 return card.cardName === lastSecondaryCard.cardName
-                        || card.cardName === ' redSkrew' && lastSecondaryCard.cardName === 'skrewDriver'
+                        || card.cardName === 'redSkrew' && lastSecondaryCard.cardName === 'skrewDriver'
             }
         }
     }
