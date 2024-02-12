@@ -46,6 +46,7 @@ let roundCounter = 0
 let turnCounter = 0
 let turnsAfterSkrew = -1
 
+const animationShuffleCardsTime = 0
 const distributionsTime = 5000
 const showCardsTime = 3000
 const insertCardTime = 50
@@ -92,8 +93,8 @@ export function getter(str){
 function tempCreateCards() {
     let cardIndex = 0
     for(let i=0; i<=50; ++i){
-        initCard('redSkrew', 25, getOwnerContainer(0), cardIndex++)
-        initCard('skrewDriver', 0, getOwnerContainer(0), cardIndex++)
+        initCard('pasra', 10, getOwnerContainer(0), cardIndex++)
+        initCard('9', 9, getOwnerContainer(0), cardIndex++)
     }
 }
 // loadGame()
@@ -173,7 +174,7 @@ async function startRound() {
     }, waitTime)
     
     
-    await wait(initRound, distributionsTime + showPlayersCardsTime + 2000 + 3000)
+    await wait(initRound, distributionsTime + showPlayersCardsTime + animationShuffleCardsTime + 2000 + 3000)
     putFirstCard()
     // roundStarted = true
     // roundCounter++
@@ -205,6 +206,7 @@ async function initRound() {
     // inCommand = false
 
     addCardsToPrimaryDeck()
+    // await wait(animationShuffleCards, animationShuffleCardsTime)
     //console.log('distribute')
     await wait(distributeCards, distributionsTime)
     //console.log('initial players scores =', playersScore)
@@ -213,7 +215,8 @@ async function initRound() {
 }
 
 function changeTurn(ms = 1500) {
-
+    // console.log(secondaryDeckcards)
+    
     fireSecondaryDeckClick(false)
     fireCardClicked(-1)
 
@@ -569,6 +572,30 @@ function removeCardsFrom(parentDiv, flip = false) {
         }
         parentDiv.removeChild(parentDiv.firstChild);
     }
+}
+
+function animationShuffleCards(){
+    let i=0
+    const id = setInterval(() =>
+    {
+        console.log(primaryDeckCardContainer.children[i])
+        console.log(primaryDeckCardContainer.children[i].style)
+        primaryDeckCardContainer.children[i].style.animation = 'shuffle 0.5s infinite ease-in-out;'
+        console.log(primaryDeckCardContainer.children[i].style)
+        if(++i==57){
+            clearInterval(id)
+        }
+    }, 700)
+    setTimeout(() => {
+        i = 0
+        const id = setInterval(() =>
+        {
+            primaryDeckCardContainer.children[i].style.animation = 'none'
+            if(++i==57){
+                clearInterval(id)
+            }
+        }, 200)
+    }, 10000)
 }
 
 function addCardsToPrimaryDeck() {
@@ -1184,6 +1211,7 @@ function commandPasra(card) {
     commandCardActivated = 'wait'
 
     // card.flipCard()
+    secondaryDeckcards.push(card)
     changeCardOwner(card, secondaryDeckCardContainer, true)
     updateScore(turnPlayer - 1, - card.cardValue)
 

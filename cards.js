@@ -33,10 +33,10 @@ export default class Card {
         // <div class="card" id="this.name">
         //     <div class="card-inner">
         //         <div class="card-front">
-        //             <img src="images/card-JackClubs.png" alt="king image" class="card-img">
+        //             <img src="images/-1.png" alt="king image" class="card-img">
         //         </div>
         //         <div class="card-back">
-        //             <img src="images/card-back-Blue.png" alt="back image" class="card-img">
+        //             <img src="images/back.png" alt="back image" class="card-img">
         //         </div>
         //     </div>
         // </div> 
