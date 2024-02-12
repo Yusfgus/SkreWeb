@@ -12,12 +12,14 @@
     --lose-color: #6A0102;
 
     --font-size: 1.5vw;
+
+    --round-name-size: 40vw;
 }
 
 body {
     margin: 0;
     height: 100vh;
-    min-height: 100svh;
+    /* height: 100lvh; */
     /* min-height: -webkit-fill-available; */
     width: 100vw;
 
@@ -370,7 +372,7 @@ main {
     transition: width 0.8s ease, height 0.5s ease;
     /* background-color: aqua; */
 
-    /* background-image: url('images/round3-background.png'); */
+    background-image: url('images/round3-background.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -451,6 +453,7 @@ td {
     justify-content: center;
     align-items: center;
     top: 0;
+    /* top: -100%; */
     transition: top 1s ease;
 
     background-image: url('images/background1.png');
@@ -579,7 +582,7 @@ td {
     color: white;
     font-size: var(--font-size);
     font-weight: 700;
-    margin-left: -2.1vw;
+    margin-left: -2vw;
 }
 
 /* #num-of-players{
@@ -619,6 +622,8 @@ td {
     font-weight: 600;
     /* text-shadow: 0 0 2px white; */
     transition: display 0.8s;
+
+    visibility: hidden;
 }
 
 @media (max-width: 700px) {
@@ -689,8 +694,11 @@ td {
         --card-width: 15vw;
         --card-height: 7vh;
     
-        --negMargin: -0.4vh;
-        --posMargin: -2.4vw;
+        --negMargin: -0.8vh;
+        --posMargin: -2vw;
+
+        /* --font-size: 2.8vw */
+        --round-name-size: 80vw;
     }
     main{
         grid-template-columns: 40% 20% 40%;
@@ -709,5 +717,8 @@ td {
     }
     .player-name-container{
         font-size: 4.5vw;
+    }
+    #room-code {
+        font-size: 5.5vw;
     }
 }

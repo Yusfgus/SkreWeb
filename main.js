@@ -35,7 +35,6 @@ export let maxPlayersNum = 4
 const maxRoundNum = 5
 const minTurnsNumBeforSkrew = 3
 
-let roomCode
 let currentPlayer = 0
 let turnPlayer = 0
 let playerSaidSkrew = 0
@@ -45,7 +44,7 @@ let primaryDeckClicked = 0
 let secondaryDeckClicked = false
 let cardsShuffled = false
 
-// let roundStarted = false
+let playing = false
 let roundCounter = 0
 let turnCounter = 0
 let turnsAfterSkrew = -1
@@ -218,6 +217,7 @@ function changeTurn(ms = 1500) {
     }
 
     turnCounter++
+    playing = false
 
     setTimeout(() => {
         
@@ -254,8 +254,8 @@ function showRoundName() {
     const imgPath = `url('images/round${roundCounter}-background.png')`
     // //console.log(imgPath)
     roundName.style.backgroundImage = (imgPath)
-    roundName.style.height = '40vw'
-    roundName.style.width = '40vw'
+    roundName.style.height = 'var(--round-name-size)'
+    roundName.style.width = 'var(--round-name-size)'
 
     setTimeout(() => {
         roundName.style.height = '0'
@@ -306,14 +306,33 @@ async function showDashBoard(flag1 = false, flag2 = true) {
 export function replacePlayersContainers()
 {
     const containersId = ['bottom', 'right', 'top', 'left']
-    for(let j=0, i=currentPlayer; j<maxPlayersNum; i=(i+1)%maxPlayersNum, ++j)
+    for(let j=0, i=currentPlayer; j<4; i=(i+1)%4, ++j)
     {
-        const index = (i ? i: maxPlayersNum)
-        document.getElementById(`${containersId[j]}-container`).appendChild(getOwnerContainer(index, true))
-        document.getElementById(`${containersId[j]}-container`).appendChild(getOwnerContainer(index, false))
-        //console.log(`player${index}-name-container`)
-        document.getElementById(`${containersId[j]}-container`).appendChild(document.getElementById(`player${index}-name-container`))
-        document.getElementById(`${containersId[j]}-container`).appendChild(document.getElementById(`player${index}-turn-line`))
+        const index = (i ? i: 4)
+        const parentContainer = document.getElementById(`${containersId[j]}-container`)
+        parentContainer.appendChild(getOwnerContainer(index, true))
+        parentContainer.appendChild(getOwnerContainer(index, false))
+        parentContainer.appendChild(document.getElementById(`player${index}-name-container`))
+        parentContainer.appendChild(document.getElementById(`player${index}-turn-line`))
+    }
+
+    if(maxPlayersNum == 2)
+    {
+        const index = currentPlayer == 1? 2: 1
+        let parentContainer = document.getElementById('top-container')
+        parentContainer.appendChild(getOwnerContainer(index, true))
+        parentContainer.appendChild(getOwnerContainer(index, false))
+        parentContainer.appendChild(document.getElementById(`player${index}-name-container`))
+        parentContainer.appendChild(document.getElementById(`player${index}-turn-line`))
+        
+        const oldContainer = currentPlayer == 1? 'right': 'left'
+        parentContainer = document.getElementById(`${oldContainer}-container`)
+        const topPlayerIndex = currentPlayer == 1? 3: 4
+
+        parentContainer.appendChild(getOwnerContainer(topPlayerIndex, true))
+        parentContainer.appendChild(getOwnerContainer(topPlayerIndex, false))
+        parentContainer.appendChild(document.getElementById(`player${topPlayerIndex}-name-container`))
+        parentContainer.appendChild(document.getElementById(`player${topPlayerIndex}-turn-line`))
     }
 }
 
@@ -512,7 +531,7 @@ async function endRound()
 }
 
 function canSaySkrew() {
-    return  turnPlayer == currentPlayer && turnsAfterSkrew == -1 && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew
+    return !playing && turnPlayer == currentPlayer && turnsAfterSkrew == -1 && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew
 }
 
 export async function saySkrew() {
@@ -611,15 +630,10 @@ function initCard(name, value, owner, cardIndex) {
 }
 
 export function reOrderCards(cardsIndex) {
-    // let tempCards = []
     for(let i=0; i<cards.length; ++i) {
         const index = cardsIndex[i]
-        // tempCards.push(cards[index])
-        // tempCards[i].setDataValue(i)
         primaryDeckcards.push(cards[index])
     }
-    // cards = tempCards
-    //console.log(cards)
 }
 
 export function shuffleCards() {
@@ -708,7 +722,9 @@ function getPlayerIndex(playerCardsContainer) {
     return playerCardsContainer.id[6] - 1
 }
 
-export function cardClicked(cardIndex) {
+export function cardClicked(cardIndex) 
+{
+    playing = true
     const card = cards[cardIndex]
     //console.log('card clicked')
     const cardOwnerElem = card.cardOwnerContainer
@@ -927,32 +943,21 @@ export function secondaryDeckClick() {
     // }
 }
 
-let displayHint = true
 const hintMsgElem = document.getElementById('hint-msg')
 
 function setHintMsg(commandCardActivated){
     if(commandCardActivated === 'lookYours'){
         hintMsgElem.innerHTML = 'بص في ورقتك'
-        hintMsgElem.style.display = 'flex'
-        displayHint = false
+        hintMsgElem.style.visibility = 'visible'
     }
     else if(commandCardActivated === 'lookOthers'){ 
         hintMsgElem.innerHTML = 'بص في ورقة غيرك'
-        hintMsgElem.display = 'flex'
-        displayHint = false
+        hintMsgElem.style.visibility = 'visible'
     }
-
-    setTimeout(() => {
-        hintMsgElem.style.display = 'none'
-    }, 2000)
 }
 
 async function commandActivate(selectedCard) {
     //console.log('command is', commandCardActivated)
-    // if(displayHint) {
-    //     setHintMsg(commandCardActivated)
-    //     displayHint = false
-    // }
     await wait(() => 
     {
         if(commandCardActivated === 'lookYours') {
@@ -977,7 +982,7 @@ function finishCommand(ms) {
     //console.log('command finished')
     setTimeout(() => {
         commandCardActivated = ''
-        displayHint = true
+        hintMsgElem.style.visibility = 'hidden'
         // inCommand = false
         changeTurn(0)
     }, ms)
@@ -1025,17 +1030,17 @@ async function commandLookOthers(card) {
     finishCommand(0)
 }
 
-async function animationExchange(card1, card2)
-{
-    card1.cardDivElem.style.transform = 'rotateZ(20deg)'
-    card2.cardDivElem.style.transform = 'rotateZ(20deg)'
-    await wait(() => {
-        setTimeout(() => {
-            card1.cardDivElem.style.transform = ''
-            card2.cardDivElem.style.transform = ''
-        }, 1500)
-    }, 2000)
-}
+// async function animationExchange(card1, card2)
+// {
+//     card1.cardDivElem.style.transform = 'rotateZ(20deg)'
+//     card2.cardDivElem.style.transform = 'rotateZ(20deg)'
+//     await wait(() => {
+//         setTimeout(() => {
+//             card1.cardDivElem.style.transform = ''
+//             card2.cardDivElem.style.transform = ''
+//         }, 1500)
+//     }, 2000)
+// }
 
 function insertCardInIndex(card, parent, index) {
 

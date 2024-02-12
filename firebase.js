@@ -95,8 +95,19 @@ function setMaxPlayersNum(){
     }
 }
 
+async function getMaxPlayersNum(){
+    if(currentPlayer == 1){
+        return
+    }
+
+    await get(maxPlayersNumRef).then((snapshot) => {
+        setter('maxPlayersNum', snapshot.val())
+    })
+}
+
 export async function initPlayer(name, code) {
     setRefrences(code)
+    await getMaxPlayersNum()
     setter('currentPlayer', currentPlayer)
     replacePlayersContainers()
     playerName = name
@@ -231,7 +242,7 @@ export async function initRoom(name) {
 }
 
 function addEventListeners() {
-    maxPlayersNumListener()
+    // maxPlayersNumListener()
     setTimeout(() =>{
         playersNamesListerner()
         playersCntListener()
@@ -272,11 +283,11 @@ function playersCntListener() {
     })
 }
 
-function maxPlayersNumListener() {
-    onValue(maxPlayersNumRef, async (snapshot) => {
-        setter('maxPlayersNum', snapshot.val())
-    })
-}
+// function maxPlayersNumListener() {
+//     onValue(maxPlayersNumRef, async (snapshot) => {
+//         setter('maxPlayersNum', snapshot.val())
+//     })
+// }
 
 // async function getPlayesName() {
 //     let names
