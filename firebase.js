@@ -77,10 +77,14 @@ import {loadGame, setter, getter,
 
 window.addEventListener('beforeunload', playerLeaves)
 
+export function removeRoom(){
+    remove(roomRef)
+}
+
 function playerLeaves(){
     if(roomRef !== undefined){
         firePlayersCnt(-1)
-        remove(roomRef)
+        removeRoom()
     }
 }
 

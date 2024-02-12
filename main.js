@@ -1,7 +1,8 @@
 import Card from "./cards.js";
 import { fireCardClicked, fireSecondaryDeckClick, 
         fireShuffleCards, fireSaySkrew, 
-        // initFirebase 
+        // initFirebase,
+        removeRoom,
         } from "./firebase.js";
 
 // const cardNames = ['skrewDriver', '1', '2', '3', '4', '5','6', '7', '8', '9', '10', 'exchange', 'lookAll', 'pasra', '-1', '20', 'redSkrew']
@@ -24,10 +25,6 @@ const roundName = document.getElementById('round-name')
 // const scoreTable = document.getElementById('score-table')
 const rowToRight = document.querySelectorAll('.row-to-right')
 const rowToLeft = document.querySelectorAll('.row-to-left')
-const player1ScoreRow = document.getElementById('player1-score-row')
-const player2ScoreRow = document.getElementById('player2-score-row')
-const player3ScoreRow = document.getElementById('player3-score-row')
-const player4ScoreRow = document.getElementById('player4-score-row')
 
 let roundColumnIndex = 5
 
@@ -144,16 +141,26 @@ function initGame()
 //     currentPlayer = startTurn
 // }
 
+async function endGame(){
+    if(++roundCounter <= maxRoundNum)
+    {
+        return false
+    }
+    await wait(() => {
+        showDashBoard(true, false)
+        // showDashBoard(true, false)
+    }, waitTime)
+    // alert("game is finished")
+    document.getElementById('log-in-page').style.top = '-100%'
+    removeRoom()
+
+    return true
+}
+
 async function startRound() {
 
     let waitTime = dashBoardDelayTime + showRoundNameTime + 2000
-    if(++roundCounter > maxRoundNum)
-    {
-        await wait(() => {
-            showDashBoard(true, false)
-            // showDashBoard(true, false)
-        }, waitTime)
-        alert("game is finished")
+    if(await endGame()){
         return
     }
 
@@ -344,10 +351,10 @@ export function initPlayerNameContainer() {
 
 function initScoreTable() {
     roundColumnIndex = 5
-    player1ScoreRow.rows[0].cells[6].textContent = playersName[0]
-    player2ScoreRow.rows[0].cells[6].textContent = playersName[1]
-    player3ScoreRow.rows[0].cells[6].textContent = playersName[2]
-    player4ScoreRow.rows[0].cells[6].textContent = playersName[3]
+    for(let i=1; i<=maxPlayersNum; ++i){
+        const playerScoreRow = getPlayerScoreRow(i)
+        playerScoreRow.rows[0].cells[6].textContent = playersName[i-1]
+    }
 }
 
 function getScore(arr, min) {
@@ -401,7 +408,9 @@ function colorScoreTableCells(columnsIndex) {
     // //console.log('max score is', maxScore)
     const minScore = getScore(arr, true)
 
-    arr.forEach((score, index) => {
+    for(let index = 0; index<maxPlayersNum; ++index)
+    {
+        const score = arr[index]
         if(score == minScore)
         {
             const wonPlayerRow = document.getElementById(`player${index+1}-score-row`)
@@ -419,19 +428,19 @@ function colorScoreTableCells(columnsIndex) {
             const losePlayerRow = document.getElementById(`player${index+1}-score-row`)
             losePlayerRow.rows[0].cells[columnsIndex].style.backgroundColor = '#6A0102'
         }
-    })
+    }
+}
+
+function getPlayerScoreRow(playerNum){
+    return document.getElementById(`player${playerNum}-score-row`)
 }
 
 function updateScoreTable() {
-    player1ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[0]
-    player2ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[1]
-    player3ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[2]
-    player4ScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[3]
-
-    player1ScoreRow.rows[0].cells[0].textContent = totalPlayersScore[0]
-    player2ScoreRow.rows[0].cells[0].textContent = totalPlayersScore[1]
-    player3ScoreRow.rows[0].cells[0].textContent = totalPlayersScore[2]
-    player4ScoreRow.rows[0].cells[0].textContent = totalPlayersScore[3]
+    for(let i=1; i<=maxPlayersNum; ++i){
+        const playerScoreRow = getPlayerScoreRow(i)
+        playerScoreRow.rows[0].cells[roundColumnIndex].textContent = playersScore[i-1]
+        playerScoreRow.rows[0].cells[0].textContent = totalPlayersScore[i-1]
+    }
     
     colorScoreTableCells(roundColumnIndex)
     if(roundCounter == maxRoundNum){
