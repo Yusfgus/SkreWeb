@@ -2,7 +2,7 @@ import Card from "./cards.js";
 import { fireCardClicked, fireSecondaryDeckClick, 
         fireShuffleCards, fireSaySkrew, 
         // initFirebase,
-        removeRoom,
+        removeRoom, addToHistory,
         } from "./firebase.js";
 
 // const cardNames = ['skrewDriver', '1', '2', '3', '4', '5','6', '7', '8', '9', '10', 'exchange', 'lookAll', 'pasra', '-1', '20', 'redSkrew']
@@ -12,8 +12,8 @@ let cards = []
 let primaryDeckcards = []
 let secondaryDeckcards = []
 
-let totalPlayersScore = []
-let playersScore = []
+let totalPlayersScore
+let playersScore
 export let playersName = []
 
 const primaryDeckCardContainer = document.getElementById('primaryDeck')
@@ -121,7 +121,7 @@ function initGame()
     // initPlayerNameContainer()
     initScoreTable()
     document.getElementById('room-code').classList.add('hide-room-code')
-    totalPlayersScore = [0, 0, 0, 0]
+    totalPlayersScore = new Array(maxPlayersNum).fill(0);
     roundCounter = 0
     // startTurn = 0
     // initturnPlayer()
@@ -149,6 +149,9 @@ async function endGame(){
         return false
     }
     console.log('ending game')
+    if(currentPlayer == 1){
+        addToHistory(totalPlayersScore)
+    }
     let waitTime = dashBoardDelayTime + showRoundNameTime + 2000
     await wait(() => {
         showDashBoard(true, false)
@@ -203,7 +206,7 @@ async function initRound() {
     await wait(waitUnitShuffling, 3000)
     // reOrderCards()
     
-    playersScore = [0, 0, 0, 0]
+    playersScore = new Array(maxPlayersNum).fill(0);
     turnPlayer = 0
     // currentPlayer = 0
     turnCounter = 0

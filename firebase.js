@@ -41,6 +41,7 @@ let playersNameRef
 let currentPlayer
 let playerName
 let roomCode
+let startTime
 
 const fireSafeTime = 2000
 
@@ -77,8 +78,42 @@ import {loadGame, setter, getter,
 
 window.addEventListener('beforeunload', playerLeaves)
 
+function setStartTime(){
+    const currentDate = new Date();
+    // Get the current date
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 for January, 11 for December)
+    const day = currentDate.getDate();
+
+    // Get the current time
+    let hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
+    const seconds = currentDate.getSeconds();
+
+    hours %= 12
+    const period = hours >= 12 ? 'PM' : 'AM';
+    if (hours === 0) {
+        hours = 12;
+    }
+
+    startTime = `${hours}:${minutes}:${seconds} ${period} ${day}-${month}-${year}`
+}
+
+export function addToHistory(totalScore)
+{
+    const result = {};
+    for (let i = 0; i < maxPlayersNum; i++) {
+        const player = playersName[i];
+        const score = totalScore[i];
+        result[player] = score;
+    }
+
+    const historyRef = ref(db, 'History/')
+    update(historyRef, { [startTime]: result })
+}
+
 export function removeRoom(){
-    // remove(roomRef)
+    remove(roomRef)
 }
 
 function playerLeaves(){
@@ -115,6 +150,7 @@ export async function initPlayer(name, code) {
     setter('currentPlayer', currentPlayer)
     replacePlayersContainers()
     playerName = name
+    // playersName = new Array(maxPlayersNum).fill('');
     await firePlayerName()
     addEventListeners()
     firePlayersCnt()
@@ -225,13 +261,16 @@ async function incrementNewRoomCode(){
 export async function initRoom(name) {
     currentPlayer = 1
     setMaxPlayersNum()
+    setStartTime()
     const newRoomCode = await incrementNewRoomCode()
     //console.log(newRoomCode)
+    const names = new Array(maxPlayersNum).fill('');
+    names[0] = name
     const newRoom = {
         players: {
             playersCnt: 1,
             maxPlayersNum: maxPlayersNum,
-            playersName: [name,'','',''],
+            playersName: names,
         },
         gameInfo: {
             clickedCardIndex: -1,
