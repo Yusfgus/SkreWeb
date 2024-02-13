@@ -39,6 +39,7 @@ let startTurn = 1
 
 let primaryDeckClicked = 0
 let secondaryDeckClicked = false
+let cardChoodes = false
 let cardsShuffled = false
 
 let playing = false
@@ -100,7 +101,7 @@ function tempCreateCards() {
 // loadGame()
 export function loadGame() {
 
-    console.log('currentPlayer =', currentPlayer)
+    // console.log('currentPlayer =', currentPlayer)
 
     attatchClickEventHandler()
     
@@ -227,8 +228,7 @@ function changeTurn(ms = 1500) {
     }
 
     turnCounter++
-    playing = false
-
+    
     setTimeout(() => {
         
         if(turnPlayer == 0){
@@ -240,9 +240,12 @@ function changeTurn(ms = 1500) {
         }
         
         // currentPlayer = turnPlayer
-
+        
         primaryDeckClicked = 0
         secondaryDeckClicked = false
+        cardChoodes = false
+        commandCardActivated = ''
+        playing = false
     
         //console.log(`player ${turnPlayer} turn`)
         getturnPlayerLine(turnPlayer).style.animation = 'glow 2.5s ease-in-out infinite'
@@ -536,7 +539,7 @@ async function endRound()
     // await wait(showDashBoard, 6000)  // show score table
 
     fireSaySkrew(false)
-    fireShuffleCards([])
+    // fireShuffleCards([])
 
     startRound()
     // //console.log("primary deck lenght", primaryDeckCardContainer.children.length)
@@ -578,10 +581,10 @@ function animationShuffleCards(){
     let i=0
     const id = setInterval(() =>
     {
-        console.log(primaryDeckCardContainer.children[i])
-        console.log(primaryDeckCardContainer.children[i].style)
+        // console.log(primaryDeckCardContainer.children[i])
+        // console.log(primaryDeckCardContainer.children[i].style)
         primaryDeckCardContainer.children[i].style.animation = 'shuffle 0.5s infinite ease-in-out;'
-        console.log(primaryDeckCardContainer.children[i].style)
+        // console.log(primaryDeckCardContainer.children[i].style)
         if(++i==57){
             clearInterval(id)
         }
@@ -666,6 +669,7 @@ function initCard(name, value, owner, cardIndex) {
 }
 
 export function reOrderCards(cardsIndex) {
+    // console.log(cards)
     for(let i=0; i<cards.length; ++i) {
         const index = cardsIndex[i]
         primaryDeckcards.push(cards[index])
@@ -760,7 +764,10 @@ function getPlayerIndex(playerCardsContainer) {
 
 export function cardClicked(cardIndex) 
 {
-    playing = true
+    // console.log(primaryDeckClicked)
+    // console.log(secondaryDeckClicked)
+    // console.log(cardChoodes)
+
     const card = cards[cardIndex]
     //console.log('card clicked')
     const cardOwnerElem = card.cardOwnerContainer
@@ -768,13 +775,13 @@ export function cardClicked(cardIndex)
         //console.log('in command')
         commandActivate(card)
     }
-    else if(card.cardOwnerContainer === getOwnerContainer(turnPlayer)
-    || card.cardOwnerContainer === getOwnerContainer(turnPlayer, true))
+    else if(!cardChoodes && (card.cardOwnerContainer === getOwnerContainer(turnPlayer)
+        || card.cardOwnerContainer === getOwnerContainer(turnPlayer, true)))
     {
         //console.log('call choosCard')
         chooseCard(card)
     }
-    else if(cardOwnerElem === primaryDeckCardContainer){
+    else if(!secondaryDeckClicked && !cardChoodes && cardOwnerElem === primaryDeckCardContainer){
         primaryDeckClick()
     }
     // else if(cardOwnerElem === secondaryDeckCardContainer){
@@ -809,7 +816,7 @@ function attatchClickEventHandlerToCard(card) {
 function attatchClickEventHandler() {
     // primaryDeckCardContainer.addEventListener('click', primaryDeckClick)
     secondaryDeckCardContainer.addEventListener('click', () => {
-        if(canChooseCard()) {
+        if(canChooseCard() && (secondaryDeckcards.length > 0 && commandCardActivated === '' || primaryDeckClicked == 1)) {
             fireSecondaryDeckClick()
         }
     })
@@ -851,12 +858,13 @@ function primaryDeckClick() {
     // if(!canChooseCard()){
     //     return
     // }
+    playing = true
     if(commandCardActivated === '' && primaryDeckClicked == 0 && primaryDeckcards.length > 0) {
         const card = primaryDeckcards[primaryDeckcards.length - 1]
         if(currentPlayer == turnPlayer){
             card.flipCard()
         }
-        primaryDeckClicked++
+        primaryDeckClicked = 1
     }
     //console.log('in primaryDeckClick primaryDeckClicked =', primaryDeckClicked)
 }
@@ -888,16 +896,19 @@ function chooseCard(card)
     // }
 
     //console.log('in chooseCard primaryDeckClicked =', primaryDeckClicked)
+    playing = true
     if(primaryDeckClicked == 1) {
+        cardChoodes = true
         //console.log('from primary deck to player', turnPlayer)
         const choosedCard = primaryDeckcards.pop()
-        primaryDeckClicked++
+        primaryDeckClicked = 2
     
         addCardsToSecondaryDeck(card, choosedCard)
         changeTurn(300)
     }
     else if (secondaryDeckcards.length > 0)
     {
+        cardChoodes = true
         //console.log('secondary size =', secondaryDeckcards.length)
         //console.log('secondaryDeckClicked =', secondaryDeckClicked)    
         if(secondaryDeckClicked)
@@ -952,25 +963,28 @@ export function secondaryDeckClick() {
 
     
     //console.log('in secondaryDeckClick primaryDeckClicked =', primaryDeckClicked)
+    playing = true
     if(primaryDeckClicked == 1) {
         //console.log('from primary deck to secondary deck')
         const victimCard = primaryDeckcards.pop()
         changeCardOwner(victimCard, secondaryDeckCardContainer, currentPlayer!=turnPlayer)
         secondaryDeckcards.push(victimCard)
-        primaryDeckClicked++
+        primaryDeckClicked = 3
         
         commandCardActivated = victimCard.cardCommand
         
-        if(commandCardActivated === ''){
+        if(commandCardActivated === '' || getOwnerContainer(turnPlayer).children.length == 0){
             //console.log('not command then change turn')
             changeTurn(300)
-        }else {
+        }
+        else 
+        {
             setHintMsg(commandCardActivated)
         }
     }
     else if(secondaryDeckcards.length > 0 && commandCardActivated === '')
     {
-        //console.log('secondary deck clicked')
+        // console.log('secondary deck clicked')
         secondaryDeckClicked = true
     }
     // else {
