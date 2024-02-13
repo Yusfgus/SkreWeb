@@ -305,12 +305,14 @@ function playersCntListener() {
 
 function playersNamesListerner() {
     onValue(playersNameRef, (snapshot) => {
-        let names
-        names = snapshot.val()
-        for(let i=0; i<maxPlayersNum; ++i){
-            playersName[i] = names[i]
+        if(snapshot.exists()){
+            let names
+            names = snapshot.val()
+            for(let i=0; i<maxPlayersNum; ++i){
+                playersName[i] = names[i]
+            }
+            initPlayerNameContainer()
         }
-        initPlayerNameContainer()
     }) 
 }
 

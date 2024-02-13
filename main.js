@@ -148,13 +148,17 @@ async function endGame(){
     {
         return false
     }
+    console.log('ending game')
+    let waitTime = dashBoardDelayTime + showRoundNameTime + 2000
     await wait(() => {
         showDashBoard(true, false)
-        // showDashBoard(true, false)
     }, waitTime)
     // alert("game is finished")
-    document.getElementById('log-in-page').style.top = '-100%'
-    removeRoom()
+    document.getElementById('log-in-page').style.top = '0'
+    setTimeout(() => {
+        removeRoom()
+        location.reload()
+    }, 2000)
 
     return true
 }
@@ -163,6 +167,7 @@ async function startRound() {
 
     let waitTime = dashBoardDelayTime + showRoundNameTime + 2000
     if(await endGame()){
+        console.log('game ended')
         return
     }
 
@@ -294,17 +299,17 @@ function showScoreTable() {
     }, showScoreTableTime)
 }
 
-async function showDashBoard(flag1 = false, flag2 = true) {
+async function showDashBoard(displayScoreTable = false, displayRoundName = true) {
     // dashboard.style.top = '0'
     dashboard.style.bottom = '0'
 
     await sleep(dashBoardDelayTime)
 
-    if(flag1) {
+    if(displayScoreTable) {
         await wait(showScoreTable, showScoreTableTime + dashBoardDelayTime)
     }
 
-    if(flag2){
+    if(displayRoundName){
         await wait(showRoundName, showRoundNameTime + 200)
     }
 
