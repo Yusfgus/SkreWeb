@@ -78,7 +78,7 @@ import {loadGame, setter, getter,
 window.addEventListener('beforeunload', playerLeaves)
 
 export function removeRoom(){
-    remove(roomRef)
+    // remove(roomRef)
 }
 
 function playerLeaves(){
