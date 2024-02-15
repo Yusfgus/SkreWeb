@@ -76,8 +76,6 @@ import {loadGame, setter, getter,
 //     update(ref(db), {test: true})
 // }
 
-window.addEventListener('beforeunload', playerLeaves)
-
 function setStartTime(){
     const currentDate = new Date();
     // Get the current date
@@ -108,15 +106,22 @@ export function addToHistory(totalScore)
         result[player] = score;
     }
 
+    const data = {
+        date: startTime,
+        scores: result,
+    }
+
     const historyRef = ref(db, 'History/')
-    update(historyRef, { [startTime]: result })
+    update(historyRef, { [roomCode]: data })
 }
 
 export function removeRoom(){
-    remove(roomRef)
+    if(currentPlayer == 1){
+        remove(roomRef)
+    }
 }
 
-function playerLeaves(){
+export function playerLeaves(){
     if(roomRef !== undefined){
         firePlayersCnt(-1)
         removeRoom()
@@ -321,6 +326,7 @@ function playersCntListener() {
         }
         else if(playersCnt == -1){
             alert('someone lift the room')
+            removeRoom()
             location.reload()
         }
     })

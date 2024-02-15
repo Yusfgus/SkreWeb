@@ -1,7 +1,7 @@
 import Card from "./cards.js";
 import { fireCardClicked, fireSecondaryDeckClick, 
-        fireShuffleCards, fireSaySkrew, 
-        // initFirebase,
+        fireShuffleCards, fireSaySkrew,
+        playerLeaves,
         removeRoom, addToHistory,
         } from "./firebase.js";
 
@@ -142,26 +142,33 @@ function initGame()
 //     }
 //     currentPlayer = startTurn
 // }
-
+window.addEventListener('beforeunload', ()=>{
+    if(roundCounter <= maxRoundNum)
+        playerLeaves()
+})
 async function endGame(){
     if(++roundCounter <= maxRoundNum)
     {
         return false
     }
-    console.log('ending game')
-    if(currentPlayer == 1){
-        addToHistory(totalPlayersScore)
-    }
-    let waitTime = dashBoardDelayTime + showRoundNameTime + 2000
+    // console.log('ending game')
+    let waitTime = dashBoardDelayTime + dashBoardDelayTime + showScoreTableTime + 2000
     await wait(() => {
         showDashBoard(true, false)
     }, waitTime)
     // alert("game is finished")
     document.getElementById('log-in-page').style.top = '0'
-    setTimeout(() => {
-        removeRoom()
+    if(currentPlayer == 1)
+    {
+        addToHistory(totalPlayersScore)
+        setTimeout(() => {
+            removeRoom()
+            location.reload()
+        }, 2000)
+    }
+    else {
         location.reload()
-    }, 2000)
+    }
 
     return true
 }
