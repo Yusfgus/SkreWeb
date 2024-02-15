@@ -147,10 +147,10 @@ window.addEventListener('beforeunload', ()=>{
         playerLeaves()
 })
 async function endGame(){
-    // if(++roundCounter <= maxRoundNum)
-    // {
-    //     return false
-    // }
+    if(++roundCounter <= maxRoundNum)
+    {
+        return false
+    }
     // console.log('ending game')
     let waitTime = dashBoardDelayTime + dashBoardDelayTime + showScoreTableTime + 2000
     await wait(() => {
