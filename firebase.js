@@ -79,9 +79,9 @@ import {loadGame, setter, getter,
 function setStartTime(){
     const currentDate = new Date();
     // Get the current date
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1; // Months are zero-based (0 for January, 11 for December)
-    const day = currentDate.getDate();
+    // const year = currentDate.getFullYear();
+    // const month = currentDate.getMonth() + 1; // Months are zero-based (0 for January, 11 for December)
+    // const day = currentDate.getDate();
 
     // Get the current time
     let hours = currentDate.getHours();
@@ -94,7 +94,7 @@ function setStartTime(){
         hours = 12;
     }
 
-    startTime = `${hours}:${minutes}:${seconds} ${period} ${day}-${month}-${year}`
+    startTime = `${hours}:${minutes}:${seconds} ${period}`
 }
 
 export function addToHistory(totalScore)
@@ -111,8 +111,14 @@ export function addToHistory(totalScore)
         scores: result,
     }
 
-    const historyRef = ref(db, 'History/')
-    update(historyRef, { [roomCode]: data })
+    const currentDate = new Date();
+    // Get the current date
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 for January, 11 for December)
+    const day = currentDate.getDate();
+
+    const dayRef = ref(db, `History/${year}/${month}/${day}/`)
+    update(dayRef, { [roomCode]: data })
 }
 
 export function removeRoom(){
