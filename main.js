@@ -100,11 +100,15 @@ export function getter(str){
 
 function tempCreateCards() {
     let cardIndex = 0
-    for(let i=0; i<=10; ++i){
-        initCard('pasra', 10, getOwnerContainer(0), cardIndex++)
-        initCard('exchange', 10, getOwnerContainer(0), cardIndex++)
-        initCard('9', 9, getOwnerContainer(0), cardIndex++)
+    for(let i=1; i<=10; ++i){
+        // initCard('pasra', 10, getOwnerContainer(0), cardIndex++)
+        // initCard('exchange', 10, getOwnerContainer(0), cardIndex++)
+        initCard(`${i}`, i, getOwnerContainer(0), cardIndex++)
     }
+    initCard(`redSkrew`, 25, getOwnerContainer(0), cardIndex++)
+    initCard(`skrewDriver`, 0, getOwnerContainer(0), cardIndex++)
+    initCard(`pasra`, 10, getOwnerContainer(0), cardIndex++)
+    initCard(20, 20, getOwnerContainer(0), cardIndex++)
 }
 // loadGame()
 export function loadGame() {
@@ -113,8 +117,8 @@ export function loadGame() {
 
     attatchClickEventHandler()
     
-    createCards()
-    // tempCreateCards()
+    // createCards()
+    tempCreateCards()
     
     startGame()
 }
@@ -203,7 +207,7 @@ async function startRound() {
     }, waitTime)
     
     
-    await wait(initRound, waitUnitShufflingTime + distributionsTime + showPlayersCardsTime + 1500)
+    await wait(initRound, waitUnitShufflingTime + distributionsTime + showPlayersCardsTime + 2000)
     putFirstCard()
     // roundStarted = true
     // roundCounter++
@@ -222,7 +226,7 @@ function waitUnitShuffling(){
 
 async function initRound() {
     // initFirebase(false)
-    shuffleCards()
+    shuffleCards(cards.length)
     await wait(waitUnitShuffling, waitUnitShufflingTime)
     // reOrderCards()
     
@@ -234,15 +238,16 @@ async function initRound() {
     commandCardActivated = ''
     // inCommand = false
 
-    addCardsToPrimaryDeck()
+    // addCardsToPrimaryDeck()
     // await wait(animationShuffleCards, animationShuffleCardsTime)
     //console.log('distribute')
     await wait(distributeCards, distributionsTime)
+    await sleep(900)
     //console.log('initial players scores =', playersScore)
-    await wait(showFirstTwoCards, showPlayersCardsTime + 1000)
+    await wait(showFirstTwoCards, showPlayersCardsTime)
 }
 
-function changeTurn(ms = 1500) {
+async function changeTurn(ms = 1500) {
     // console.log(secondaryDeckcards)
     
     fireSecondaryDeckClick(false)
@@ -254,6 +259,10 @@ function changeTurn(ms = 1500) {
         return
     }
 
+    if(primaryDeckcards.length == 0){
+        shuffleCards(secondaryDeckcards.length - 1)
+        await wait(waitUnitShuffling, waitUnitShufflingTime)
+    }
     turnCounter++
     
     setTimeout(() => {
@@ -328,11 +337,12 @@ function showScoreTable() {
 async function showDashBoard(displayScoreTable = false, displayRoundName = true) {
     // dashboard.style.top = '0'
     displayScoreTable? playAudio('score-table'): playAudio('intro');
+    
+    await sleep(600)
     dashboard.style.bottom = '0'
-
     await sleep(dashBoardDelayTime)
     
-    let waitTime = showRoundNameTime + 200
+    let waitTime = showRoundNameTime + dashBoardDelayTime + 200
 
     if(displayScoreTable) {
         // playAudio('score-table')
@@ -656,10 +666,8 @@ async function showFirstTwoCards() {
     const secondChild = getDivChild(cardsContainer, 1)
 
     await wait( () => {
-        setTimeout(() => {
             getCardClass(firstChild).flipCard()
             getCardClass(secondChild).flipCard()
-        }, 300)
     },showPlayersCardsTime)
 
     getCardClass(firstChild).flipCard()
@@ -709,24 +717,38 @@ function initCard(name, value, owner, cardIndex) {
 }
 
 export function reOrderCards(cardsIndex) {
-    // console.log(cards)
-    for(let i=0; i<cards.length; ++i) {
-        const index = cardsIndex[i]
-        primaryDeckcards.push(cards[index])
+    console.log(cardsIndex)
+    const length = cardsIndex.length
+    if(turnCounter == 0){
+        for(let i=0; i<length; ++i) {
+            const index = cardsIndex[i]
+            primaryDeckcards.push(cards[index])
+        }
     }
+    else {
+        console.log(secondaryDeckcards)
+        for(let i=0; i<length; ++i) {
+            const index = cardsIndex[i]
+            const card = secondaryDeckcards[index]
+            console.log(card)
+            card.flipCard()
+            primaryDeckcards.push(card)
+        }
+        secondaryDeckcards = [secondaryDeckcards[length]]
+    }
+    addCardsToPrimaryDeck()
 }
 
-export function shuffleCards() {
+export function shuffleCards(maxIndex) {
     if(currentPlayer != 1){
         return
     }
     //console.log("shuffling")
     let cardsIndex = []
-    for(let i=0; i<cards.length; ++i){
+    for(let i=0; i<maxIndex; ++i){
         cardsIndex.push(i)
     }
     // //console.log(cardsIndex)
-    const maxIndex = cardsIndex.length
     let ctr = 1000
     while(ctr-- > 0)
     {
@@ -740,7 +762,8 @@ export function shuffleCards() {
         // cardsIndex[random1].setDataValue(random1)
         // cardsIndex[random2].setDataValue(random2)
     }
-    // //console.log(cards)
+    // console.log(cards)
+    console.log(cardsIndex)
     fireShuffleCards(cardsIndex)
 }
 

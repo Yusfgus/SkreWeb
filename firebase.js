@@ -122,9 +122,12 @@ export function addToHistory(totalScore)
 }
 
 export function removeRoom(){
-    if(currentPlayer == 1){
-        remove(roomRef)
-    }
+    // if(currentPlayer == 1){
+        // setTimeout(()=>{
+            // remove(roomRef)
+        // }, 600)
+    // }
+    remove(roomRef)
 }
 
 export function playerLeaves(){
@@ -371,7 +374,8 @@ function shuffledCardsListener() {
     onValue(shuffledCardsRef, (snapshot) => {
         //shuffleCards
         const shuffledCards = snapshot.val()
-        if(shuffledCards !== ""){
+        if(shuffledCards != []){
+            console.log(shuffledCards)
             setter('cardsShuffled', true)
             reOrderCards(shuffledCards)
         }
