@@ -19,14 +19,20 @@ export let playersName = []
 const primaryDeckCardContainer = document.getElementById('primaryDeck')
 const secondaryDeckCardContainer = document.getElementById('secondaryDeck')
 const skrewButton = document.getElementById('skrew-button')
-const skrewAudio = new Audio('audio/skrew.mp3')
 const dashboard = document.getElementById('dashboard')
 const roundName = document.getElementById('round-name')
 // const scoreTable = document.getElementById('score-table')
 const rowToRight = document.querySelectorAll('.row-to-right')
 const rowToLeft = document.querySelectorAll('.row-to-left')
 
-let roundColumnIndex = 5
+const skrewAudio = new Audio('audio/skrew.m4a')
+const selectAudio = new Audio('audio/select.m4a')
+const goodAudio = new Audio('audio/good.m4a')
+const badAudio = new Audio('audio/bad.m4a')
+const introAudio = new Audio('audio/intro.m4a')
+const scoreTableAudio = new Audio('audio/score-table.m4a')
+
+let roundColumnIndex = 2
 
 export let maxPlayersNum = 4
 const maxRoundNum = 5
@@ -47,14 +53,15 @@ let roundCounter = 0
 let turnCounter = 0
 let turnsAfterSkrew = -1
 
-const animationShuffleCardsTime = 0
-const distributionsTime = 5000
+const waitUnitShufflingTime = 3000
+let distributionsTime
 const showCardsTime = 3000
 const insertCardTime = 50
-const dashBoardDelayTime = 600
+const dashBoardDelayTime = 500
 const showRoundNameTime = 3000
 const showScoreTableTime = 10000
 const showPlayersCardsTime = 5000
+const audioDelayTime = 300
 
 let commandCardActivated = ''
 // let inCommand = false
@@ -93,8 +100,9 @@ export function getter(str){
 
 function tempCreateCards() {
     let cardIndex = 0
-    for(let i=0; i<=50; ++i){
+    for(let i=0; i<=10; ++i){
         initCard('pasra', 10, getOwnerContainer(0), cardIndex++)
+        initCard('exchange', 10, getOwnerContainer(0), cardIndex++)
         initCard('9', 9, getOwnerContainer(0), cardIndex++)
     }
 }
@@ -123,6 +131,7 @@ function initGame()
     document.getElementById('room-code').classList.add('hide-room-code')
     totalPlayersScore = new Array(maxPlayersNum).fill(0);
     roundCounter = 0
+    distributionsTime = maxPlayersNum*4*350
     // startTurn = 0
     // initturnPlayer()
 }
@@ -146,6 +155,7 @@ window.addEventListener('beforeunload', ()=>{
     if(roundCounter <= maxRoundNum)
         playerLeaves()
 })
+
 async function endGame(){
     if(++roundCounter <= maxRoundNum)
     {
@@ -158,24 +168,24 @@ async function endGame(){
     }, waitTime)
     // alert("game is finished")
     document.getElementById('log-in-page').style.top = '0'
-    if(currentPlayer == 1)
-    {
-        addToHistory(totalPlayersScore)
-        setTimeout(() => {
+    setTimeout(() => {
+        if(currentPlayer == 1)
+        {
+            addToHistory(totalPlayersScore)
             removeRoom()
             location.reload()
-        }, 3000)
-    }
-    else {
-        location.reload()
-    }
-
+        }
+        else {
+            location.reload()
+        }
+    }, 3000)
+        
     return true
 }
 
 async function startRound() {
 
-    let waitTime = dashBoardDelayTime + showRoundNameTime + 2000
+    let waitTime = dashBoardDelayTime + showRoundNameTime/* + 2000*/
     if(await endGame()){
         console.log('game ended')
         return
@@ -184,13 +194,16 @@ async function startRound() {
     if(roundCounter > 1) {
         waitTime += dashBoardDelayTime + showScoreTableTime
     }
+    else{
+        waitTime += dashBoardDelayTime + 2000
+    }
     await wait(() => {
         showDashBoard(roundCounter > 1, true)
         // showDashBoard(true, true)
     }, waitTime)
     
     
-    await wait(initRound, distributionsTime + showPlayersCardsTime + animationShuffleCardsTime + 2000 + 3000)
+    await wait(initRound, waitUnitShufflingTime + distributionsTime + showPlayersCardsTime + 1500)
     putFirstCard()
     // roundStarted = true
     // roundCounter++
@@ -210,7 +223,7 @@ function waitUnitShuffling(){
 async function initRound() {
     // initFirebase(false)
     shuffleCards()
-    await wait(waitUnitShuffling, 3000)
+    await wait(waitUnitShuffling, waitUnitShufflingTime)
     // reOrderCards()
     
     playersScore = new Array(maxPlayersNum).fill(0);
@@ -226,7 +239,6 @@ async function initRound() {
     //console.log('distribute')
     await wait(distributeCards, distributionsTime)
     //console.log('initial players scores =', playersScore)
-    
     await wait(showFirstTwoCards, showPlayersCardsTime + 1000)
 }
 
@@ -282,13 +294,17 @@ function showRoundName() {
     const imgPath = `url('images/round${roundCounter}-background.png')`
     // //console.log(imgPath)
     roundName.style.backgroundImage = (imgPath)
-    roundName.style.height = 'var(--round-name-size)'
-    roundName.style.width = 'var(--round-name-size)'
 
+    setTimeout(() => {
+        roundName.style.height = 'var(--round-name-size)'
+        roundName.style.width = 'var(--round-name-size)'
+    }, 500)
+
+    const waitTime = roundCounter>1? showRoundNameTime + 200: showRoundNameTime + 1800
     setTimeout(() => {
         roundName.style.height = '0'
         roundName.style.width = '0'
-    }, showRoundNameTime)
+    }, waitTime)
 }
 
 function showScoreTable() {
@@ -311,16 +327,24 @@ function showScoreTable() {
 
 async function showDashBoard(displayScoreTable = false, displayRoundName = true) {
     // dashboard.style.top = '0'
+    displayScoreTable? playAudio('score-table'): playAudio('intro');
     dashboard.style.bottom = '0'
 
     await sleep(dashBoardDelayTime)
+    
+    let waitTime = showRoundNameTime + 200
 
     if(displayScoreTable) {
+        // playAudio('score-table')
         await wait(showScoreTable, showScoreTableTime + dashBoardDelayTime)
+    }
+    else {
+        // playAudio('intro')
+        waitTime += 1800
     }
 
     if(displayRoundName){
-        await wait(showRoundName, showRoundNameTime + 200)
+        await wait(showRoundName, waitTime)
     }
 
     // dashboard.style.top = '-100%'
@@ -576,7 +600,8 @@ export async function saySkrew() {
         playerSaidSkrew = turnPlayer - 1
         //console.log('player sad skrew', turnPlayer)
         await wait(() => {
-            skrewAudio.play()
+            // skrewAudio.play()
+            playAudio('skrew')
         }, 2000)
         // skrewButton.style.display = 'inline-block'
         changeTurn(0)
@@ -634,8 +659,8 @@ async function showFirstTwoCards() {
         setTimeout(() => {
             getCardClass(firstChild).flipCard()
             getCardClass(secondChild).flipCard()
-        }, 800)
-    },showPlayersCardsTime + 800)
+        }, 300)
+    },showPlayersCardsTime)
 
     getCardClass(firstChild).flipCard()
     getCardClass(secondChild).flipCard()
@@ -674,7 +699,7 @@ function distributeCards() {
             //console.log('cards after distributing', cards)
             // putFirstCard()
         }
-    }, distributionsTime/(4*4))
+    }, distributionsTime/(4*maxPlayersNum))
 }
 
 function initCard(name, value, owner, cardIndex) {
@@ -755,6 +780,12 @@ function createCards() {
 }
 
 function updateScore(playerIndex, valueToAdd) {
+    // if(valueToAdd > 0){
+    //     playAudio('bad', toAll)
+    // }
+    // else if(valueToAdd < 0){
+    //     playAudio('good', toAll)
+    // }
     playersScore[playerIndex] += valueToAdd
 }
 
@@ -806,14 +837,14 @@ export function cardClicked(cardIndex)
 
 function cheating(card) {
 
-    if(card.cardOwnerContainer === getOwnerContainer(currentPlayer)
-    || card.cardOwnerContainer === getOwnerContainer(currentPlayer, true))
-    {
-        alert(`player ${currentPlayer} is cheating`)
-        // //console.log(playersScore)
-        playersScore[currentPlayer-1] += 10
-        // //console.log(playersScore)
-    }
+    // if(card.cardOwnerContainer === getOwnerContainer(currentPlayer)
+    // || card.cardOwnerContainer === getOwnerContainer(currentPlayer, true))
+    // {
+    //     alert(`player ${currentPlayer} is cheating`)
+    //     // //console.log(playersScore)
+    //     playersScore[currentPlayer-1] += 10
+    //     // //console.log(playersScore)
+    // }
 }
 
 function attatchClickEventHandlerToCard(card) {
@@ -875,9 +906,12 @@ function primaryDeckClick() {
     // }
     playing = true
     if(commandCardActivated === '' && primaryDeckClicked == 0 && primaryDeckcards.length > 0) {
+        playAudio('select')
         const card = primaryDeckcards[primaryDeckcards.length - 1]
         if(currentPlayer == turnPlayer){
-            card.flipCard()
+            setTimeout(()=>{
+                card.flipCard()
+            }, audioDelayTime)
         }
         primaryDeckClicked = 1
     }
@@ -900,7 +934,9 @@ function addCardsToSecondaryDeck(myCard, choosedCard)
     secondaryDeckcards.push(myCard)
     changeCardOwner(myCard, secondaryDeckCardContainer, true, true, false) 
 
-    updateScore(turnPlayer - 1, choosedCard.cardValue - myCard.cardValue)
+    const valueToAdd = choosedCard.cardValue - myCard.cardValue
+    goodOrBadAudio(valueToAdd, false)
+    updateScore(turnPlayer - 1, valueToAdd)
 }
 
 function chooseCard(card) 
@@ -943,21 +979,26 @@ function chooseCard(card)
                 {
                     //console.log('pasra succeded') 
                     //succeded
-                    secondaryDeckcards.push(card)
-                    changeCardOwner(card, secondaryDeckCardContainer, false)
-                    updateScore(turnPlayer - 1, - card.cardValue)
+                    goodOrBadAudio(- card.cardValue, true)
+                    setTimeout(() => {
+                        secondaryDeckcards.push(card)
+                        changeCardOwner(card, secondaryDeckCardContainer, false)
+                        updateScore(turnPlayer - 1, - card.cardValue)
+                    }, audioDelayTime)
                 }
                 else {
                     //console.log('pasra failed') 
                     // failed
-                    card.flipCard()
-                    secondaryDeckcards.pop()
-                    
-                    changeCardOwner(lastSecondaryCard, getOwnerContainer(turnPlayer, true), true)
-                    updateScore(turnPlayer - 1, lastSecondaryCard.cardValue)
+                    goodOrBadAudio(lastSecondaryCard.cardValue, true)
+                    setTimeout(()=>{
+                        card.flipCard()
+                        secondaryDeckcards.pop()
+                        changeCardOwner(lastSecondaryCard, getOwnerContainer(turnPlayer, true), true)
+                        updateScore(turnPlayer - 1, lastSecondaryCard.cardValue)
+                    }, audioDelayTime)
                 }
+                changeTurn(1500)
             }, 1300)
-            changeTurn(1500)
 
             function pasraSucceded(){
                 //console.log(card.cardName)
@@ -1242,7 +1283,42 @@ function commandPasra(card) {
     // card.flipCard()
     secondaryDeckcards.push(card)
     changeCardOwner(card, secondaryDeckCardContainer, true)
+    goodOrBadAudio(- card.cardValue, true)
     updateScore(turnPlayer - 1, - card.cardValue)
 
     finishCommand(500)
+}
+
+function playAudio(audioFileName, toAll = false)
+{
+    if(audioFileName === "select"){
+        selectAudio.play()
+    }
+    else if(audioFileName === "skrew"){
+        skrewAudio.play()
+    }
+    else if(audioFileName === "score-table"){
+        scoreTableAudio.play()
+    }
+    else if(audioFileName === "intro"){
+        introAudio.play()
+    }
+    else if(toAll || currentPlayer == turnPlayer)
+    {
+        if(audioFileName === "good"){
+            goodAudio.play()
+        }
+        else if(audioFileName === "bad"){
+            badAudio.play()
+        }
+    }
+}
+
+function goodOrBadAudio(valueToAdd, toAll = false){
+    if(valueToAdd > 0){
+        playAudio('bad', toAll)
+    }
+    else if(valueToAdd < 0){
+        playAudio('good', toAll)
+    }
 }

@@ -86,7 +86,7 @@ function setStartTime(){
     // Get the current time
     let hours = currentDate.getHours();
     const minutes = currentDate.getMinutes();
-    const seconds = currentDate.getSeconds();
+    // const seconds = currentDate.getSeconds();
 
     hours %= 12
     const period = hours >= 12 ? 'PM' : 'AM';
@@ -94,7 +94,7 @@ function setStartTime(){
         hours = 12;
     }
 
-    startTime = `${hours}:${minutes}:${seconds} ${period}`
+    startTime = `${hours}:${minutes} ${period}`
 }
 
 export function addToHistory(totalScore)
@@ -328,7 +328,7 @@ function playersCntListener() {
             // await getPlayesName()
             setTimeout(()=>{
                 loadGame()
-            },4000)
+            },2000)
         }
         else if(playersCnt == -1){
             alert('someone lift the room')
