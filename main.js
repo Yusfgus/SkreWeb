@@ -26,7 +26,7 @@ const rowToRight = document.querySelectorAll('.row-to-right')
 const rowToLeft = document.querySelectorAll('.row-to-left')
 
 // const skrewAudio = new Audio('audio/skrew.m4a')
-const skrewAudio = new Audio('audio\skrew2.mp3')
+const skrewAudio = new Audio('audio/skrew2.mp3')
 const selectAudio = new Audio('audio/select.m4a')
 const goodAudio = new Audio('audio/good.m4a')
 const badAudio = new Audio('audio/bad.m4a')
