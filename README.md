@@ -1,1 +1,1 @@
-# Play with your freinds. [click here](https://yusfgus.github.io/SkreWeb/)
+# Play with your friends. [click here](https://yusfgus.github.io/SkreWeb/)

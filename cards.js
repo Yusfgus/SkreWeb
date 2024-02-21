@@ -125,7 +125,8 @@ export default class Card {
                 innerCardElem.style.transform = ''
                 
                 setTimeout(() => {
-                    const imagePath = getImagePath('surprise-mf')
+                    // const imagePath = getImagePath('surprise-mf')
+                    const imagePath = getImagePath('white-card')
                     addSrcToImageElem(this.cardFrontImg, imagePath)
                 }, 500)
             }
