@@ -25,7 +25,8 @@ const roundName = document.getElementById('round-name')
 const rowToRight = document.querySelectorAll('.row-to-right')
 const rowToLeft = document.querySelectorAll('.row-to-left')
 
-const skrewAudio = new Audio('audio/skrew.m4a')
+// const skrewAudio = new Audio('audio/skrew.m4a')
+const skrewAudio = new Audio('audio\skrew2.mp3')
 const selectAudio = new Audio('audio/select.m4a')
 const goodAudio = new Audio('audio/good.m4a')
 const badAudio = new Audio('audio/bad.m4a')
@@ -117,8 +118,8 @@ export function loadGame() {
 
     attatchClickEventHandler()
     
-    // createCards()
-    tempCreateCards()
+    createCards()
+    // tempCreateCards()
     
     startGame()
 }
@@ -225,10 +226,6 @@ function waitUnitShuffling(){
 }
 
 async function initRound() {
-    // initFirebase(false)
-    shuffleCards(cards.length)
-    await wait(waitUnitShuffling, waitUnitShufflingTime)
-    // reOrderCards()
     
     playersScore = new Array(maxPlayersNum).fill(0);
     turnPlayer = 0
@@ -238,8 +235,10 @@ async function initRound() {
     commandCardActivated = ''
     // inCommand = false
 
+    shuffleCards(cards.length)
+    await wait(waitUnitShuffling, waitUnitShufflingTime)
+
     // addCardsToPrimaryDeck()
-    // await wait(animationShuffleCards, animationShuffleCardsTime)
     //console.log('distribute')
     await wait(distributeCards, distributionsTime)
     await sleep(900)
@@ -717,16 +716,17 @@ function initCard(name, value, owner, cardIndex) {
 }
 
 export function reOrderCards(cardsIndex) {
-    console.log(cardsIndex)
-    const length = cardsIndex.length
+    // console.log(cardsIndex)
     if(turnCounter == 0){
+        const length = cards.length
         for(let i=0; i<length; ++i) {
             const index = cardsIndex[i]
             primaryDeckcards.push(cards[index])
         }
     }
     else {
-        console.log(secondaryDeckcards)
+        // console.log(secondaryDeckcards)
+        const length = secondaryDeckcards.length-1
         for(let i=0; i<length; ++i) {
             const index = cardsIndex[i]
             const card = secondaryDeckcards[index]
@@ -763,7 +763,7 @@ export function shuffleCards(maxIndex) {
         // cardsIndex[random2].setDataValue(random2)
     }
     // console.log(cards)
-    console.log(cardsIndex)
+    // console.log(cardsIndex)
     fireShuffleCards(cardsIndex)
 }
 

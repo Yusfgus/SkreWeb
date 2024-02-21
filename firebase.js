@@ -374,8 +374,8 @@ function shuffledCardsListener() {
     onValue(shuffledCardsRef, (snapshot) => {
         //shuffleCards
         const shuffledCards = snapshot.val()
-        if(shuffledCards != []){
-            console.log(shuffledCards)
+        if(shuffledCards != null){
+            // console.log(shuffledCards)
             setter('cardsShuffled', true)
             reOrderCards(shuffledCards)
         }
