@@ -813,6 +813,18 @@ table td {
     transform: rotate(90deg);
 }
 
+
+#warning {
+    direction: rtl;
+    color: rgba(255, 255, 255, 0.276);
+    font-size: 1.6vw;
+    font-weight: 900;
+
+    position: absolute;
+    bottom: 6px;
+    right: 10px;
+}
+
 /* Apply styles when height is greater than width */
 @media (orientation: portrait){
 /* @media (max-width:400px){ */
@@ -859,6 +871,9 @@ table td {
     #log-in-container {
         width: 75vw;
         height: 15vh;
+    }
+    #warning {
+        font-size: 14px;
     }
 }
 

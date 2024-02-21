@@ -25,7 +25,7 @@ const roundName = document.getElementById('round-name')
 const rowToRight = document.querySelectorAll('.row-to-right')
 const rowToLeft = document.querySelectorAll('.row-to-left')
 
-// const skrewAudio = new Audio('audio/skrew.m4a')
+// const skrewAudio = new Audio('audio/skrew1.m4a')
 const skrewAudio = new Audio('audio/skrew2.mp3')
 const selectAudio = new Audio('audio/select.m4a')
 const goodAudio = new Audio('audio/good.m4a')
