@@ -300,7 +300,7 @@ function playersCntListener() {
         }
         else if(playersCnt == -1){
             alert('someone lift the room')
-            removeRoom()
+            // removeRoom()
             location.reload()
         }
     })
