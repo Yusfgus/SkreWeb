@@ -240,6 +240,7 @@ async function initRound() {
     if(currentPlayer == 1){
         fireSaySkrew(false)
         fireplayersActionCnt(true)
+        await sleep(1000)
         shuffleCards(cards.length)
     }
     // await wait(waitUnitShuffling, waitUnitShufflingTime)
