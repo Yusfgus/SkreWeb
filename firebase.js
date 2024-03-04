@@ -134,7 +134,7 @@ export function removeRoom(){
 export function playerLeaves(){
     if(roomRef !== undefined){
         firePlayersCnt(-1)
-        removeRoom()
+        // removeRoom()
     }
 }
 
@@ -171,64 +171,6 @@ export async function initPlayer(name, code) {
     firePlayersCnt()
 }
 
-// function signIn() {
-//     signInAnonymously(auth).then(() => {
-//         initPlayer()
-//     }).catch((error) => {
-//         //console.log(error.code, error.message)
-//     })
-// }
-
-// export function initFirebase(firstTime = false) {
-//     if(currentPlayer == 1)
-//     {
-//         if(firstTime) {
-//             set(roomsRef, {
-//                 clickedCardIndex: -1,
-//                 playersCnt: 1,
-//                 shuffledCards: "",
-//                 secondaryDeckClicked: 0,
-//                 saidSrew: false,
-//             })
-//         }
-//         else {
-//             update(roomsRef, { saidSrew: false })
-//         }
-//     }
-// }
-
-// async function setCurrentPlayer() {
-//     await get(playersCntRef).then((snapshot) => {
-//         if (snapshot.exists() && snapshot.val() < 4) {
-//             currentPlayer = snapshot.val() + 1
-//         }
-//         else {
-//             currentPlayer = 1 
-//         }
-//     })
-//     initFirebase(true)
-//     setter('currentPlayer', currentPlayer)
-//     update(roomsRef, { playersCnt: currentPlayer })
-// }
-
-// function changeGridCardContainers() {
-//     const mainDiv = document.getElementById('main-area')
-//     const currentPlayerNum = getter('currentPlayer')
-//     if(currentPlayerNum == 1){
-//         mainDiv.style.gridTemplateAreas = '"p4 p3 p2" "p4 d p2" "p4 p1 p2"'
-//     }
-//     else if(currentPlayerNum == 2){
-//         mainDiv.style.gridTemplateAreas = '"p1 p4 p3" "p1 d p3" "p1 p2 p3"'
-        
-//     }
-//     else if(currentPlayerNum == 3){
-//         mainDiv.style.gridTemplateAreas = '"p2 p1 p4" "p2 d p4" "p2 p3 p4"'
-//     }
-//     else if(currentPlayerNum == 4){
-//         mainDiv.style.gridTemplateAreas = '"p3 p2 p1" "p3 d p1" "p3 p4 p1"'
-//     }
-// }
-
 export function fireCardClicked(cardIndex) {
     update(gameInfoRef, { clickedCardIndex: cardIndex })
 }
@@ -251,11 +193,11 @@ let actionCnt = 0
 export function fireplayersActionCnt(toAll = false){
     if(toAll){
         // actionCnt = 0
-        const ActionCnts = {};
-        for(let i=1; i<=maxPlayersNum; ++i){
-            ActionCnts[`cnt${i}`] = 0
-        }
-        update(gameInfoRef, { playersActionCnt: ActionCnts })
+        // const ActionCnts = {};
+        // for(let i=1; i<=maxPlayersNum; ++i){
+        //     ActionCnts[`cnt${i}`] = 0
+        // }
+        // update(gameInfoRef, { playersActionCnt: ActionCnts })
     }
     else {
         update(playersActionCntRef, { [`cnt${currentPlayer}`]: ++actionCnt })
@@ -364,22 +306,6 @@ function playersCntListener() {
     })
 }
 
-// function maxPlayersNumListener() {
-//     onValue(maxPlayersNumRef, async (snapshot) => {
-//         setter('maxPlayersNum', snapshot.val())
-//     })
-// }
-
-// async function getPlayesName() {
-//     let names
-//     await get(playersRef).then((snapshot) => {
-//         names = snapshot.val().playersName
-//     })
-//     for(let i=0; i<maxPlayersNum; ++i){
-//         playersName[i] = names[i]
-//     }
-// }
-
 function playersNamesListerner() {
     onValue(playersNameRef, (snapshot) => {
         if(snapshot.exists()){
@@ -406,13 +332,13 @@ function shuffledCardsListener() {
     })
 }
 
-function fact(index){
-    let sum = 0;
-    for(let i=1; i<=index; ++i){
-        sum += i
-    }
-    return sum
-}
+// function fact(index){
+//     let sum = 0;
+//     for(let i=1; i<=index; ++i){
+//         sum += i
+//     }
+//     return sum
+// }
 
 let sum = 0
 function playersActionCntListener() {
@@ -421,14 +347,22 @@ function playersActionCntListener() {
         const actionCntRef = child(playersActionCntRef, `cnt${i}`)
         onValue(actionCntRef, (snapshot) => {
             const val = snapshot.val()
-            if(val == 1){
-                if(++sum == maxPlayersNum){
-                    sum = 0
-                    setter('cardsShuffled', true)
-                }
-            }
-            else if(val == 0){
-                actionCnt = 0
+            console.log(val)
+            // if(val == 1){
+            //     if(++sum == maxPlayersNum){
+            //         sum = 0
+            //         setter('cardsShuffled', true)
+            //     }
+            // }
+            // else if(val == 0){
+            //     actionCnt = 0
+            // }
+            sum += val
+            console.log(actionCnt)
+            console.log(sum)
+            if(sum == maxPlayersNum*actionCnt){
+                sum = 0
+                setter('cardsShuffled', true)
             }
         })
     }

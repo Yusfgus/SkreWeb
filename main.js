@@ -166,6 +166,11 @@ async function endGame(){
     {
         return false
     }
+    if(currentPlayer == 1)
+    {
+        addToHistory(totalPlayersScore)
+        removeRoom()
+    }
     // console.log('ending game')
     let waitTime = dashBoardDelayTime + dashBoardDelayTime + showScoreTableTime + 2000
     await wait(() => {
@@ -174,15 +179,7 @@ async function endGame(){
     // alert("game is finished")
     document.getElementById('log-in-page').style.top = '0'
     setTimeout(() => {
-        if(currentPlayer == 1)
-        {
-            addToHistory(totalPlayersScore)
-            removeRoom()
-            location.reload()
-        }
-        else {
-            location.reload()
-        }
+        location.reload()
     }, 3000)
         
     return true
@@ -239,8 +236,8 @@ async function initRound() {
     // inCommand = false
     if(currentPlayer == 1){
         fireSaySkrew(false)
-        fireplayersActionCnt(true)
-        await sleep(1000)
+        // fireplayersActionCnt(true)
+        // await sleep(1000)
         shuffleCards(cards.length)
     }
     // await wait(waitUnitShuffling, waitUnitShufflingTime)
