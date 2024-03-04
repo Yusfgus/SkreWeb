@@ -1,6 +1,6 @@
 import Card from "./cards.js";
 import { fireCardClicked, fireSecondaryDeckClick, 
-        fireShuffleCards, fireSaySkrew,
+        fireShuffleCards, fireSaySkrew, fireplayersActionCnt,
         playerLeaves,
         removeRoom, addToHistory,
         } from "./firebase.js";
@@ -208,7 +208,10 @@ async function startRound() {
     }, waitTime)
     
     
-    await wait(initRound, waitUnitShufflingTime + distributionsTime + showPlayersCardsTime + 2000)
+    // await wait(initRound, waitUnitShufflingTime + distributionsTime + showPlayersCardsTime + 2000)
+    await initRound()
+    await sleep(2000)
+    
     putFirstCard()
     // roundStarted = true
     // roundCounter++
@@ -216,14 +219,14 @@ async function startRound() {
     changeTurn(800)
 }
 
-function waitUnitShuffling(){
-    const id = setInterval(() => {
-        if(cardsShuffled){
-            clearInterval(id)
-            cardsShuffled = false
-        }
-    }, 12)
-}
+// function waitUnitShuffling(){
+//     const id = setInterval(() => {
+//         if(cardsShuffled){
+//             clearInterval(id)
+//             cardsShuffled = false
+//         }
+//     }, 200)
+// }
 
 async function initRound() {
     
@@ -234,9 +237,23 @@ async function initRound() {
     turnsAfterSkrew = -1
     commandCardActivated = ''
     // inCommand = false
-
-    shuffleCards(cards.length)
-    await wait(waitUnitShuffling, waitUnitShufflingTime)
+    if(currentPlayer == 1){
+        fireSaySkrew(false)
+        fireplayersActionCnt(true)
+        shuffleCards(cards.length)
+    }
+    // await wait(waitUnitShuffling, waitUnitShufflingTime)
+    await new Promise(resolve => {
+        const id = setInterval(() => {
+            if(cardsShuffled){
+                clearInterval(id)
+                cardsShuffled = false
+                setTimeout(() =>{
+                    resolve()
+                }, 1500)
+            }
+        }, 200)
+    })
 
     // addCardsToPrimaryDeck()
     //console.log('distribute')
@@ -249,8 +266,10 @@ async function initRound() {
 async function changeTurn(ms = 1500) {
     // console.log(secondaryDeckcards)
     
-    fireSecondaryDeckClick(false)
-    fireCardClicked(-1)
+    if(currentPlayer == 1){
+        fireSecondaryDeckClick(false)
+        fireCardClicked(-1)
+    }
 
     if(turnsAfterSkrew != -1 && turnsAfterSkrew++ == maxPlayersNum-1){
         turnOffturnPlayerLine()
@@ -586,7 +605,7 @@ async function endRound()
     }
     // await wait(showDashBoard, 6000)  // show score table
 
-    fireSaySkrew(false)
+    // fireSaySkrew(false)
     // fireShuffleCards([])
 
     startRound()
@@ -739,10 +758,10 @@ export function reOrderCards(cardsIndex) {
     addCardsToPrimaryDeck()
 }
 
-export function shuffleCards(maxIndex) {
-    if(currentPlayer != 1){
-        return
-    }
+function shuffleCards(maxIndex) {
+    // if(currentPlayer != 1){
+    //     return
+    // }
     //console.log("shuffling")
     let cardsIndex = []
     for(let i=0; i<maxIndex; ++i){

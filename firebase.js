@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, get, update, remove, onValue,
-        // set, child, onDisconnect, onChildRemoved, onChildChanged
+import { getDatabase, ref, get, update, remove, onValue, child,
+        // set, onDisconnect, onChildRemoved, onChildChanged
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 // import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   
@@ -30,6 +30,7 @@ let roomRef
 let gameInfoRef
 let clickedCardIndexRef
 let shuffledCardsRef
+let playersActionCntRef
 let secondaryDeckClickedRef
 let saidSrewRef
 
@@ -242,7 +243,23 @@ export function fireSaySkrew(value = true){
 
 export function fireShuffleCards(shuffledCards)
 {
+    // fireplayersActionCnt(false, true)
     update(gameInfoRef, { shuffledCards: shuffledCards })
+}
+
+let actionCnt = 0
+export function fireplayersActionCnt(toAll = false){
+    if(toAll){
+        // actionCnt = 0
+        const ActionCnts = {};
+        for(let i=1; i<=maxPlayersNum; ++i){
+            ActionCnts[`cnt${i}`] = 0
+        }
+        update(gameInfoRef, { playersActionCnt: ActionCnts })
+    }
+    else {
+        update(playersActionCntRef, { [`cnt${currentPlayer}`]: ++actionCnt })
+    }
 }
 
 async function firePlayerName(){
@@ -278,6 +295,10 @@ export async function initRoom(name) {
     setStartTime()
     const newRoomCode = await incrementNewRoomCode()
     //console.log(newRoomCode)
+    const ActionCnts = {};
+    for(let i=1; i<=maxPlayersNum; ++i){
+        ActionCnts[`cnt${i}`] = 0
+    }
     const names = new Array(maxPlayersNum).fill('');
     names[0] = name
     const newRoom = {
@@ -287,6 +308,7 @@ export async function initRoom(name) {
             playersName: names,
         },
         gameInfo: {
+            playersActionCnt: ActionCnts,
             clickedCardIndex: -1,
             secondaryDeckClicked: false,
             saidSrew: false,
@@ -307,6 +329,7 @@ function addEventListeners() {
 
     cardClickedIndexListener()
     shuffledCardsListener()
+    playersActionCntListener()
     secondaryDeckClickedListener()
     saidSrewListener()
 }
@@ -376,10 +399,39 @@ function shuffledCardsListener() {
         const shuffledCards = snapshot.val()
         if(shuffledCards != null){
             // console.log(shuffledCards)
-            setter('cardsShuffled', true)
+            // setter('cardsShuffled', true)
+            fireplayersActionCnt(false)
             reOrderCards(shuffledCards)
         }
     })
+}
+
+function fact(index){
+    let sum = 0;
+    for(let i=1; i<=index; ++i){
+        sum += i
+    }
+    return sum
+}
+
+let sum = 0
+function playersActionCntListener() {
+    for(let i=1; i<=maxPlayersNum; ++i)
+    {
+        const actionCntRef = child(playersActionCntRef, `cnt${i}`)
+        onValue(actionCntRef, (snapshot) => {
+            const val = snapshot.val()
+            if(val == 1){
+                if(++sum == maxPlayersNum){
+                    sum = 0
+                    setter('cardsShuffled', true)
+                }
+            }
+            else if(val == 0){
+                actionCnt = 0
+            }
+        })
+    }
 }
 
 function secondaryDeckClickedListener(){
@@ -425,6 +477,7 @@ function setRefrences(code) {
     gameInfoRef = ref(db, `Rooms/${code}/gameInfo/`)
     clickedCardIndexRef = ref(db, `Rooms/${code}/gameInfo/clickedCardIndex`)
     shuffledCardsRef = ref(db, `Rooms/${code}/gameInfo/shuffledCards`)
+    playersActionCntRef = ref(db, `Rooms/${code}/gameInfo/playersActionCnt`)
     secondaryDeckClickedRef = ref(db, `Rooms/${code}/gameInfo/secondaryDeckClicked`)
     saidSrewRef = ref(db, `Rooms/${code}/gameInfo/saidSrew`)
 
