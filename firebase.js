@@ -326,6 +326,7 @@ function shuffledCardsListener() {
         if(shuffledCards != null){
             // console.log(shuffledCards)
             // setter('cardsShuffled', true)
+            console.log("got cards")
             fireplayersActionCnt(false)
             reOrderCards(shuffledCards)
         }
@@ -347,7 +348,7 @@ function playersActionCntListener() {
         const actionCntRef = child(playersActionCntRef, `cnt${i}`)
         onValue(actionCntRef, (snapshot) => {
             const val = snapshot.val()
-            console.log(val)
+            // console.log(val)
             // if(val == 1){
             //     if(++sum == maxPlayersNum){
             //         sum = 0
@@ -362,7 +363,7 @@ function playersActionCntListener() {
             console.log(sum)
             if(sum == maxPlayersNum*actionCnt){
                 sum = 0
-                setter('cardsShuffled', true)
+                setter('gotCards', true)
             }
         })
     }

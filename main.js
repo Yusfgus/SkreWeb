@@ -47,7 +47,8 @@ let startTurn = 1
 let primaryDeckClicked = 0
 let secondaryDeckClicked = false
 let cardChoodes = false
-let cardsShuffled = false
+let gotCards = false
+let cardsAdded = false
 
 let playing = false
 let roundCounter = 0
@@ -84,8 +85,8 @@ export function setter(str, value) {
     if(str === 'currentPlayer'){
         currentPlayer = value
     }
-    else if(str === 'cardsShuffled'){
-        cardsShuffled = value
+    else if(str === 'gotCards'){
+        gotCards = value
     }
     else if('maxPlayersNum'){
         maxPlayersNum = value
@@ -216,14 +217,20 @@ async function startRound() {
     changeTurn(800)
 }
 
-// function waitUnitShuffling(){
-//     const id = setInterval(() => {
-//         if(cardsShuffled){
-//             clearInterval(id)
-//             cardsShuffled = false
-//         }
-//     }, 200)
-// }
+function waitUnitShuffling(){
+    return new Promise(resolve => {
+        const id = setInterval(() => {
+            if(gotCards && cardsAdded){
+                clearInterval(id)
+                gotCards = false
+                cardsAdded = false
+                setTimeout(() =>{
+                    resolve()
+                }, 1500)
+            }
+        }, 200)
+    })
+}
 
 async function initRound() {
     
@@ -241,17 +248,7 @@ async function initRound() {
         shuffleCards(cards.length)
     }
     // await wait(waitUnitShuffling, waitUnitShufflingTime)
-    await new Promise(resolve => {
-        const id = setInterval(() => {
-            if(cardsShuffled){
-                clearInterval(id)
-                cardsShuffled = false
-                setTimeout(() =>{
-                    resolve()
-                }, 1500)
-            }
-        }, 200)
-    })
+    await waitUnitShuffling()
 
     // addCardsToPrimaryDeck()
     //console.log('distribute')
@@ -277,7 +274,8 @@ async function changeTurn(ms = 1500) {
 
     if(primaryDeckcards.length == 0){
         shuffleCards(secondaryDeckcards.length - 1)
-        await wait(waitUnitShuffling, waitUnitShufflingTime)
+        // await wait(waitUnitShuffling, waitUnitShufflingTime)
+        await waitUnitShuffling()
     }
     turnCounter++
     
@@ -674,6 +672,7 @@ function addCardsToPrimaryDeck() {
         card.assignCardToOwner()
     })
     // primaryDeckcards = cards
+    cardsAdded = true
 }
 
 async function showFirstTwoCards() {
