@@ -359,8 +359,8 @@ function playersActionCntListener() {
             //     actionCnt = 0
             // }
             sum += val
-            console.log(actionCnt)
-            console.log(sum)
+            // console.log(actionCnt)
+            // console.log("sum=", sum)
             if(sum == maxPlayersNum*actionCnt){
                 sum = 0
                 setter('gotCards', true)

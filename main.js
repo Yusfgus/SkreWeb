@@ -140,6 +140,14 @@ function initGame()
     distributionsTime = maxPlayersNum*4*350
     // startTurn = 0
     // initturnPlayer()
+
+    //==============================================
+    playersScore = new Array(maxPlayersNum).fill(0);
+    turnPlayer = 0
+    turnCounter = 0
+    turnsAfterSkrew = -1
+    commandCardActivated = ''
+    //==============================================
 }
 
 // function initturnPlayer() {
@@ -234,13 +242,13 @@ function waitUnitShuffling(){
 
 async function initRound() {
     
-    playersScore = new Array(maxPlayersNum).fill(0);
-    turnPlayer = 0
-    // currentPlayer = 0
-    turnCounter = 0
-    turnsAfterSkrew = -1
-    commandCardActivated = ''
-    // inCommand = false
+    // playersScore = new Array(maxPlayersNum).fill(0);
+    // turnPlayer = 0
+    // // currentPlayer = 0
+    // turnCounter = 0
+    // turnsAfterSkrew = -1
+    // commandCardActivated = ''
+    // // inCommand = false
     if(currentPlayer == 1){
         fireSaySkrew(false)
         // fireplayersActionCnt(true)
@@ -595,6 +603,13 @@ async function endRound()
     removeCardsFrom(secondaryDeckCardContainer, true)
     primaryDeckcards = [] 
     secondaryDeckcards = []
+    //==============================================
+    playersScore = new Array(maxPlayersNum).fill(0);
+    turnPlayer = 0
+    turnCounter = 0
+    turnsAfterSkrew = -1
+    commandCardActivated = ''
+    //==============================================
     for(let i=1; i<=maxPlayersNum; ++i) {
         removeCardsFrom(document.getElementById(`player${i}-cards-container`))
         removeCardsFrom(document.getElementById(`player${i}-cards-container2`))
@@ -711,6 +726,7 @@ function distributeCards() {
     const id = setInterval(() => 
     {
         const card = primaryDeckcards.pop()
+        // console.log(card)
         const playerIndex = ctr++ % maxPlayersNum
         playersScore[playerIndex] += card.cardValue
         const playerContainer = getOwnerContainer(playerIndex + 1)
@@ -732,7 +748,8 @@ function initCard(name, value, owner, cardIndex) {
 }
 
 export function reOrderCards(cardsIndex) {
-    // console.log(cardsIndex)
+    console.log(cardsIndex)
+    // console.log("turnCounter=", turnCounter);
     if(turnCounter == 0){
         const length = cards.length
         for(let i=0; i<length; ++i) {
@@ -752,6 +769,7 @@ export function reOrderCards(cardsIndex) {
         }
         secondaryDeckcards = [secondaryDeckcards[length]]
     }
+    // console.log(primaryDeckcards)
     addCardsToPrimaryDeck()
 }
 
