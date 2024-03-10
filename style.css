@@ -641,6 +641,13 @@ table td {
     height: 100%;
 }
 
+.radio-buttons-container span{
+    font-weight: 900;
+    font-size: var(--font-size);
+    font-family:serif;
+    color: white;
+}
+
 /* .players-num-label {
     color: white;
     font-size: var(--font-size);
@@ -652,8 +659,9 @@ table td {
     /* border: 1px solid white; */
     display: flex;
     align-items: center;
-    gap: 15px;
-  }
+    /* gap: 15px; */
+    gap: 1vw;
+}
   
   .radio-button {
     display: inline-block;
@@ -880,6 +888,9 @@ button {
     }
     #warning {
         font-size: 14px;
+    }
+    .radio-buttons-container {
+        gap: 10px;
     }
 }
 

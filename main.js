@@ -1063,7 +1063,8 @@ function chooseCard(card)
                 //console.log(lastSecondaryCard.cardName)
                 //console.log(lastSecondaryCard.cardName === 'skrewDriver')
                 return card.cardName === lastSecondaryCard.cardName
-                        || card.cardName === 'redSkrew' && lastSecondaryCard.cardName === 'skrewDriver'
+                    || card.cardName === 'redSkrew' && lastSecondaryCard.cardName === 'skrewDriver'
+                    || card.cardName === 'skrewDriver' && lastSecondaryCard.cardName === 'redSkrew'
             }
         }
     }
