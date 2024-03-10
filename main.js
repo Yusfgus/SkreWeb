@@ -748,7 +748,7 @@ function initCard(name, value, owner, cardIndex) {
 }
 
 export function reOrderCards(cardsIndex) {
-    console.log(cardsIndex)
+    // console.log(cardsIndex)
     // console.log("turnCounter=", turnCounter);
     if(turnCounter == 0){
         const length = cards.length

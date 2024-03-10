@@ -142,7 +142,7 @@ function setMaxPlayersNum(){
     let radioButtons = document.getElementsByName('players-num');
     for (let i = 0; i < radioButtons.length; i++) {
         if (radioButtons[i].checked) {
-            console.log('Checked option:', radioButtons[i].value);
+            // console.log('Checked option:', radioButtons[i].value);
             setter('maxPlayersNum', Number(radioButtons[i].value))
             break; 
         }
@@ -292,8 +292,6 @@ function playersCntListener() {
         //playerCnt
         const playersCnt = snapshot.val()
         if(playersCnt == maxPlayersNum){
-            //console.log('load game')
-            // await getPlayesName()
             setTimeout(()=>{
                 loadGame()
             },2000)
@@ -324,9 +322,6 @@ function shuffledCardsListener() {
         //shuffleCards
         const shuffledCards = snapshot.val()
         if(shuffledCards != null){
-            // console.log(shuffledCards)
-            // setter('cardsShuffled', true)
-            console.log("got cards")
             fireplayersActionCnt(false)
             reOrderCards(shuffledCards)
         }
@@ -348,19 +343,8 @@ function playersActionCntListener() {
         const actionCntRef = child(playersActionCntRef, `cnt${i}`)
         onValue(actionCntRef, (snapshot) => {
             const val = snapshot.val()
-            // console.log(val)
-            // if(val == 1){
-            //     if(++sum == maxPlayersNum){
-            //         sum = 0
-            //         setter('cardsShuffled', true)
-            //     }
-            // }
-            // else if(val == 0){
-            //     actionCnt = 0
-            // }
+            if(val == 0) return
             sum += val
-            // console.log(actionCnt)
-            // console.log("sum=", sum)
             if(sum == maxPlayersNum*actionCnt){
                 sum = 0
                 setter('gotCards', true)
