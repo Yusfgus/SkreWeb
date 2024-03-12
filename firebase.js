@@ -69,7 +69,7 @@ import {loadGame, setter, getter,
 
 // function testListener() {
 //     onValue(ref(db, 'test'), (snapshot) => {
-//         //console.log(snapshot.val())
+//         //////console.log(snapshot.val())
 //     })
 // }
 
@@ -142,7 +142,7 @@ function setMaxPlayersNum(){
     let radioButtons = document.getElementsByName('players-num');
     for (let i = 0; i < radioButtons.length; i++) {
         if (radioButtons[i].checked) {
-            // console.log('Checked option:', radioButtons[i].value);
+            // ////console.log('Checked option:', radioButtons[i].value);
             setter('maxPlayersNum', Number(radioButtons[i].value))
             break; 
         }
@@ -224,7 +224,7 @@ async function incrementNewRoomCode(){
     await get(newRoomCodeRef).then((snapshot) => {
         if (snapshot.exists()) {
             newRoomCode = snapshot.val()
-            //console.log(newRoomCode)
+            //////console.log(newRoomCode)
             update(ref(db, 'Rooms/'), { newRoomCode: newRoomCode+1 })
         }
     })
@@ -236,7 +236,7 @@ export async function initRoom(name) {
     setMaxPlayersNum()
     setStartTime()
     const newRoomCode = await incrementNewRoomCode()
-    //console.log(newRoomCode)
+    //////console.log(newRoomCode)
     const ActionCnts = {};
     for(let i=1; i<=maxPlayersNum; ++i){
         ActionCnts[`cnt${i}`] = 0
@@ -257,7 +257,7 @@ export async function initRoom(name) {
             shuffledCards: [],
         },
     };
-    //console.log(newRoom)
+    //////console.log(newRoom)
     update(ref(db, 'Rooms/'), { [newRoomCode]: newRoom })
     return newRoomCode
 }
@@ -280,7 +280,7 @@ function cardClickedIndexListener() {
     onValue(clickedCardIndexRef, (snapshot) => {
         // cardClickIndex
         const cardIndex = snapshot.val()
-        //console.log('cardClickedIndex =', cardIndex)
+        //////console.log('cardClickedIndex =', cardIndex)
         if(cardIndex >= 0){
             cardClicked(cardIndex)
         }
@@ -376,10 +376,10 @@ export async function isRoomValid(code) {
     let valid = false
     await get(roomCodeRef).then((snapshot) => {
         const exists = snapshot.exists()
-        //console.log('snapshot.exists()=', exists)
+        //////console.log('snapshot.exists()=', exists)
         if(snapshot.exists()){
             const playersCnt = snapshot.val().players.playersCnt
-            //console.log('playersCnt=', playersCnt)
+            //////console.log('playersCnt=', playersCnt)
             if(playersCnt < 4){
                 currentPlayer = playersCnt + 1
                 valid = true
