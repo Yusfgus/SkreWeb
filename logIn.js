@@ -16,7 +16,7 @@ function addEventHandlers() {
 
 async function createRoom() {
     if(clicked) return
-    clicked = true
+    // clicked = true
 
     const playerName = getPlayerName()
     ////console.log('name is', playerName)
@@ -24,6 +24,7 @@ async function createRoom() {
         alert('name can not be empty')
         return false
     }
+    clicked = true
     const code = await initRoom(playerName)
     ////console.log('room created')
     initPlayer(playerName, code)
@@ -49,7 +50,7 @@ async function canJoinRoom(name, code) {
 
 async function joinRoom() {
     if(clicked) return
-    clicked = true
+    // clicked = true
 
     const playerName = getPlayerName()
     const code = getRoomCode()
@@ -58,6 +59,7 @@ async function joinRoom() {
     if(!canJoin){
         return
     }
+    clicked = true
     ////console.log('can join room')
     initPlayer(playerName, code)
     goToWaitingRoom(code)

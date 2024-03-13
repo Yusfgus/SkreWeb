@@ -102,15 +102,9 @@ export function getter(str){
 
 function tempCreateCards() {
     let cardIndex = 0
-    for(let i=1; i<=10; ++i){
-        // initCard('pasra', 10, getOwnerContainer(0), cardIndex++)
-        // initCard('exchange', 10, getOwnerContainer(0), cardIndex++)
-        initCard(`${i}`, i, getOwnerContainer(0), cardIndex++)
+    for(let i=1; i<=57; ++i){
+        initCard(`pasra`, 10, getOwnerContainer(0), cardIndex++)
     }
-    initCard(`redSkrew`, 25, getOwnerContainer(0), cardIndex++)
-    initCard(`skrewDriver`, 0, getOwnerContainer(0), cardIndex++)
-    initCard(`pasra`, 10, getOwnerContainer(0), cardIndex++)
-    initCard(20, 20, getOwnerContainer(0), cardIndex++)
 }
 // loadGame()
 export function loadGame() {
@@ -147,6 +141,7 @@ function initGame()
     turnCounter = 0
     turnsAfterSkrew = -1
     commandCardActivated = ''
+    flagChangeTurn = true
     //==============================================
 }
 
@@ -180,6 +175,7 @@ async function endGame(){
         addToHistory(totalPlayersScore)
         removeRoom()
     }
+    turnOffturnPlayerLine()
     // //console.log('ending game')
     let waitTime = dashBoardDelayTime + dashBoardDelayTime + showScoreTableTime + 2000
     await wait(() => {
@@ -273,7 +269,7 @@ async function changeTurn(ms = 1500) {
         fireSecondaryDeckClick(false)
         fireCardClicked(-1)
     }
-
+    // console.log("change turn.. turnsAfterSkrew=", turnsAfterSkrew)
     if(turnsAfterSkrew != -1 && turnsAfterSkrew++ == maxPlayersNum-1){
         turnOffturnPlayerLine()
         endRound()
@@ -305,7 +301,7 @@ async function changeTurn(ms = 1500) {
         commandCardActivated = ''
         playing = false
     
-        ////console.log(`player ${turnPlayer} turn`)
+        // console.log(`player ${turnPlayer} turn`)
         getturnPlayerLine(turnPlayer).style.animation = 'glow 2.5s ease-in-out infinite'
     }, ms)
 }
@@ -609,6 +605,7 @@ async function endRound()
     turnCounter = 0
     turnsAfterSkrew = -1
     commandCardActivated = ''
+    flagChangeTurn = true
     //==============================================
     for(let i=1; i<=maxPlayersNum; ++i) {
         removeCardsFrom(document.getElementById(`player${i}-cards-container`))
@@ -627,22 +624,16 @@ function canSaySkrew() {
     return !playing && turnPlayer == currentPlayer && turnsAfterSkrew == -1 && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew
 }
 
+let flagChangeTurn = true
 export async function saySkrew() {
 
-    // if(!canSaySkrew()){
-    //     return
-    // }
-
-    // if(turnsAfterSkrew == -1 && turnPlayer == currentPlayer && turnCounter/maxPlayersNum > minTurnsNumBeforSkrew)
-    {
-        turnsAfterSkrew = 0
-        playerSaidSkrew = turnPlayer - 1
-        ////console.log('player sad skrew', turnPlayer)
-        await wait(() => {
-            // skrewAudio.play()
-            playAudio('skrew')
-        }, 2000)
-        // skrewButton.style.display = 'inline-block'
+    turnsAfterSkrew = 0
+    // console.log("change saySkrew.. turnsAfterSkrew=", turnsAfterSkrew)
+    playerSaidSkrew = turnPlayer - 1
+    await wait(() => {
+        playAudio('skrew')
+    }, 2000)
+    if(flagChangeTurn){
         changeTurn(0)
     }
 }
@@ -867,9 +858,9 @@ function getPlayerIndex(playerCardsContainer) {
 
 export function cardClicked(cardIndex) 
 {
-    // //console.log(primaryDeckClicked)
-    // //console.log(secondaryDeckClicked)
-    // //console.log(cardChoodes)
+    // console.log("primaryDeckClicked", primaryDeckClicked)
+    // console.log("secondaryDeckClicked", secondaryDeckClicked)
+    // console.log("cardChoodes" ,cardChoodes)
 
     const card = cards[cardIndex]
     ////console.log('card clicked')
@@ -881,10 +872,11 @@ export function cardClicked(cardIndex)
     else if(!cardChoodes && (card.cardOwnerContainer === getOwnerContainer(turnPlayer)
         || card.cardOwnerContainer === getOwnerContainer(turnPlayer, true)))
     {
-        ////console.log('call choosCard')
+        // console.log('call choosCard')
         chooseCard(card)
     }
     else if(!secondaryDeckClicked && !cardChoodes && cardOwnerElem === primaryDeckCardContainer){
+        // console.log('primaryDeckClick()')
         primaryDeckClick()
     }
     // else if(cardOwnerElem === secondaryDeckCardContainer){
@@ -953,7 +945,7 @@ function changeCardOwner(card, owner, flip, assign = true, hide = false) {
 function canChooseCard() {
     // ////console.log('turnPlayer =', turnPlayer)
     // ////console.log('currentPlayer =', currentPlayer)
-    // ////console.log('commandCardActivated =', commandCardActivated)
+    // console.log('turnsAfterSkrew =', turnsAfterSkrew)
     return (turnsAfterSkrew != 0 && /*turnPlayer != 0 &&*/ currentPlayer == turnPlayer/* && commandCardActivated === ''*/)
 }
 
@@ -1040,7 +1032,9 @@ function chooseCard(card)
                     setTimeout(() => {
                         secondaryDeckcards.push(card)
                         changeCardOwner(card, secondaryDeckCardContainer, false)
+                        afterPasra()
                         updateScore(turnPlayer - 1, - card.cardValue)
+                        changeTurn(1500)
                     }, audioDelayTime)
                 }
                 else {
@@ -1052,9 +1046,10 @@ function chooseCard(card)
                         secondaryDeckcards.pop()
                         changeCardOwner(lastSecondaryCard, getOwnerContainer(turnPlayer, true), true)
                         updateScore(turnPlayer - 1, lastSecondaryCard.cardValue)
+                        changeTurn(1500)
                     }, audioDelayTime)
                 }
-                changeTurn(1500)
+                // changeTurn(1500)
             }, 1300)
 
             function pasraSucceded(){
@@ -1342,9 +1337,21 @@ function commandPasra(card) {
     secondaryDeckcards.push(card)
     changeCardOwner(card, secondaryDeckCardContainer, true)
     goodOrBadAudio(- card.cardValue, true)
+    afterPasra()
     updateScore(turnPlayer - 1, - card.cardValue)
 
     finishCommand(500)
+}
+
+function afterPasra()
+{
+    const card1Container = getOwnerContainer(turnPlayer)
+    const card2Container = getOwnerContainer(turnPlayer, true)
+    const cardsNum = card1Container.children.length + card2Container.children.length
+    if(cardsNum == 0){
+        flagChangeTurn = false
+        fireSaySkrew()
+    }
 }
 
 function playAudio(audioFileName, toAll = false)
