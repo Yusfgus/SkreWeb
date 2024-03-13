@@ -104,6 +104,7 @@ function tempCreateCards() {
     let cardIndex = 0
     for(let i=1; i<=57; ++i){
         initCard(`pasra`, 10, getOwnerContainer(0), cardIndex++)
+        initCard(`lookAll`, 10, getOwnerContainer(0), cardIndex++)
     }
 }
 // loadGame()
@@ -309,7 +310,7 @@ function turnOffturnPlayerLine() {
     // for(let i=1; i<=maxPlayersNum; ++i){
     //     getturnPlayerLine(i).style.animation = ''
     // }
-    console.log("turnPlayer=", turnPlayer)
+    // console.log("turnPlayer=", turnPlayer)
     getturnPlayerLine(turnPlayer).style.animation = ''
 }
 
@@ -1287,6 +1288,14 @@ function commandExchangeCard(card) {
     finishCommand(500)
 }
 
+function getOwnerId(cardContainer)
+{
+    // player${ownerId}-cards-container
+    const containerId = cardContainer.id
+    // console.log("containerId=", containerId)
+    return containerId[6]
+}
+
 let lookedCards = []
 function commandLookAll(card) {
     const cardOwner = card.cardOwnerContainer
@@ -1296,9 +1305,10 @@ function commandLookAll(card) {
         return
     }
 
+    const ownerId = getOwnerId(cardOwner)
     let can = true
-    lookedCards.forEach((lookedCardParent) => {
-        if(lookedCardParent === cardOwner){
+    lookedCards.forEach((lookedCardOwnerId) => {
+        if(lookedCardOwnerId === ownerId){
             ////console.log('card owner is', lookedCardParent)
             ////console.log('cant not look here again')
             can = false
@@ -1322,7 +1332,8 @@ function commandLookAll(card) {
         finishCommand(3000)
         return
     }
-    lookedCards.push(cardOwner)
+    // lookedCards.push(cardOwner)
+    lookedCards.push(ownerId)
 }
 
 function commandPasra(card) {
