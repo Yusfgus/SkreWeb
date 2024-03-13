@@ -175,7 +175,6 @@ async function endGame(){
         addToHistory(totalPlayersScore)
         removeRoom()
     }
-    turnOffturnPlayerLine()
     // //console.log('ending game')
     let waitTime = dashBoardDelayTime + dashBoardDelayTime + showScoreTableTime + 2000
     await wait(() => {
@@ -310,6 +309,7 @@ function turnOffturnPlayerLine() {
     // for(let i=1; i<=maxPlayersNum; ++i){
     //     getturnPlayerLine(i).style.animation = ''
     // }
+    console.log("turnPlayer=", turnPlayer)
     getturnPlayerLine(turnPlayer).style.animation = ''
 }
 
@@ -594,6 +594,7 @@ async function endRound()
     // playersScore = [20, 25, 1, 20]
     ////console.log('round scores is', playersScore)
     calculateScores()
+    turnOffturnPlayerLine()
 
     removeCardsFrom(primaryDeckCardContainer)
     removeCardsFrom(secondaryDeckCardContainer, true)
