@@ -24,7 +24,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase()
 // const auth = getAuth(app)
 
-let newRoomCodeRef = ref(db, 'Rooms/newRoomCode')
+// let newRoomCodeRef = ref(db, 'Rooms/newRoomCode')
 let roomRef
 
 let gameInfoRef
@@ -219,23 +219,56 @@ function firePlayersCnt(value = currentPlayer){
     update(playersRef, { playersCnt: value })
 }
 
-async function incrementNewRoomCode(){
-    let newRoomCode
-    await get(newRoomCodeRef).then((snapshot) => {
-        if (snapshot.exists()) {
-            newRoomCode = snapshot.val()
-            //////console.log(newRoomCode)
-            update(ref(db, 'Rooms/'), { newRoomCode: newRoomCode+1 })
+// async function incrementNewRoomCode(){
+//     let newRoomCode
+//     await get(newRoomCodeRef).then((snapshot) => {
+//         if (snapshot.exists()) {
+//             newRoomCode = snapshot.val()
+//             //////console.log(newRoomCode)
+//             update(ref(db, 'Rooms/'), { newRoomCode: newRoomCode+1 })
+//         }
+//     })
+//     return newRoomCode
+// }
+
+function generateCode()
+{
+    const codeLength = Math.floor(Math.random() * 3) + 4
+    let roomCode = "";
+    for(let i=1; i<=codeLength; ++i)
+    {
+        const letterOrdigit = Math.floor(Math.random() * 2)
+        if(letterOrdigit == 0){
+            //letter
+            // const upperOrlower = Math.floor(Math.random() * 2)
+            // if(upperOrlower == 0){
+            //     //upper
+            //     const asciiCode = Math.floor(Math.random() * 26) + 65
+            //     const char = String.fromCharCode(asciiCode)
+            //     roomCode += char
+            // }
+            // else {
+                //lower
+                const asciiCode = Math.floor(Math.random() * 26) + 97
+                const char = String.fromCharCode(asciiCode)
+                roomCode += char
+            // }
         }
-    })
-    return newRoomCode
+        else {
+            //digit
+            roomCode += Math.floor(Math.random() * 10)
+        }
+    }
+
+    return roomCode
 }
 
 export async function initRoom(name) {
     currentPlayer = 1
     setMaxPlayersNum()
     setStartTime()
-    const newRoomCode = await incrementNewRoomCode()
+    // const newRoomCode = await incrementNewRoomCode()
+    const newRoomCode = generateCode()
     //////console.log(newRoomCode)
     const ActionCnts = {};
     for(let i=1; i<=maxPlayersNum; ++i){
