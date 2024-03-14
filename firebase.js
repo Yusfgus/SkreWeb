@@ -87,15 +87,16 @@ function setStartTime(){
     // Get the current time
     let hours = currentDate.getHours();
     const minutes = currentDate.getMinutes();
-    // const seconds = currentDate.getSeconds();
+    const seconds = currentDate.getSeconds();
 
-    hours %= 12
-    const period = hours >= 12 ? 'PM' : 'AM';
-    if (hours === 0) {
-        hours = 12;
-    }
+    // hours %= 12
+    // const period = hours >= 12 ? 'PM' : 'AM';
+    // if (hours === 0) {
+    //     hours = 12;
+    // }
 
-    startTime = `${hours}:${minutes} ${period}`
+    // startTime = `${hours}:${minutes} ${period}`
+    startTime = `${hours}:${minutes}:${seconds}`
 }
 
 export function addToHistory(totalScore)
@@ -107,10 +108,10 @@ export function addToHistory(totalScore)
         result[player] = score;
     }
 
-    const data = {
-        date: startTime,
-        scores: result,
-    }
+    // const data = {
+    //     date: startTime,
+    //     scores: result,
+    // }
 
     const currentDate = new Date();
     // Get the current date
@@ -119,7 +120,8 @@ export function addToHistory(totalScore)
     const day = currentDate.getDate();
 
     const dayRef = ref(db, `History/${year}/${month}/${day}/`)
-    update(dayRef, { [roomCode]: data })
+    // update(dayRef, { [roomCode]: data })
+    update(dayRef, { [startTime]: result })
 }
 
 export function removeRoom(){
