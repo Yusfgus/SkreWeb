@@ -74,8 +74,7 @@ function getRoomCode(){
 }
 
 function goToWaitingRoom(code){
-    document.getElementById('main-container').style.visibility = 'visible'
-    document.getElementById('dashboard').style.visibility = 'visible'
-    document.getElementById('log-in-page').style.top = '-100%'
+    document.getElementById('main-area').style.visibility = 'visible'
     document.getElementById('room-code').innerHTML += code
+    document.getElementById('log-in-page').style.top = '-100%'
 }
