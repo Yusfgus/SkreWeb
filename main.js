@@ -259,7 +259,9 @@ async function initRound() {
     await wait(distributeCards, distributionsTime)
     await sleep(900)
     ////console.log('initial players scores =', playersScore)
-    await wait(showFirstTwoCards, showPlayersCardsTime)
+    if(roundCounter < maxRoundNum){
+        await wait(showFirstTwoCards, showPlayersCardsTime)
+    }
 }
 
 async function changeTurn(ms = 1500) {
@@ -487,7 +489,8 @@ function colorScoreTableCells(columnsIndex) {
         const score = arr[index]
         if(score == minScore)
         {
-            const wonPlayerRow = document.getElementById(`player${index+1}-score-row`)
+            // const wonPlayerRow = document.getElementById(`player${index+1}-score-row`)
+            const wonPlayerRow = getPlayerScoreRow(index+1)
             wonPlayerRow.rows[0].cells[columnsIndex].style.backgroundColor = '#51A500'
 
             if(columnsIndex == 0){
