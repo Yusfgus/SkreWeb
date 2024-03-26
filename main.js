@@ -1,6 +1,7 @@
 import Card from "./cards.js";
 import { fireCardClicked, fireSecondaryDeckClick, 
-        fireShuffleCards, fireSaySkrew, fireplayersActionCnt,
+        fireShuffleCards, fireSaySkrew, 
+        // fireplayersActionCnt,
         playerLeaves,
         removeRoom, addToHistory,
         } from "./firebase.js";
@@ -103,14 +104,13 @@ export function getter(str){
 function tempCreateCards() {
     let cardIndex = 0
     for(let i=1; i<=57; ++i){
-        initCard(`pasra`, 10, getOwnerContainer(0), cardIndex++)
-        initCard(`lookAll`, 10, getOwnerContainer(0), cardIndex++)
+        initCard(`3`, 3, getOwnerContainer(0), cardIndex++)
     }
 }
 // loadGame()
 export function loadGame() {
 
-    // //console.log('currentPlayer =', currentPlayer)
+    //console.log('currentPlayer =', currentPlayer)
 
     attatchClickEventHandler()
     
@@ -176,7 +176,7 @@ async function endGame(){
         addToHistory(totalPlayersScore)
         removeRoom()
     }
-    // //console.log('ending game')
+    //console.log('ending game')
     let waitTime = dashBoardDelayTime + dashBoardDelayTime + showScoreTableTime + 2000
     await wait(() => {
         showDashBoard(true, false)
@@ -255,17 +255,17 @@ async function initRound() {
     await waitUnitShuffling()
 
     // addCardsToPrimaryDeck()
-    ////console.log('distribute')
+    //console.log('distribute')
     await wait(distributeCards, distributionsTime)
     await sleep(900)
-    ////console.log('initial players scores =', playersScore)
+    //console.log('initial players scores =', playersScore)
     if(roundCounter < maxRoundNum){
         await wait(showFirstTwoCards, showPlayersCardsTime)
     }
 }
 
 async function changeTurn(ms = 1500) {
-    // //console.log(secondaryDeckcards)
+    //console.log(secondaryDeckcards)
     
     if(currentPlayer == 1){
         fireSecondaryDeckClick(false)
@@ -322,7 +322,7 @@ function getturnPlayerLine(playerIndex) {
 
 function showRoundName() {
     const imgPath = `url('images/round${roundCounter}-background.png')`
-    // ////console.log(imgPath)
+    //console.log(imgPath)
     roundName.style.backgroundImage = (imgPath)
 
     setTimeout(() => {
@@ -450,7 +450,7 @@ function getScore(arr, min) {
             ScorePlayerIndex.push(i)
         }
         Score = arr[ScorePlayerIndex[0]]
-        // ////console.log(score)
+        //console.log(score)
     }
 
     return Score
@@ -470,7 +470,7 @@ function getScore(arr, min) {
 //             minScorePlayerIndex.push(i)
 //         }
 //         minScore = arr[minScorePlayerIndex[0]]
-//         // ////console.log(score)
+//         // console.log(score)
 //     }
 
 //     return minScore
@@ -481,7 +481,7 @@ function colorScoreTableCells(columnsIndex) {
     const arr = columnsIndex == 0? totalPlayersScore: playersScore 
 
     const maxScore = getScore(arr, false)
-    // ////console.log('max score is', maxScore)
+    //console.log('max score is', maxScore)
     const minScore = getScore(arr, true)
 
     for(let index = 0; index<maxPlayersNum; ++index)
@@ -529,7 +529,7 @@ function updateScoreTable() {
 function winOrPunish() {
     // playersScore = [5, 7, 1, 0]
     let minScore = getScore(playersScore, true)
-    ////console.log('min score is', minScore)
+    //console.log('min score is', minScore)
 
     for(let i = maxPlayersNum-1 ; i>=0; --i) {
         if(playersScore[i] == minScore){
@@ -542,7 +542,7 @@ function winOrPunish() {
         for(let i=0; i<maxPlayersNum; ++i){
             playersScore[i] *= 2
         }
-        ////console.log('roundCounter = maxRoundNum = ', maxRoundNum)
+        //console.log('roundCounter = maxRoundNum = ', maxRoundNum)
     }
 
     if(playersScore[playerSaidSkrew] != 0) {
@@ -553,7 +553,7 @@ function winOrPunish() {
         startTurn = playerSaidSkrew+1
     }
 
-    // ////console.log('round scores is', playersScore)
+    //console.log('round scores is', playersScore)
 }
 
 function calculateScores() {
@@ -566,7 +566,7 @@ function calculateScores() {
 
     updateScoreTable()
 
-    ////console.log("total players scores =", totalPlayersScore)
+    //console.log("total players scores =", totalPlayersScore)
 }
 
 function showCards(parentDiv) {
@@ -596,7 +596,7 @@ async function endRound()
     await wait(showPlayersCards, showPlayersCardsTime + 100)
     await sleep(1000)
     // playersScore = [20, 25, 1, 20]
-    ////console.log('round scores is', playersScore)
+    //console.log('round scores is', playersScore)
     calculateScores()
     turnOffturnPlayerLine()
 
@@ -622,7 +622,7 @@ async function endRound()
     // fireShuffleCards([])
 
     startRound()
-    // ////console.log("primary deck lenght", primaryDeckCardContainer.children.length)
+    //console.log("primary deck lenght", primaryDeckCardContainer.children.length)
 }
 
 function canSaySkrew() {
@@ -656,10 +656,10 @@ function animationShuffleCards(){
     let i=0
     const id = setInterval(() =>
     {
-        // //console.log(primaryDeckCardContainer.children[i])
-        // //console.log(primaryDeckCardContainer.children[i].style)
+        //console.log(primaryDeckCardContainer.children[i])
+        //console.log(primaryDeckCardContainer.children[i].style)
         primaryDeckCardContainer.children[i].style.animation = 'shuffle 0.5s infinite ease-in-out;'
-        // //console.log(primaryDeckCardContainer.children[i].style)
+        //console.log(primaryDeckCardContainer.children[i].style)
         if(++i==57){
             clearInterval(id)
         }
@@ -716,22 +716,22 @@ function putFirstCard() {
 
 function distributeCards() {
 
-    ////console.log('cards before distributing', cards)
+    //console.log('cards before distributing', cards)
     let ctr = startTurn - 1
     let maxCards = maxPlayersNum * 4
     const id = setInterval(() => 
     {
         const card = primaryDeckcards.pop()
-        // //console.log(card)
+        //console.log(card)
         const playerIndex = ctr++ % maxPlayersNum
         playersScore[playerIndex] += card.cardValue
         const playerContainer = getOwnerContainer(playerIndex + 1)
-        // ////console.log('playerIndex + 1=',playerIndex + 1)
+        //console.log('playerIndex + 1=',playerIndex + 1)
         changeCardOwner(card, playerContainer, false)
         // addchildElement(playerContainer, card)
         if(--maxCards == 0) {
             clearInterval(id)
-            ////console.log('cards after distributing', cards)
+            //console.log('cards after distributing', cards)
             // putFirstCard()
         }
     }, distributionsTime/(4*maxPlayersNum))
@@ -744,8 +744,8 @@ function initCard(name, value, owner, cardIndex) {
 }
 
 export function reOrderCards(cardsIndex) {
-    // //console.log(cardsIndex)
-    // //console.log("turnCounter=", turnCounter);
+    //console.log(cardsIndex)
+    //console.log("turnCounter=", turnCounter);
     if(turnCounter == 0){
         const length = cards.length
         for(let i=0; i<length; ++i) {
@@ -754,7 +754,7 @@ export function reOrderCards(cardsIndex) {
         }
     }
     else {
-        // //console.log(secondaryDeckcards)
+        //console.log(secondaryDeckcards)
         const length = secondaryDeckcards.length-1
         for(let i=0; i<length; ++i) {
             const index = cardsIndex[i]
@@ -765,7 +765,7 @@ export function reOrderCards(cardsIndex) {
         }
         secondaryDeckcards = [secondaryDeckcards[length]]
     }
-    // //console.log(primaryDeckcards)
+    //console.log(primaryDeckcards)
     addCardsToPrimaryDeck()
 }
 
@@ -773,7 +773,7 @@ function shuffleCards(maxIndex) {
     // if(currentPlayer != 1){
     //     return
     // }
-    ////console.log("shuffling")
+    //console.log("shuffling")
     let cardsIndex = []
     for(let i=0; i<maxIndex; ++i){
         cardsIndex.push(i)
@@ -792,8 +792,8 @@ function shuffleCards(maxIndex) {
         // cardsIndex[random1].setDataValue(random1)
         // cardsIndex[random2].setDataValue(random2)
     }
-    // //console.log(cards)
-    // //console.log(cardsIndex)
+    //console.log(cards)
+    //console.log(cardsIndex)
     fireShuffleCards(cardsIndex)
 }
 
@@ -868,10 +868,10 @@ export function cardClicked(cardIndex)
     // console.log("cardChoodes" ,cardChoodes)
 
     const card = cards[cardIndex]
-    ////console.log('card clicked')
+    //console.log('card clicked')
     const cardOwnerElem = card.cardOwnerContainer
     if(commandCardActivated !== ''){
-        ////console.log('in command')
+        //console.log('in command')
         commandActivate(card)
     }
     else if(!cardChoodes && (card.cardOwnerContainer === getOwnerContainer(turnPlayer)
@@ -895,9 +895,9 @@ function cheating(card) {
     // || card.cardOwnerContainer === getOwnerContainer(currentPlayer, true))
     // {
     //     alert(`player ${currentPlayer} is cheating`)
-    //     // ////console.log(playersScore)
+        // ////console.log(playersScore)
     //     playersScore[currentPlayer-1] += 10
-    //     // ////console.log(playersScore)
+        // ////console.log(playersScore)
     // }
 }
 
@@ -908,6 +908,7 @@ function attatchClickEventHandlerToCard(card) {
     })
     card.cardDivElem.addEventListener('click', () => { 
         if(canChooseCard()){
+            // console.log("fireCardClicked")
             fireCardClicked(card.cardIndex) 
         }
     })
@@ -917,6 +918,7 @@ function attatchClickEventHandler() {
     // primaryDeckCardContainer.addEventListener('click', primaryDeckClick)
     secondaryDeckCardContainer.addEventListener('click', () => {
         if(canChooseCard() && (secondaryDeckcards.length > 0 && commandCardActivated === '' || primaryDeckClicked == 1)) {
+            // console.log("fireSecondaryDeckClick")
             fireSecondaryDeckClick()
         }
     })
@@ -934,8 +936,8 @@ function changeCardOwner(card, owner, flip, assign = true, hide = false) {
     }
 
     card.setOwnerContainer(owner)
-    ////console.log('hide=', hide)
-    // ////console.log(card)
+    //console.log('hide=', hide)
+    //console.log(card)
     if(hide){
         const cardInnerElem = card.cardDivElem.firstChild
         cardInnerElem.style.height = '0'
@@ -948,8 +950,8 @@ function changeCardOwner(card, owner, flip, assign = true, hide = false) {
 }
 
 function canChooseCard() {
-    // ////console.log('turnPlayer =', turnPlayer)
-    // ////console.log('currentPlayer =', currentPlayer)
+    //console.log('turnPlayer =', turnPlayer)
+    //console.log('currentPlayer =', currentPlayer)
     // console.log('turnsAfterSkrew =', turnsAfterSkrew)
     return (turnsAfterSkrew != 0 && /*turnPlayer != 0 &&*/ currentPlayer == turnPlayer/* && commandCardActivated === ''*/)
 }
@@ -969,7 +971,7 @@ function primaryDeckClick() {
         }
         primaryDeckClicked = 1
     }
-    ////console.log('in primaryDeckClick primaryDeckClicked =', primaryDeckClicked)
+    //console.log('in primaryDeckClick primaryDeckClicked =', primaryDeckClicked)
 }
 
 function addCardsToSecondaryDeck(myCard, choosedCard) 
@@ -996,15 +998,15 @@ function addCardsToSecondaryDeck(myCard, choosedCard)
 function chooseCard(card) 
 {
     // if(!canChooseCard()) {
-    //     ////console.log('cant choose')
+        ////console.log('cant choose')
     //     return
     // }
 
-    ////console.log('in chooseCard primaryDeckClicked =', primaryDeckClicked)
+    //console.log('in chooseCard primaryDeckClicked =', primaryDeckClicked)
     playing = true
     if(primaryDeckClicked == 1) {
         cardChoodes = true
-        ////console.log('from primary deck to player', turnPlayer)
+        //console.log('from primary deck to player', turnPlayer)
         const choosedCard = primaryDeckcards.pop()
         primaryDeckClicked = 2
     
@@ -1014,8 +1016,8 @@ function chooseCard(card)
     else if (secondaryDeckcards.length > 0)
     {
         cardChoodes = true
-        ////console.log('secondary size =', secondaryDeckcards.length)
-        ////console.log('secondaryDeckClicked =', secondaryDeckClicked)    
+        //console.log('secondary size =', secondaryDeckcards.length)
+        //console.log('secondaryDeckClicked =', secondaryDeckClicked)    
         if(secondaryDeckClicked)
         {
             const choosedCard = secondaryDeckcards.pop()
@@ -1031,7 +1033,7 @@ function chooseCard(card)
             setTimeout(() => {
                 if(pasraSucceded())
                 {
-                    ////console.log('pasra succeded') 
+                    //console.log('pasra succeded') 
                     //succeded
                     goodOrBadAudio(- card.cardValue, true)
                     setTimeout(() => {
@@ -1043,7 +1045,7 @@ function chooseCard(card)
                     }, audioDelayTime)
                 }
                 else {
-                    ////console.log('pasra failed') 
+                    //console.log('pasra failed') 
                     // failed
                     goodOrBadAudio(lastSecondaryCard.cardValue, true)
                     setTimeout(()=>{
@@ -1058,10 +1060,10 @@ function chooseCard(card)
             }, 1300)
 
             function pasraSucceded(){
-                ////console.log(card.cardName)
-                ////console.log(card.cardName === ' redSkrew')
-                ////console.log(lastSecondaryCard.cardName)
-                ////console.log(lastSecondaryCard.cardName === 'skrewDriver')
+                //console.log(card.cardName)
+                //console.log(card.cardName === ' redSkrew')
+                //console.log(lastSecondaryCard.cardName)
+                //console.log(lastSecondaryCard.cardName === 'skrewDriver')
                 return card.cardName === lastSecondaryCard.cardName
                     || card.cardName === 'redSkrew' && lastSecondaryCard.cardName === 'skrewDriver'
                     || card.cardName === 'skrewDriver' && lastSecondaryCard.cardName === 'redSkrew'
@@ -1076,10 +1078,10 @@ export function secondaryDeckClick() {
     // }
 
     
-    ////console.log('in secondaryDeckClick primaryDeckClicked =', primaryDeckClicked)
+    // console.log('in secondaryDeckClick primaryDeckClicked =', primaryDeckClicked, " commandCardActivated=", commandCardActivated)
     playing = true
     if(primaryDeckClicked == 1) {
-        ////console.log('from primary deck to secondary deck')
+        //console.log('from primary deck to secondary deck')
         const victimCard = primaryDeckcards.pop()
         changeCardOwner(victimCard, secondaryDeckCardContainer, currentPlayer!=turnPlayer)
         secondaryDeckcards.push(victimCard)
@@ -1088,7 +1090,7 @@ export function secondaryDeckClick() {
         commandCardActivated = victimCard.cardCommand
         
         if(commandCardActivated === '' || getOwnerContainer(turnPlayer).children.length == 0){
-            ////console.log('not command then change turn')
+            //console.log('not command then change turn')
             changeTurn(300)
         }
         else 
@@ -1098,12 +1100,12 @@ export function secondaryDeckClick() {
     }
     else if(secondaryDeckcards.length > 0 && commandCardActivated === '')
     {
-        // //console.log('secondary deck clicked')
+        //console.log('secondary deck clicked')
         secondaryDeckClicked = true
     }
     // else {
-    //     ////console.log('secondaryDeckcards.length =', secondaryDeckcards.length)
-    //     ////console.log('commandCardActivated =', commandCardActivated)
+        ////console.log('secondaryDeckcards.length =', secondaryDeckcards.length)
+        ////console.log('commandCardActivated =', commandCardActivated)
     // }
 }
 
@@ -1121,7 +1123,7 @@ function setHintMsg(commandCardActivated){
 }
 
 async function commandActivate(selectedCard) {
-    ////console.log('command is', commandCardActivated)
+    //console.log('command is', commandCardActivated)
     await wait(() => 
     {
         if(commandCardActivated === 'lookYours') {
@@ -1143,7 +1145,7 @@ async function commandActivate(selectedCard) {
 }
 
 function finishCommand(ms) {
-    ////console.log('command finished')
+    //console.log('command finished')
     setTimeout(() => {
         commandCardActivated = ''
         hintMsgElem.style.visibility = 'hidden'
@@ -1208,7 +1210,7 @@ async function commandLookOthers(card) {
 
 function insertCardInIndex(card, parent, index) {
 
-    ////console.log(card.cardDivElem)
+    //console.log(card.cardDivElem)
     const cardInnerElem = card.cardDivElem.firstChild
     // cardInnerElem.style.height = '0'
     // cardInnerElem.style.width = '0'
@@ -1312,8 +1314,8 @@ function commandLookAll(card) {
     let can = true
     lookedCards.forEach((lookedCardOwnerId) => {
         if(lookedCardOwnerId === ownerId){
-            ////console.log('card owner is', lookedCardParent)
-            ////console.log('cant not look here again')
+            //console.log('card owner is', lookedCardParent)
+            //console.log('cant not look here again')
             can = false
             return
         }

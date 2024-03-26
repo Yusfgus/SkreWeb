@@ -191,20 +191,20 @@ export function fireShuffleCards(shuffledCards)
     update(gameInfoRef, { shuffledCards: shuffledCards })
 }
 
-let actionCnt = 0
-export function fireplayersActionCnt(toAll = false){
-    if(toAll){
-        // actionCnt = 0
-        // const ActionCnts = {};
-        // for(let i=1; i<=maxPlayersNum; ++i){
-        //     ActionCnts[`cnt${i}`] = 0
-        // }
-        // update(gameInfoRef, { playersActionCnt: ActionCnts })
-    }
-    else {
-        update(playersActionCntRef, { [`cnt${currentPlayer}`]: ++actionCnt })
-    }
-}
+// let actionCnt = 0
+// export function fireplayersActionCnt(toAll = false){
+//     if(toAll){
+//         // actionCnt = 0
+//         // const ActionCnts = {};
+//         // for(let i=1; i<=maxPlayersNum; ++i){
+//         //     ActionCnts[`cnt${i}`] = 0
+//         // }
+//         // update(gameInfoRef, { playersActionCnt: ActionCnts })
+//     }
+//     else {
+//         update(playersActionCntRef, { [`cnt${currentPlayer}`]: ++actionCnt })
+//     }
+// }
 
 async function firePlayerName(){
     let names
@@ -271,11 +271,11 @@ export async function initRoom(name) {
     setStartTime()
     // const newRoomCode = await incrementNewRoomCode()
     const newRoomCode = generateCode()
-    //////console.log(newRoomCode)
-    const ActionCnts = {};
-    for(let i=1; i<=maxPlayersNum; ++i){
-        ActionCnts[`cnt${i}`] = 0
-    }
+    //console.log(newRoomCode)
+    // const ActionCnts = {};
+    // for(let i=1; i<=maxPlayersNum; ++i){
+    //     ActionCnts[`cnt${i}`] = 0
+    // }
     const names = new Array(maxPlayersNum).fill('');
     names[0] = name
     const newRoom = {
@@ -285,7 +285,7 @@ export async function initRoom(name) {
             playersName: names,
         },
         gameInfo: {
-            playersActionCnt: ActionCnts,
+            // playersActionCnt: ActionCnts,
             clickedCardIndex: -1,
             secondaryDeckClicked: false,
             saidSrew: false,
@@ -306,7 +306,7 @@ function addEventListeners() {
 
     cardClickedIndexListener()
     shuffledCardsListener()
-    playersActionCntListener()
+    // playersActionCntListener()
     secondaryDeckClickedListener()
     saidSrewListener()
 }
@@ -357,8 +357,9 @@ function shuffledCardsListener() {
         //shuffleCards
         const shuffledCards = snapshot.val()
         if(shuffledCards != null){
-            fireplayersActionCnt(false)
+            // fireplayersActionCnt(false)
             reOrderCards(shuffledCards)
+            setter('gotCards', true)
         }
     })
 }
@@ -371,22 +372,22 @@ function shuffledCardsListener() {
 //     return sum
 // }
 
-let sum = 0
-function playersActionCntListener() {
-    for(let i=1; i<=maxPlayersNum; ++i)
-    {
-        const actionCntRef = child(playersActionCntRef, `cnt${i}`)
-        onValue(actionCntRef, (snapshot) => {
-            const val = snapshot.val()
-            if(val == 0) return
-            sum += val
-            if(sum == maxPlayersNum*actionCnt){
-                sum = 0
-                setter('gotCards', true)
-            }
-        })
-    }
-}
+// let sum = 0
+// function playersActionCntListener() {
+//     for(let i=1; i<=maxPlayersNum; ++i)
+//     {
+//         const actionCntRef = child(playersActionCntRef, `cnt${i}`)
+//         onValue(actionCntRef, (snapshot) => {
+//             const val = snapshot.val()
+//             if(val == 0) return
+//             sum += val
+//             if(sum == maxPlayersNum*actionCnt){
+//                 sum = 0
+//                 setter('gotCards', true)
+//             }
+//         })
+//     }
+// }
 
 function secondaryDeckClickedListener(){
     onValue(secondaryDeckClickedRef, (snapshot) => {
