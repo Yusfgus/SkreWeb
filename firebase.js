@@ -77,6 +77,10 @@ import {loadGame, setter, getter,
 //     update(ref(db), {test: true})
 // }
 
+function addLeftZero(time){
+    return time >= 10? `${time}`: `0${time}`
+}
+
 function setStartTime(){
     const currentDate = new Date();
     // Get the current date
@@ -96,7 +100,10 @@ function setStartTime(){
     // }
 
     // startTime = `${hours}:${minutes} ${period}`
-    startTime = `${hours}:${minutes}:${seconds}`
+
+    // startTime = `${hours}:${minutes}:${seconds}`
+    startTime = `${addLeftZero(hours)}:${addLeftZero(minutes)}:${addLeftZero(seconds)}`
+    // console.log(startTime)
 }
 
 export function addToHistory(totalScore)
