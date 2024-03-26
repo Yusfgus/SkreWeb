@@ -513,6 +513,7 @@ table td {
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     top: 0;
@@ -726,6 +727,26 @@ table td {
     height: 100%;
 } */
 
+#warning, #contact {
+    direction: rtl;
+    color: rgba(255, 255, 255, 0.276);
+    font-size: 1.6vw;
+    font-weight: 900;
+    margin-top: 20px;
+}
+
+#warning { 
+    direction: rtl;
+    color: rgba(255, 255, 255, 0.276);
+    font-size: 1.6vw;
+    font-weight: 900;
+    margin-top: 20px;
+
+    position: absolute;
+    bottom: 6px;
+    right: 10px;
+}
+
 /* -------------------------------------------------------------------------------- */
 
 #room-code {
@@ -825,18 +846,6 @@ table td {
     transform: rotate(90deg);
 }
 
-
-#warning {
-    direction: rtl;
-    color: rgba(255, 255, 255, 0.276);
-    font-size: 1.6vw;
-    font-weight: 900;
-
-    position: absolute;
-    bottom: 6px;
-    right: 10px;
-}
-
 button {
     cursor: pointer;
 }
@@ -888,7 +897,7 @@ button {
         width: 75vw;
         height: 15vh;
     }
-    #warning {
+    #warning, #contact {
         font-size: 14px;
     }
     .radio-buttons-container {
