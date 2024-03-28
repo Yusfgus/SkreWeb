@@ -267,6 +267,12 @@ async function initRound() {
 async function changeTurn(ms = 1500) {
     //console.log(secondaryDeckcards)
     
+    primaryDeckClicked = 0
+    secondaryDeckClicked = false
+    cardChoodes = false
+    commandCardActivated = ''
+    playing = false
+
     if(currentPlayer == 1){
         fireSecondaryDeckClick(false)
         fireCardClicked(-1)
@@ -297,11 +303,11 @@ async function changeTurn(ms = 1500) {
         
         // currentPlayer = turnPlayer
         
-        primaryDeckClicked = 0
-        secondaryDeckClicked = false
-        cardChoodes = false
-        commandCardActivated = ''
-        playing = false
+        // primaryDeckClicked = 0
+        // secondaryDeckClicked = false
+        // cardChoodes = false
+        // commandCardActivated = ''
+        // playing = false
     
         // console.log(`player ${turnPlayer} turn`)
         getturnPlayerLine(turnPlayer).style.animation = 'glow 2.5s ease-in-out infinite'

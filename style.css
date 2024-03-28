@@ -727,9 +727,9 @@ table td {
     height: 100%;
 } */
 
-#warning, #contact {
+#contact {
     direction: rtl;
-    color: rgba(255, 255, 255, 0.276);
+    color: rgba(255, 255, 255, 0.776);
     font-size: 1.6vw;
     font-weight: 900;
     margin-top: 20px;
