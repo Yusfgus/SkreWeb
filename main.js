@@ -163,7 +163,7 @@ function initGame()
 // }
 window.addEventListener('beforeunload', ()=>{
     if(roundCounter <= maxRoundNum)
-        playerLeaves()
+        playerLeaves(roundCounter == 0)
 })
 
 async function endGame(){
@@ -913,7 +913,7 @@ function attatchClickEventHandlerToCard(card) {
         cheating(card)
     })
     card.cardDivElem.addEventListener('click', () => { 
-        if(canChooseCard()){
+        if(canChooseCard() && card.cardOwnerContainer !== secondaryDeckCardContainer){
             // console.log("fireCardClicked")
             fireCardClicked(card.cardIndex) 
         }
@@ -1047,7 +1047,8 @@ function chooseCard(card)
                         changeCardOwner(card, secondaryDeckCardContainer, false)
                         afterPasra()
                         updateScore(turnPlayer - 1, - card.cardValue)
-                        changeTurn(1500)
+                        // changeTurn(1500)
+                        changeTurn(300)
                     }, audioDelayTime)
                 }
                 else {
@@ -1059,7 +1060,8 @@ function chooseCard(card)
                         secondaryDeckcards.pop()
                         changeCardOwner(lastSecondaryCard, getOwnerContainer(turnPlayer, true), true)
                         updateScore(turnPlayer - 1, lastSecondaryCard.cardValue)
-                        changeTurn(1500)
+                        // changeTurn(1500)
+                        changeTurn(300)
                     }, audioDelayTime)
                 }
                 // changeTurn(1500)
@@ -1095,7 +1097,7 @@ export function secondaryDeckClick() {
         
         commandCardActivated = victimCard.cardCommand
         
-        if(commandCardActivated === '' || getOwnerContainer(turnPlayer).children.length == 0){
+        if(commandCardActivated === '' /*|| getOwnerContainer(turnPlayer).children.length == 0**/){
             //console.log('not command then change turn')
             changeTurn(300)
         }
@@ -1104,7 +1106,7 @@ export function secondaryDeckClick() {
             setHintMsg(commandCardActivated)
         }
     }
-    else if(secondaryDeckcards.length > 0 && commandCardActivated === '')
+    else if(secondaryDeckcards.length > 0 /*&& commandCardActivated === ''*/)
     {
         //console.log('secondary deck clicked')
         secondaryDeckClicked = true

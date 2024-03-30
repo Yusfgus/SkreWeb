@@ -84,25 +84,21 @@ function addLeftZero(time){
 function setStartTime(){
     const currentDate = new Date();
     // Get the current date
-    // const year = currentDate.getFullYear();
-    // const month = currentDate.getMonth() + 1; // Months are zero-based (0 for January, 11 for December)
-    // const day = currentDate.getDate();
-
-    // Get the current time
-    let hours = currentDate.getHours();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based (0 for January, 11 for December)
+    const day = currentDate.getDate();
+    const hours = currentDate.getHours();
     const minutes = currentDate.getMinutes();
     const seconds = currentDate.getSeconds();
 
-    // hours %= 12
-    // const period = hours >= 12 ? 'PM' : 'AM';
-    // if (hours === 0) {
-    //     hours = 12;
-    // }
+    const time = `${addLeftZero(hours)}:${addLeftZero(minutes)}:${addLeftZero(seconds)}`
 
-    // startTime = `${hours}:${minutes} ${period}`
-
-    // startTime = `${hours}:${minutes}:${seconds}`
-    startTime = `${addLeftZero(hours)}:${addLeftZero(minutes)}:${addLeftZero(seconds)}`
+    startTime = {
+        year: year,
+        month: month,
+        day: day,
+        time: time,
+    }
     // console.log(startTime)
 }
 
@@ -115,20 +111,8 @@ export function addToHistory(totalScore)
         result[player] = score;
     }
 
-    // const data = {
-    //     date: startTime,
-    //     scores: result,
-    // }
-
-    const currentDate = new Date();
-    // Get the current date
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1; // Months are zero-based (0 for January, 11 for December)
-    const day = currentDate.getDate();
-
-    const dayRef = ref(db, `History/${year}/${month}/${day}/`)
-    // update(dayRef, { [roomCode]: data })
-    update(dayRef, { [startTime]: result })
+    const dayRef = ref(db, `History/${startTime.year}/${startTime.month}/${startTime.day}/`)
+    update(dayRef, { [startTime.time]: result })
 }
 
 export function removeRoom(){
@@ -140,10 +124,11 @@ export function removeRoom(){
     remove(roomRef)
 }
 
-export function playerLeaves(){
+export function playerLeaves(remove){
     if(roomRef !== undefined){
         firePlayersCnt(-1)
-        // removeRoom()
+        if(remove)
+            removeRoom()
     }
 }
 
@@ -286,6 +271,7 @@ export async function initRoom(name) {
     const names = new Array(maxPlayersNum).fill('');
     names[0] = name
     const newRoom = {
+        createTime: startTime.time,
         players: {
             playersCnt: 1,
             maxPlayersNum: maxPlayersNum,
@@ -418,12 +404,13 @@ export async function isRoomValid(code) {
     const roomCodeRef = ref(db, `Rooms/${code}/`)
     let valid = false
     await get(roomCodeRef).then((snapshot) => {
-        const exists = snapshot.exists()
+        // const exists = snapshot.exists()
         //////console.log('snapshot.exists()=', exists)
         if(snapshot.exists()){
             const playersCnt = snapshot.val().players.playersCnt
+            const playersMax = snapshot.val().players.maxPlayersNum
             //////console.log('playersCnt=', playersCnt)
-            if(playersCnt < 4){
+            if(playersCnt > -1 && playersCnt < playersMax){
                 currentPlayer = playersCnt + 1
                 valid = true
             }
