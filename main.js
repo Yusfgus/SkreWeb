@@ -52,7 +52,7 @@ let gotCards = false
 let cardsAdded = false
 
 let playing = false
-let roundCounter = 0
+export let roundCounter = 0
 let turnCounter = 0
 let turnsAfterSkrew = -1
 
@@ -163,7 +163,7 @@ function initGame()
 // }
 window.addEventListener('beforeunload', ()=>{
     if(roundCounter <= maxRoundNum)
-        playerLeaves(roundCounter == 0)
+        playerLeaves()
 })
 
 async function endGame(){

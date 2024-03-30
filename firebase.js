@@ -61,6 +61,7 @@ import {loadGame, setter, getter,
         secondaryDeckClick, saySkrew,
         initPlayerNameContainer,
         replacePlayersContainers,
+        roundCounter,
         } from './main.js'
 
 // document.addEventListener('DOMContentLoaded', () => {
@@ -124,11 +125,14 @@ export function removeRoom(){
     remove(roomRef)
 }
 
-export function playerLeaves(remove){
+export function playerLeaves(){
     if(roomRef !== undefined){
         firePlayersCnt(-1)
-        if(remove)
+        // removeRoom()
+        if(roundCounter == 0)
             removeRoom()
+        else 
+            update(roomRef, { roundsPlayed: roundCounter })
     }
 }
 
