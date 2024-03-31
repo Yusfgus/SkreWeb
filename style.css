@@ -728,11 +728,16 @@ table td {
 } */
 
 #contact {
-    direction: rtl;
     color: rgba(255, 255, 255, 0.776);
-    font-size: 1.6vw;
+    font-size: 1.3vw;
     font-weight: 900;
     margin-top: 20px;
+
+    /* font-family:monospace; */
+}
+
+#contact a {
+    color: rgba(255, 255, 255, 0.776);
 }
 
 #warning { 
