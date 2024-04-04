@@ -231,31 +231,31 @@ function firePlayersCnt(value = currentPlayer){
 
 function generateCode()
 {
-    const codeLength = Math.floor(Math.random() * 3) + 4
+    const codeLength = Math.floor(Math.random() * 3) + 4 //4,5,6
     let roomCode = "";
     for(let i=1; i<=codeLength; ++i)
     {
-        const letterOrdigit = Math.floor(Math.random() * 2)
-        if(letterOrdigit == 0){
-            //letter
-            // const upperOrlower = Math.floor(Math.random() * 2)
-            // if(upperOrlower == 0){
-            //     //upper
-            //     const asciiCode = Math.floor(Math.random() * 26) + 65
-            //     const char = String.fromCharCode(asciiCode)
-            //     roomCode += char
-            // }
-            // else {
-                //lower
-                const asciiCode = Math.floor(Math.random() * 26) + 97
-                const char = String.fromCharCode(asciiCode)
-                roomCode += char
-            // }
-        }
-        else {
+        // const letterOrdigit = Math.floor(Math.random() * 2) //0,1
+        // if(letterOrdigit == 0){
+        //     //letter
+        //     // const upperOrlower = Math.floor(Math.random() * 2)
+        //     // if(upperOrlower == 0){
+        //     //     //upper
+        //     //     const asciiCode = Math.floor(Math.random() * 26) + 65
+        //     //     const char = String.fromCharCode(asciiCode)
+        //     //     roomCode += char
+        //     // }
+        //     // else {
+        //         //lower
+        //         const asciiCode = Math.floor(Math.random() * 26) + 97  //a-z
+        //         const char = String.fromCharCode(asciiCode)
+        //         roomCode += char
+        //     // }
+        // }
+        // else {
             //digit
             roomCode += Math.floor(Math.random() * 10)
-        }
+        // }
     }
 
     return roomCode
