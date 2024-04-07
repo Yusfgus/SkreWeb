@@ -78,6 +78,34 @@ import {loadGame, setter, getter,
 //     update(ref(db), {test: true})
 // }
 
+document.getElementById('copy').addEventListener('click', copyCode)
+
+function copyCode(){
+    // alert('here')
+    // navigator.clipboard.writeText(roomCode)
+    // .then(() => {
+    //     // Provide feedback to the user
+    //     alert("Text copied to clipboard: " + textToCopy);
+    //   })
+    //   .catch((error) => {
+    //     alert('Could not copy text: ', error);
+    //   });
+    // Create a temporary input field
+    const tempInput = document.createElement("input");
+    tempInput.setAttribute("value", roomCode);
+    document.body.appendChild(tempInput);
+
+    // Select the text
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+    // Copy the text to the clipboard
+    document.execCommand("copy");
+
+    // Remove the temporary input field
+    document.body.removeChild(tempInput);
+}
+
 function addLeftZero(time){
     return time >= 10? `${time}`: `0${time}`
 }

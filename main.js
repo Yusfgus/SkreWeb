@@ -273,10 +273,10 @@ async function changeTurn(ms = 1500) {
     commandCardActivated = ''
     playing = false
 
-    if(currentPlayer == 1){
-        fireSecondaryDeckClick(false)
-        fireCardClicked(-1)
-    }
+    // if(currentPlayer == 1){
+    //     fireSecondaryDeckClick(false)
+    //     fireCardClicked(-1)
+    // }
     // console.log("change turn.. turnsAfterSkrew=", turnsAfterSkrew)
     if(turnsAfterSkrew != -1 && turnsAfterSkrew++ == maxPlayersNum-1){
         turnOffturnPlayerLine()
@@ -300,7 +300,11 @@ async function changeTurn(ms = 1500) {
             turnOffturnPlayerLine()
             turnPlayer = turnPlayer % maxPlayersNum + 1
         }
-        
+
+        if(currentPlayer == turnPlayer){
+            fireSecondaryDeckClick(false)
+            fireCardClicked(-1)
+        }
         // currentPlayer = turnPlayer
         
         // primaryDeckClicked = 0
