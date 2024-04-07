@@ -129,7 +129,7 @@ function initGame()
 {
     // initPlayerNameContainer()
     initScoreTable()
-    document.getElementById('room-code').classList.add('hide-room-code')
+    document.getElementById('room-code-div').classList.add('hide-room-code')
     totalPlayersScore = new Array(maxPlayersNum).fill(0);
     roundCounter = 0
     distributionsTime = maxPlayersNum*4*350
