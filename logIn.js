@@ -5,6 +5,7 @@ let playerName
 document.addEventListener('DOMContentLoaded', logIn)
 
 function logIn() {
+    loadUsername()
     addEventHandlers()
 }
 
@@ -15,32 +16,32 @@ function addEventHandlers() {
 }
 
 async function createRoom() {
-    if(clicked) return
+    if (clicked) return
     // clicked = true
 
     const playerName = getPlayerName()
     ////console.log('name is', playerName)
-    if(playerName == ""){
+    if (playerName == "") {
         alert('name can not be empty')
         return false
     }
     clicked = true
+    saveUsername(playerName)
     const code = await initRoom(playerName)
-    ////console.log('room created')
     initPlayer(playerName, code)
     goToWaitingRoom(code)
 }
 
 async function canJoinRoom(name, code) {
     ////console.log('name is', name)
-    if(name == ""){
+    if (name == "") {
         alert('name can not be empty')
         return false
     }
-    
+
     ////console.log('code is', code)
-    const exist  = await isRoomValid(code)
-    if(!exist){
+    const exist = await isRoomValid(code)
+    if (!exist) {
         alert('Room is full or does\'t exist')
         return false
     }
@@ -49,32 +50,42 @@ async function canJoinRoom(name, code) {
 }
 
 async function joinRoom() {
-    if(clicked) return
+    if (clicked) return
     // clicked = true
 
     const playerName = getPlayerName()
     const code = getRoomCode()
 
     const canJoin = await canJoinRoom(playerName, code)
-    if(!canJoin){
+    if (!canJoin) {
         return
     }
     clicked = true
-    ////console.log('can join room')
+    saveUsername(playerName)
     initPlayer(playerName, code)
     goToWaitingRoom(code)
 }
 
-function getPlayerName(){
+function getPlayerName() {
     return document.getElementById('player-name-txt').value
 }
 
-function getRoomCode(){
+function getRoomCode() {
     return document.getElementById('room-code-txt').value
 }
 
-function goToWaitingRoom(code){
+function goToWaitingRoom(code) {
     document.getElementById('main-area').style.visibility = 'visible'
     document.getElementById('room-code').innerHTML += code
     document.getElementById('log-in-page').style.top = '-100%'
+}
+
+function saveUsername(username) {
+    localStorage.setItem('username', username);
+}
+
+function loadUsername() {
+    const username = localStorage.getItem('username')
+    if (username !== null)
+        document.getElementById('player-name-txt').value = username
 }
